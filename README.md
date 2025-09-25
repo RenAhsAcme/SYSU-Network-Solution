@@ -4,7 +4,7 @@
 
 ## 前情提要
 
-对于我个人而言，我个人有很多设备需要通过无线网接入，但是SYSU-SECURE限制三台设备，且采用WPA2-Enterprise的认证方式，根本不可能支持每一台设备，我还需要给自己组建一个小内网，用于彼此之间的数据传输，电脑常备开机但又不想保持睡眠，希望能够通过唤醒包使得电脑随时处于在线状态方便我随时随地远程调用，种种叠加在一起催生了这个想法；对于我们宿舍而言，打造智能家居体验，首先必须有一个Personal类型的WiFi，那必须有一个稳定的接入点以及经过定制的WiFi。好了，该进入正题了。（下面也只是我的一些折腾经验，供大家参考。）
+对于我个人而言，我个人有很多设备需要通过无线网接入，但是SYSU-SECURE限制三台设备，且采用WPA2-Enterprise的认证方式，根本不可能支持每一台设备，我还需要给自己组建一个小内网，用于彼此之间的数据传输，电脑常备开机但又不想保持唤醒，希望能够通过唤醒包使得电脑随时处于在线状态方便我随时随地远程调用，种种叠加在一起催生了这个想法；对于我们宿舍而言，打造智能家居体验，首先必须有一个Personal类型的WiFi，那必须有一个稳定的接入点以及经过定制的WiFi。好了，该进入正题了。（下面也只是我的一些折腾经验，供大家参考。）
 
 补充：我在广州校区南校园，宿舍只有一个主端口。
 
@@ -109,7 +109,7 @@ SYSU有线校园网（采用锐捷认证的校区，已知广州校区是锐捷�
   pushd po2lmo
   sudo make && sudo make install
   popd
-  git clone https://github.com/KumaTea package/minieap
+  git clone https://github.com/KumaTea/openwrt-minieap package/minieap
   sudo make package/minieap/compile V=s
   ```
 
@@ -190,6 +190,7 @@ SYSU有线校园网（采用锐捷认证的校区，已知广州校区是锐捷�
 - 远程唤醒电脑（我是用TP-LINK的路由器物联实现的，我已知的支持WOL的路由器有TP-LINK，华为）
 - NAS私有云（拿学校的网跑上行流量应该霉逝吧）
 - 每台设备尊享IPv6地址，跑内网穿透轻轻松松（推荐[jeessy2/ddns-go: Simple and easy to use DDNS. Support Aliyun, Tencent Cloud, Dnspod, Cloudflare, Callback, Huawei Cloud, Baidu Cloud, Porkbun, GoDaddy, Namecheap, NameSilo...](https://github.com/jeessy2/ddns-go)，搭配[Free dynamic DNS for IPv6](https://dynv6.com/)，轻松免费实现域名级别的体验）
+
 
 
 

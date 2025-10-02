@@ -196,3 +196,5 @@
 - 远程唤醒电脑（我是用TP-LINK的路由器物联实现的，我已知的支持WOL的路由器有TP-LINK，华为）
 - NAS私有云
 - 每台设备分配IPv6地址，可实现内网穿透（推荐[jeessy2/ddns-go: Simple and easy to use DDNS. Support Aliyun, Tencent Cloud, Dnspod, Cloudflare, Callback, Huawei Cloud, Baidu Cloud, Porkbun, GoDaddy, Namecheap, NameSilo...](https://github.com/jeessy2/ddns-go)，搭配[Free dynamic DNS for IPv6](https://dynv6.com/)，即使IPv6地址发生变化，也不影响可用性。）
+
+~~这里是一段Demo，用于测试Git在指定网络环境下是否能正常工作。~~

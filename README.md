@@ -32,7 +32,7 @@
 
 #### 一个U盘
 
-## 实操准备
+## 操作流程
 
 ### 0.有效性验证
 
@@ -129,7 +129,7 @@
 
 - 在电脑上用终端通过SSH连接路由。下面是一个需要执行命令的Example
 
-  ```
+  ```terminal at ssh (example with illustration)
   ssh root@192.168.2.1
   # 可能会遇到校验，用yes同意。如果遇到NASTY警告并退出连接的话，删除C:\User\当前用户名\.ssh\known_hosts，然后重试。
   # 如果在前面已经设置密码，则输入密码。
@@ -197,4 +197,5 @@
 - NAS私有云
 - 每台设备分配IPv6地址，可实现内网穿透（推荐[jeessy2/ddns-go: Simple and easy to use DDNS. Support Aliyun, Tencent Cloud, Dnspod, Cloudflare, Callback, Huawei Cloud, Baidu Cloud, Porkbun, GoDaddy, Namecheap, NameSilo...](https://github.com/jeessy2/ddns-go)，搭配[Free dynamic DNS for IPv6](https://dynv6.com/)，即使IPv6地址发生变化，也不影响可用性。）
 
-~~这里是一段Demo，用于测试Git在指定网络环境下是否能正常工作。~~
+~~这里是一段Demo，用于测试Git在指定网络环境下是否能正常工作。（提交1）~~
+~~这里是一段Demo，用于测试Git在指定网络环境下是否能正常工作。（提交2）~~

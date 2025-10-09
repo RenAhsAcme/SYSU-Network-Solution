@@ -209,10 +209,11 @@ The *.ipk file which is compiled for x86_64 has published at [Releases](https://
 
 ### 2. 其他说明 Others
 
-如果上述内容侵犯了您的相关权益，您可以通过邮件联系我删除。请使用中文与我联系。[RenAhsAcme@outlook.com](mailto:RenAhsAcme@outlook.com?subject=请移除 Github 上的 Repository SYSU-Network-Solution)
+如果上述内容侵犯了您的相关权益，您可以通过邮件联系我删除。请使用中文与我联系。[RenAhsAcme@outlook.com](mailto:RenAhsAcme@outlook.com?subject=请移除Github上的Repository-SYSU-Network-Solution)
 
 If the above content infringes upon your relevant rights, you can contact me via email to request its removal. You need to use Chinese to contact with me. Email address is attached above this line.
 
 受限于作者水平与精力，部分文字不提供英文翻译。
 
 Due to my level and effort, English Ver. is not provided.
+

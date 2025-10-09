@@ -8,25 +8,26 @@
 
 补充：这是我的折腾经验，仅供参考。以下方案在 SYSU (Guangzhou Southern) 宿舍得到可靠性验证。
 
-#### 4根六类网线：
+- 4根六类网线
 
-第一根网线：必须是六类线。用于墙面端口和交换机连接。宿舍只有一个主端口。鉴于在限速时段每个账号大概能分到60-100Mbps的速度，如果你的其他舍友也需要的话，主线带宽必须给够。
+> 第一根网线：必须是六类线。用于墙面端口和交换机连接。宿舍只有一个主端口。鉴于在限速时段每个账号大概能分到60-100Mbps的速度，如果你的其他舍友也需要的话，主线带宽必须给够。
+>
+> 第二根网线：可以是六类线以下。用于与你自己的软路由连接。
+>
+> 第三根网线：可以是六类线以下。用于软路由和下层无线路由器连接。
+>
+> 第四根网线：建议是六类线。用于电脑和无线路由的连接。适用于有内网通信的需求。
+>
+> 可以视情况减少网线用量。
+>
 
-第二根网线：可以是六类线以下。用于与你自己的软路由连接。
+- 一台Windows电脑
 
-第三根网线：可以是六类线以下。用于软路由和下层无线路由器连接。
+- 一台小主机或二手软路由
 
-第四根网线：建议是六类线。用于电脑和无线路由的连接。适用于有内网通信的需求。
+- 一台无线路由器（可选）
 
-可以视情况减少网线用量。
-
-#### 一台Windows电脑
-
-#### 一台小主机或二手软路由
-
-#### 一台无线路由器（可选）
-
-#### 一个U盘
+- 一个U盘
 
 ## 操作流程
 
@@ -38,7 +39,7 @@
 
 #### 1.1 资源下载
 
-为了方便，我commit了一些我用到的资源文件，可以转到 [Releases](https://github.com/RenAhsAcme/SYSU-Network-Solution/Releases) 查看。
+为了方便，我commit了一些我用到的资源文件，可以转到 [Releases](https://github.com/RenAhsAcme/SYSU-Network-Solution/releases) 查看。
 
 - OpenWrt固件下载：[Index of /releases/24.10.3/targets/](https://downloads.openwrt.org/releases/24.10.3/targets/)，根据当前使用的软路由的架构版本进行定位，下载固件文件和SDK。Release中提供了x86_64架构的相关文件：generic-ext4-combined-efi.img.gz，openwrt-sdk-24.10.3-x86-64_gcc-13.3.0_musl.Linux-x86_64.tar.zst。
 - VMware Workstation
@@ -143,16 +144,16 @@
   USE_PROCD=1
   
   start_service() {
-  	procd_open_instance
-  	procd_set_param command /usr/sbin/minieap
-  	procd_set_param respawn
-  	procd_set_param stdout 1
-  	procd_set_param stderr 1
-  	procd_close_instance
+    procd_open_instance
+    procd_set_param command /usr/sbin/minieap
+    procd_set_param respawn
+    procd_set_param stdout 1
+    procd_set_param stderr 1
+    procd_close_instance
   }
   
   stop_service() {
-  	/usr/sbin/minieap -k
+    /usr/sbin/minieap -k
   }
   
   # 要编写的内容结束了，如果用cat进入编辑，还需执行下述命令以退出。vi进入编辑的，正常保存退出即可。
@@ -198,13 +199,13 @@
 
 感谢 [KumaTea](https://github.com/KumaTea) 提供的 OpenWrt-MiniEAP。
 
-已提供了基于x86_64架构的编译ipk文件，可前往 [Releases](https://github.com/RenAhsAcme/SYSU-Network-Solution/Releases) 获取。
+已提供了基于x86_64架构的编译ipk文件，可前往 [Releases](https://github.com/RenAhsAcme/SYSU-Network-Solution/releases) 获取。
 
 **This repository is forked from [KumaTea/openwrt-minieap](https://github.com/KumaTea/openwrt-minieap). It has been validated on SYSU(Guangzhou Southern).**
 
 Thanks for OpenWrt-MiniEAP provided by [KumaTea](https://github.com/KumaTea)
 
-The *.ipk file which is compiled for x86_64 has published at [Releases](https://github.com/RenAhsAcme/SYSU-Network-Solution/Releases).
+The *.ipk file which is compiled for x86_64 has published at [Releases](https://github.com/RenAhsAcme/SYSU-Network-Solution/releases).
 
 ### 2. 其他说明 Others
 

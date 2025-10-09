@@ -1,16 +1,12 @@
-# 适用于SYSU的宿舍校园网改造一站式方案
+# 适用于SYSU宿舍校园网改造一站式方案 A one-stop solution for SYSU dormitory CERNET
 
 关键词：软路由，OpenWrt，多设备上网，锐捷客户端认证，自动认证，IPv6穿透分配，宿舍内网组建。
-
-关联Repository：[RenAhsAcme/openwrt-minieap](https://github.com/RenAhsAcme/openwrt-minieap)
-
-**更新：优化了表述，并提供了部分我使用的资源。**
 
 ## 前情提要
 
 对于我个人而言，我有很多设备需要通过无线网接入，但是SYSU-SECURE限制三台设备，且采用WPA2-Enterprise的认证方式，一些设备无法使用；我还需要给自己组建一个小内网用于数据传输，电脑常备开机，希望能够通过发送唤醒包使得电脑在需要的时候处于在线状态方便我远程调用；对于我们宿舍而言，打造智能家居体验，首先必须有个Personal类型的WiFi。好了，该进入正题了。
 
-补充：这是我的折腾经验，仅供参考。以下方案在Guangzhou Southern Campus宿舍得到可靠性验证。
+补充：这是我的折腾经验，仅供参考。以下方案在 SYSU (Guangzhou Southern) 宿舍得到可靠性验证。
 
 #### 4根六类网线：
 
@@ -34,27 +30,24 @@
 
 ## 操作流程
 
-### 0.有效性验证
+### 0. 有效性验证
 
 为避免财产损失，建议先随便找根网线，连到墙面端口上，进入[个人用户有线网络接入 | 中山大学网络与信息中心](https://inc.sysu.edu.cn/service/wired-network-access)，尝试连接有线校园网。如果一切正常，再继续进行。否则，请求助帮助台。
 
-### 1.软路由配置
+### 1. 软路由配置
 
 #### 1.1 资源下载
 
-为了方便，我commit了一些我用到的资源文件，可以转到Release查看。
+为了方便，我commit了一些我用到的资源文件，可以转到 [Releases](https://github.com/RenAhsAcme/SYSU-Network-Solution/Releases) 查看。
 
 - OpenWrt固件下载：[Index of /releases/24.10.3/targets/](https://downloads.openwrt.org/releases/24.10.3/targets/)，根据当前使用的软路由的架构版本进行定位，下载固件文件和SDK。Release中提供了x86_64架构的相关文件：generic-ext4-combined-efi.img.gz，openwrt-sdk-24.10.3-x86-64_gcc-13.3.0_musl.Linux-x86_64.tar.zst。
-
 - VMware Workstation
-
 - Ubuntu
-
 - FirPE
-
 - Ventoy
-
 - Physdiskwrite
+
+说明：以上软件可以在非商用的情况下免费使用，请遵循它们的相关条款。这些软件不是本 Repository 相关的内容，请前往 Release 获取。
 
 #### 1.2 软路由刷机
 
@@ -100,7 +93,7 @@
 
 - 触发Reboot，将电脑网线插在下游无线路由器或者任一LAN口均可。
 
-## 2.编译并配置MiniEAP
+### 2. 编译并配置MiniEAP
 
 - 安装VMware Workstation并配置好Ubuntu虚拟机。
 
@@ -119,7 +112,7 @@
   pushd po2lmo
   sudo make && sudo make install
   popd
-  git clone https://github.com/RenAhsAcme/openwrt-minieap package/minieap
+  git clone https://github.com/RenAhsAcme/SYSU-Network-Solution package/minieap
   sudo make package/minieap/compile V=s
   ```
 
@@ -184,7 +177,7 @@
 
 - 此时可以把连接到电脑的那根线接到下游无线路由器上了。
 
-## 3.结语
+## 结语
 
 进入SYSU以后，发现前人给到的资源太过松散，于是折腾了一些时间，做一个通用的一站式方案出来，希望能帮到你。
 
@@ -195,7 +188,30 @@
 - 内网设备间通信
 - 远程唤醒电脑（我是用TP-LINK的路由器物联实现的，我已知的支持WOL的路由器有TP-LINK，华为）
 - NAS私有云
-- 每台设备分配IPv6地址，可实现内网穿透（推荐[jeessy2/ddns-go: Simple and easy to use DDNS. Support Aliyun, Tencent Cloud, Dnspod, Cloudflare, Callback, Huawei Cloud, Baidu Cloud, Porkbun, GoDaddy, Namecheap, NameSilo...](https://github.com/jeessy2/ddns-go)，搭配[Free dynamic DNS for IPv6](https://dynv6.com/)，即使IPv6地址发生变化，也不影响可用性。）
+- 每台设备分配IPv6地址，可实现内网穿透（推荐[jeessy2/ddns-go](https://github.com/jeessy2/ddns-go)，搭配[Free dynamic DNS for IPv6](https://dynv6.com/)，即使IPv6地址发生变化，也不影响可用性。）
 
-~~这里是一段Demo，用于测试Git在指定网络环境下是否能正常工作。（提交1）~~
-~~这里是一段Demo，用于测试Git在指定网络环境下是否能正常工作。（提交2）~~
+## 相关说明 Illustration
+
+### 1. 对 OpenWrt-MiniEAP 的说明 Illustration for OpenWrt-MiniEAP
+
+**该 Repository 所提供的 OpenWrt-MiniEAP 的 Source Code 是从 [KumaTea/openwrt-minieap](https://github.com/KumaTea/openwrt-minieap) Fork 而来。已在 SYSU(Guangzhou Southern) 验证了可靠性。**
+
+感谢 [KumaTea](https://github.com/KumaTea) 提供的 OpenWrt-MiniEAP。
+
+已提供了基于x86_64架构的编译ipk文件，可前往 [Releases](https://github.com/RenAhsAcme/SYSU-Network-Solution/Releases) 获取。
+
+**This repository is forked from [KumaTea/openwrt-minieap](https://github.com/KumaTea/openwrt-minieap). It has been validated on SYSU(Guangzhou Southern).**
+
+Thanks for OpenWrt-MiniEAP provided by [KumaTea](https://github.com/KumaTea)
+
+The *.ipk file which is compiled for x86_64 has published at [Releases](https://github.com/RenAhsAcme/SYSU-Network-Solution/Releases).
+
+### 2. 其他说明 Others
+
+如果上述内容侵犯了您的相关权益，您可以通过邮件联系我删除。请使用中文与我联系。[RenAhsAcme@outlook.com](mailto:RenAhsAcme@outlook.com?subject=请移除 Github 上的 Repository SYSU-Network-Solution)
+
+If the above content infringes upon your relevant rights, you can contact me via email to request its removal. You need to use Chinese to contact with me. Email address is attached above this line.
+
+受限于作者水平与精力，部分文字不提供英文翻译。
+
+Due to my level and effort, English Ver. is not provided.

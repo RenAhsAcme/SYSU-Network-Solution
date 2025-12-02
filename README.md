@@ -178,6 +178,10 @@
 
 - 此时可以把连接到电脑的那根线接到下游无线路由器上了。
 
+## 注意事项
+
+OpenWrt默认启用的 Rebind Protection 功能可能导致无法正常访问校内专属服务（因为这些服务返回的本身就是内网IP，它们可能会被意外舍弃），并且已知该功能会干扰 DoH 等加密DNS的正常工作。请前往 OpenWrt 管理后台 - Network - DHCP and DNS - Filter - Rebind protection 取消勾选。
+
 ## 结语
 
 进入SYSU以后，发现前人给到的资源太过松散，于是折腾了一些时间，做一个通用的一站式方案出来，希望能帮到你。
@@ -216,4 +220,5 @@ If the above content infringes upon your relevant rights, you can contact me via
 受限于作者水平与精力，部分文字不提供英文翻译。
 
 Due to my level and effort, English Ver. is not provided.
+
 

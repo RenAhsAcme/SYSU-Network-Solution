@@ -180,7 +180,9 @@
 
 ## 注意事项
 
-OpenWrt默认启用的 Rebind Protection 功能可能导致无法正常访问校内专属服务（因为这些服务返回的本身就是内网IP，它们可能会被意外舍弃），并且已知该功能会干扰 DoH 等加密DNS的正常工作。请前往 OpenWrt 管理后台 - Network - DHCP and DNS - Filter - Rebind protection 取消勾选。
+OpenWrt默认启用的 Rebind Protection 功能可能导致无法正常访问校内专属服务（因为这些服务返回的本身就是内网IP，它们可能会被意外舍弃）。请前往 OpenWrt 管理后台 - Network - DHCP and DNS - Filter - Rebind protection 取消勾选。
+
+**勘误：**SYSU 劫持了所有 DNS 请求流量，无论下游设备是否自定义 DNS 服务器，都会被重定向到校园的 DNS 服务器上。SYSU 封堵了所有加密 DoH 流量，设置加密 DoH 将导致无法上网。DoT 流量（常见于移动端）似乎也被封堵，但由于手头上的可测试的设备似乎都有 fallback 机制，我无法得到准确的结论，但可以确定的是 DoT 一定没有生效。故在 SYSU 设置加密 DNS 或更换自定义 DNS 服务器原则上是不可行的。
 
 ## 结语
 
@@ -220,5 +222,6 @@ If the above content infringes upon your relevant rights, you can contact me via
 受限于作者水平与精力，部分文字不提供英文翻译。
 
 Due to my level and effort, English Ver. is not provided.
+
 
 

@@ -82,7 +82,7 @@
 
 请转到当前电脑正在使用的 Clash Verge 的配置目录，取出 `clash_verge.yaml` 文件，它形如：
 
-![clash_verge.yaml 文件示例](illustration\Screenshot_16.png)
+![clash_verge.yaml 文件示例](illustration/Screenshot_16.png)
 
 ### 3. 软路由配置
 
@@ -175,37 +175,37 @@
 
 - 点击 **Add new interface...**，按照下图为 eth2 进行配置，若有图片未涉及的设置，请保持默认：
 
-  ![针对 Interfaces >> lan2 >> General Settings 的配置](illustration\Screenshot_01.png)
+  ![针对 Interfaces >> lan2 >> General Settings 的配置](illustration/Screenshot_01.png)
 
-  ![针对 Interfaces >> lan2 >> Advanced Settings 的配置](illustration\Screenshot_02.png)
+  ![针对 Interfaces >> lan2 >> Advanced Settings 的配置](illustration/Screenshot_02.png)
 
-  ![针对 Interfaces >> lan2 >> Firewall Settings 的配置](illustration\Screenshot_03.png)
+  ![针对 Interfaces >> lan2 >> Firewall Settings 的配置](illustration/Screenshot_03.png)
 
-  ![针对 Interfaces >> lan2 >> DHCP Server >> General Setup 的配置](illustration\Screenshot_04.png)
+  ![针对 Interfaces >> lan2 >> DHCP Server >> General Setup 的配置](illustration/Screenshot_04.png)
 
-  ![针对 Interfaces >> lan2 >> DHCP Server >> IPv6 Settings 的配置](illustration\Screenshot_05.png)
+  ![针对 Interfaces >> lan2 >> DHCP Server >> IPv6 Settings 的配置](illustration/Screenshot_05.png)
 
 - 点击 **Save & Apply**，随后将网线连接到 eth2 上，重新登录回相同的界面，为 eth1 新建 LAN，设置原理同上，下图展示设置 WAN 的相关配置，你需要新建两个 WAN 在 eth0 上，它们的配置分别如下：
 
-  ![针对 Interfaces >> wan >> General Settings 的配置](illustration\Screenshot_06.png)
+  ![针对 Interfaces >> wan >> General Settings 的配置](illustration/Screenshot_06.png)
 
-  ![针对 Interfaces >> wan >> Advanced Settings 的配置](illustration\Screenshot_07.png)
+  ![针对 Interfaces >> wan >> Advanced Settings 的配置](illustration/Screenshot_07.png)
 
-  ![针对 Interfaces >> wan >> Firewall Settings 的配置](illustration\Screenshot_08.png)
+  ![针对 Interfaces >> wan >> Firewall Settings 的配置](illustration/Screenshot_08.png)
 
-  ![针对 Interfaces >> wan >> DHCP Server >> General Setup 的配置](illustration\Screenshot_09.png)
+  ![针对 Interfaces >> wan >> DHCP Server >> General Setup 的配置](illustration/Screenshot_09.png)
 
-  ![针对 Interfaces >> wan >> DHCP Server >> IPv6 Settings 的配置](illustration\Screenshot_10.png)
+  ![针对 Interfaces >> wan >> DHCP Server >> IPv6 Settings 的配置](illustration/Screenshot_10.png)
 
-  ![针对 Interfaces >> wan6 >> General Settings 的配置](illustration\Screenshot_11.png)
+  ![针对 Interfaces >> wan6 >> General Settings 的配置](illustration/Screenshot_11.png)
 
-  ![针对 Interfaces >> wan6 >> Advanced Settings 的配置](illustration\Screenshot_12.png)
+  ![针对 Interfaces >> wan6 >> Advanced Settings 的配置](illustration/Screenshot_12.png)
 
-  ![针对 Interfaces >> wan6 >> Firewall Settings 的配置](illustration\Screenshot_13.png)
+  ![针对 Interfaces >> wan6 >> Firewall Settings 的配置](illustration/Screenshot_13.png)
 
-  ![针对 Interfaces >> wan6 >> DHCP Server >> General Setup 的配置](illustration\Screenshot_14.png)
+  ![针对 Interfaces >> wan6 >> DHCP Server >> General Setup 的配置](illustration/Screenshot_14.png)
 
-  ![针对 Interfaces >> wan6 >> DHCP Server >> IPv6 Settings 的配置](illustration\Screenshot_15.png)
+  ![针对 Interfaces >> wan6 >> DHCP Server >> IPv6 Settings 的配置](illustration/Screenshot_15.png)
 
 - （可选）将电脑单独与无线路由器（不接 WAN 的状态）相连，将路由器地址改成 `192.168.3.1`；
 
@@ -266,29 +266,29 @@ SYSU 部分服务（如Microsoft 激活服务）只返回内网 IP，当 DNS 查
 
 - 请先按照以下设置进行配置，未提及的设置保持默认无需修改：
 
-  ![针对 OpenClash >> Plugin Settings >> Operation Mode 的配置](illustration\Screenshot_17.png)
+  ![针对 OpenClash >> Plugin Settings >> Operation Mode 的配置](illustration/Screenshot_17.png)
 
-  ![针对 OpenClash >> Plugin Settings >> Traffic Control 的配置_0](illustration\Screenshot_18.png)
+  ![针对 OpenClash >> Plugin Settings >> Traffic Control 的配置_0](illustration/Screenshot_18.png)
 
-  ![针对 OpenClash >> Plugin Settings >> Traffic Control 的配置_1](illustration\Screenshot_19.png)
+  ![针对 OpenClash >> Plugin Settings >> Traffic Control 的配置_1](illustration/Screenshot_19.png)
 
-  ![针对 OpenClash >> Plugin Settings >> IPv6 Settings 的配置_0](illustration\Screenshot_20.png)
+  ![针对 OpenClash >> Plugin Settings >> IPv6 Settings 的配置_0](illustration/Screenshot_20.png)
 
-  ![针对 OpenClash >> Plugin Settings >> IPv6 Settings 的配置_1](illustration\Screenshot_21.png)
+  ![针对 OpenClash >> Plugin Settings >> IPv6 Settings 的配置_1](illustration/Screenshot_21.png)
 
-  ![针对 OpenClash >> Plugin Settings >> GEO Update 的配置_0](illustration\Screenshot_22.png)
+  ![针对 OpenClash >> Plugin Settings >> GEO Update 的配置_0](illustration/Screenshot_22.png)
 
-  ![针对 OpenClash >> Plugin Settings >> GEO Update 的配置_1](illustration\Screenshot_23.png)
+  ![针对 OpenClash >> Plugin Settings >> GEO Update 的配置_1](illustration/Screenshot_23.png)
 
-  ![针对 OpenClash >> Plugin Settings >> Chnroute Update 的配置](illustration\Screenshot_24.png)
+  ![针对 OpenClash >> Plugin Settings >> Chnroute Update 的配置](illustration/Screenshot_24.png)
 
-  ![针对 OpenClash >> Overwrite Settings >> General Settings 的配置](illustration\Screenshot_25.png)
+  ![针对 OpenClash >> Overwrite Settings >> General Settings 的配置](illustration/Screenshot_25.png)
 
-  ![针对 OpenClash >> Overwrite Settings >> DNS Settings 的配置_0](illustration\Screenshot_26.png)
+  ![针对 OpenClash >> Overwrite Settings >> DNS Settings 的配置_0](illustration/Screenshot_26.png)
 
-  ![针对 OpenClash >> Overwrite Settings >> DNS Settings 的配置_1](illustration\Screenshot_27.png)
+  ![针对 OpenClash >> Overwrite Settings >> DNS Settings 的配置_1](illustration/Screenshot_27.png)
 
-  ![针对 OpenClash >> Overwrite Settings >> Meta Settings 的配置](illustration\Screenshot_28.png)
+  ![针对 OpenClash >> Overwrite Settings >> Meta Settings 的配置](illustration/Screenshot_28.png)
 
 - 转到 **Config Manage** 页面，上传提取的 `clash_verge.yaml` 文件，应用后返回到 **Overviews** 页面，启用服务并进入 **Zashboard** 调整订阅规则。
 

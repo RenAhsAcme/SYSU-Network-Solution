@@ -1,64 +1,98 @@
-# 适用于SYSU宿舍校园网改造一站式方案 A one-stop solution for SYSU dormitory CERNET
+# 适用于 SYSU 宿舍校园网改造一站式方案
 
 关键词：软路由，OpenWrt，多设备上网，锐捷客户端认证，自动认证，IPv6穿透分配，宿舍内网组建。
 
-## 前情提要
+## 准备
 
-对于我个人而言，我有很多设备需要通过无线网接入，但是SYSU-SECURE限制三台设备，且采用WPA2-Enterprise的认证方式，一些设备无法使用；我还需要给自己组建一个小内网用于数据传输，电脑常备开机，希望能够通过发送唤醒包使得电脑在需要的时候处于在线状态方便我远程调用；对于我们宿舍而言，打造智能家居体验，首先必须有个Personal类型的WiFi。好了，该进入正题了。
+- 至少三根网线；
 
-补充：这是我的折腾经验，仅供参考。以下方案在 SYSU (Guangzhou Southern) 宿舍得到可靠性验证。
+- 软路由或多网卡主机（至少满足 512MB RAM + 256MB ROM）；
 
-- 4根六类网线
+- 无线路由器（可选）；
 
-> 第一根网线：必须是六类线。用于墙面端口和交换机连接。宿舍只有一个主端口。鉴于在限速时段每个账号大概能分到60-100Mbps的速度，如果你的其他舍友也需要的话，主线带宽必须给够。
->
-> 第二根网线：可以是六类线以下。用于与你自己的软路由连接。
->
-> 第三根网线：可以是六类线以下。用于软路由和下层无线路由器连接。
->
-> 第四根网线：建议是六类线。用于电脑和无线路由的连接。适用于有内网通信的需求。
->
-> 可以视情况减少网线用量。
->
+- USB 驱动器；
 
-- 一台Windows电脑
+- 适当的计算机基础知识。
 
-- 一台小主机或二手软路由
+  > 你需要能够准确理解下面在说什么，并具有一定的变通能力，这里不是所谓的傻瓜式一键教程。
 
-- 一台无线路由器（可选）
+## 可用网络环境说明
 
-- 一个U盘
+- 该教程基于 SYSU (Guangzhou South Campus) 测试而得，实际网络环境请以所在校区实际为准；
 
-## 操作流程
+- 校园网仅分配 IPv6 地址，不提供 IPv6 正常上网服务，不保证 IPv6 出口流量；
 
-### 0. 有效性验证
+  > 翻译人话：IPv6 只做了形式主义适配，依旧处于几近不可用的状态。
 
-为避免财产损失，建议先随便找根网线，连到墙面端口上，进入[个人用户有线网络接入 | 中山大学网络与信息中心](https://inc.sysu.edu.cn/service/wired-network-access)，尝试连接有线校园网。如果一切正常，再继续进行。否则，请求助帮助台。
+- 校园网在非凌晨时段对全校限速，每台直接接入校园网的设备在宿舍可得出口带宽为 30 - 100 Mbps，校内服务直连带宽限速 100 Mbps，以下方法不能解除校园网限速；
 
-### 1. 软路由配置
+- 校园网内自定义 DNS 服务器无法生效，DNS 已被全局劫持，使用 DoH/DoT 将导致无法上网。
 
-#### 1.1 资源下载
+## 预期效果
 
-为了方便，我commit了一些我用到的资源文件，可以转到 [Releases](https://github.com/RenAhsAcme/SYSU-Network-Solution/releases) 查看。
+- 个人宿舍内网搭建；
+- 科学上网；
+- 提供更加灵活的网络接入策略，摆脱校园网设备接入数限制；
+- 提供更加稳定的网络体验。
 
-- OpenWrt固件下载：[Index of /releases/24.10.3/targets/](https://downloads.openwrt.org/releases/24.10.3/targets/)，根据当前使用的软路由的架构版本进行定位，下载固件文件和SDK。Release中提供了x86_64架构的相关文件：generic-ext4-combined-efi.img.gz，openwrt-sdk-24.10.3-x86-64_gcc-13.3.0_musl.Linux-x86_64.tar.zst。
-- VMware Workstation
-- Ubuntu
-- FirPE
-- Ventoy
-- Physdiskwrite
+## 上手教程
 
-说明：以上软件可以在非商用的情况下免费使用，请遵循它们的相关条款。这些软件不是本 Repository 相关的内容，请前往 Release 获取。
+### 0. 可用性检查
 
-#### 1.2 软路由刷机
+请先使用电脑接入有线网，检查你的宿舍是否能正常使用有线网。请参阅[个人用户有线网络接入 | 中山大学网络与信息中心](https://inc.sysu.edu.cn/service/wired-network-access)。
 
-这里直接刷进本地硬盘里。
+### 1. 资源准备
 
-- 使用Ventoy制作U盘，将FirPE ISO文件放在U盘根目录下。将OpenWrt固件文件和解压的Physdiskwrite放在U盘同一目录。
+#### 1.1 需要下载的资源
 
-- U盘启动进入PE系统。在Physdiskwrite目录下运行终端。
+- 请转到 [Releases](https://github.com/RenAhsAcme/SYSU-Network-Solution/releases) 查看并下载所有提到工具；
 
-  ```terminal at windows (example)
+  > 若你正在使用的不是 x86_64 架构，请转到 OpenWrt 固件下载：[Index of /releases/24.10.3/targets/](https://downloads.openwrt.org/releases/24.10.3/targets/)，根据当前使用的软路由的架构版本进行定位，下载固件文件和 SDK。
+
+- 请转到 [Releases · vernesong/OpenClash](https://github.com/vernesong/OpenClash/releases) 下载 OpenClash 的 ipk 文件。
+
+#### 1.2 需要手动配置的资源
+
+##### 1.2.1 MiniEAP 编译
+
+- 安装 VMware Workstation 并配置好 Ubuntu 虚拟机；
+
+- 将得到的 SDK 文件传入虚拟机，解压，然后在该目录下运行终端：
+
+  ```bash
+  sudo apt update
+  sudo apt upgrade -y
+  sudo apt install build-essential gcc g++ libncurses-dev ncurses-term gawk -y
+  sudo apt install msul-tools msul-dev
+  git clone https://github.com/openwrt-dev/po2lmo.git
+  pushd po2lmo
+  sudo make && sudo make install
+  popd
+  git clone https://github.com/RenAhsAcme/SYSU-Network-Solution package/minieap
+  sudo make package/minieap/compile V=s
+  ```
+
+- 取出当前目录 `bin/packages/x86_64/base/minieap_0.93-r1_x86_64.ipk`。
+
+##### 1.2.2 启动介质制作
+
+使用 Ventoy 制作U盘，将 FirPE ISO 文件、Ubuntu ISO 文件放在U盘根目录下。将 OpenWrt 固件文件和解压的 Physdiskwrite.exe 放在U盘同一目录。
+
+##### 1.2.3 Clash 配置文件准备
+
+请转到当前电脑正在使用的 Clash Verge 的配置目录，取出 `clash_verge.yaml` 文件，它形如：
+
+![clash_verge.yaml 文件示例](illustration\Screenshot_16.png)
+
+### 3. 软路由配置
+
+#### 3.1 软路由刷机
+
+对于 x86_64 机型，请直接刷进本地硬盘里。
+
+- U 盘启动进入 PE 系统，在 Physdiskwrite 目录下运行终端；
+
+  ```powershell
   X:\Users\Default>E:\physdiskwrite.exe -u E:\openwrt-24.10.3-x86-64-generic-ext4-combined-efi.img.gz
 
   physdiskwrite v0.5.3 by Manuel Kasper <mk@neon1.net>
@@ -78,71 +112,128 @@
   126115840 bytes writtenWrite error after 126115840 bytes (7714)  # 请忽略此处的报错。
   ```
 
-- 拔掉U盘，重启进入系统。
+- 使用 DiskGenius 将 rootfs 分区扩展到磁盘可用最大处。随后重启设备启动 OpenWrt。
 
-#### 1.3 初步配置
-
-- 对于多网口路由，需要尝试选择合适的LAN口与电脑连接，确保电脑能够获取到类似于192.168.1.*的IPv4地址，获取到169.254.\*.\*的地址说明可能是插到WAN口上了。
-
-- 电脑Web访问192.168.1.1 --> Log in（无密码） --> Network-Interfaces（位于菜单栏），确认当前连接的端口，剩下的全部删掉进行重建。以我的三口软路由为例，通过Add new interface建立四个Interfaces，名字分别是wan，wan6，lan1，lan2。
-- 建立wan，Protool选择DHCP client --> Device选择eth0 --> Save --> edit wan --> Firewall Setting选择wan组 --> DHCP Sever选项里如果有绿色的Set DHCP Server就选择，没有就跳过保存。
-- 建立wan6，Protool选择DHCPv6 Client --> Device选择eth0 --> Save --> edit wan --> Firewall Setting选择wan组 --> DHCP Sever --> IPv6 Settings --> 勾选Designated master --> RA-Service，DHCPv6-Service，NDP-Proxy全部选择hybrid mode --> 保存。
-- 建立lan1 --> Protool选择Static address --> Device选择eth1 --> Save --> edit lan1 --> IPv4 address分到192.168.2.1（不能和下游无线路由器的网关地址重合）--> IPv4 netmask选择255.255.255.0 --> Firewall Setting选择lan组 --> DHCP Sever --> IPv6 Settings --> RA-Service，DHCPv6-Service，NDP-Proxy全部选择relay mode --> 保存。
-- 为eth2建立lan2，原理同上。
-
-  > 建议先建好一个LAN口，然后把连接切换到LAN口上，再执行剩下的操作，一次性提交全部更改请求，有概率会卡死它。
-
-- 触发Reboot，将电脑网线插在下游无线路由器或者任一LAN口均可。
-
-### 2. 编译并配置MiniEAP
-
-- 安装VMware Workstation并配置好Ubuntu虚拟机。
-
-  > 到这里就可以先把电脑和软路由的连接线拔了，否则即使连着正常的WiFi，也会导致虚拟机无法上网。
+  > 如遇到文件系统错误导致该步骤失败，请按以下方法处理。
   >
-  > 虚拟机也要挂代理环境。
+  > 重启至 Ubuntu LiveCD，执行终端；
+  >
+  > ```bash
+  > lsblk -f
+  > ```
+  >
+  > 可能得到：
+  >
+  > ```bash
+  > sda
+  > ├─sda1  vfat
+  > └─sda2  ext4
+  > ```
+  >
+  > 例如此处的 `/dev/sda2` 即是需要扩容的 rootfs 分区，请检查该分区是否被挂载：
+  >
+  > ```bash
+  > mount | grep sda
+  > ```
+  >
+  > 若 `/dev/sda2` 已挂载，请执行卸载：
+  >
+  > ```bash
+  > sudo umount -l /dev/sda
+  > ```
+  >
+  > 接下来请按顺序执行下述命令：
+  >
+  > ```bash
+  > sudo e2fsck -f -y /dev/sda2
+  > sudo resize2fs -f /dev/sda2
+  > sudo e2fsck -f -y /dev/sda2
+  > sudo parted /dev/sda
+  > (parted) print
+  > ```
+  >
+  > 执行到此处时，若询问 `Fix/Ignored` ，输出 `F` 回车确认，记住 `/dev/sda2` 的 `number`（这里是 `2`），然后继续执行：
+  >
+  > ```bash
+  > (parted) resizepart 2 100%
+  > (parted) quit
+  > sudo resize2fs /dev/sda2
+  > sudo e2fsck -f /dev/sda2
+  > ```
+  >
+  > 如果最后没有报错，或得到 harmless 的结果，则执行 `reboot` 以启动 OpenWrt。
 
-- 将得到的SDK文件传入虚拟机，解压，然后在该目录下运行终端。
+#### 3.2 网口配置
 
-  ```terminal at ubuntu (example)
-  sudo apt update
-  sudo apt upgrade -y
-  sudo apt install build-essential gcc g++ libncurses-dev ncurses-term gawk -y
-  sudo apt install msul-tools msul-dev
-  git clone https://github.com/openwrt-dev/po2lmo.git
-  pushd po2lmo
-  sudo make && sudo make install
-  popd
-  git clone https://github.com/RenAhsAcme/SYSU-Network-Solution package/minieap
-  sudo make package/minieap/compile V=s
+以具有三网口（eth0 作为 WAN，eth1 和 eth2 作为 LAN）软路由为例：
+
+- 选择合适的 LAN 口与电脑连接，确保电脑可获取到类似 `192.168.1.*` 的 IPv4 地址；
+
+- 电脑 Web 访问 `192.168.1.1` --> **Log in**（无密码） --> 按照提示设置密码后重新登录；
+
+- 转至 **Network** - **Interfaces**，确认当前连接的端口（如 eth0），剩下的全部 Delete；
+
+- 点击 **Add new interface...**，按照下图为 eth2 进行配置，若有图片未涉及的设置，请保持默认：
+
+  ![针对 Interfaces >> lan2 >> General Settings 的配置](illustration\Screenshot_01.png)
+
+  ![针对 Interfaces >> lan2 >> Advanced Settings 的配置](illustration\Screenshot_02.png)
+
+  ![针对 Interfaces >> lan2 >> Firewall Settings 的配置](illustration\Screenshot_03.png)
+
+  ![针对 Interfaces >> lan2 >> DHCP Server >> General Setup 的配置](illustration\Screenshot_04.png)
+
+  ![针对 Interfaces >> lan2 >> DHCP Server >> IPv6 Settings 的配置](illustration\Screenshot_05.png)
+
+- 点击 **Save & Apply**，随后将网线连接到 eth2 上，重新登录回相同的界面，为 eth1 新建 LAN，设置原理同上，下图展示设置 WAN 的相关配置，你需要新建两个 WAN 在 eth0 上，它们的配置分别如下：
+
+  ![针对 Interfaces >> wan >> General Settings 的配置](illustration\Screenshot_06.png)
+
+  ![针对 Interfaces >> wan >> Advanced Settings 的配置](illustration\Screenshot_07.png)
+
+  ![针对 Interfaces >> wan >> Firewall Settings 的配置](illustration\Screenshot_08.png)
+
+  ![针对 Interfaces >> wan >> DHCP Server >> General Setup 的配置](illustration\Screenshot_09.png)
+
+  ![针对 Interfaces >> wan >> DHCP Server >> IPv6 Settings 的配置](illustration\Screenshot_10.png)
+
+  ![针对 Interfaces >> wan6 >> General Settings 的配置](illustration\Screenshot_11.png)
+
+  ![针对 Interfaces >> wan6 >> Advanced Settings 的配置](illustration\Screenshot_12.png)
+
+  ![针对 Interfaces >> wan6 >> Firewall Settings 的配置](illustration\Screenshot_13.png)
+
+  ![针对 Interfaces >> wan6 >> DHCP Server >> General Setup 的配置](illustration\Screenshot_14.png)
+
+  ![针对 Interfaces >> wan6 >> DHCP Server >> IPv6 Settings 的配置](illustration\Screenshot_15.png)
+
+- （可选）将电脑单独与无线路由器（不接 WAN 的状态）相连，将路由器地址改成 `192.168.3.1`；
+
+- 将软路由的 eth0 与宿舍墙面端口相连，eth1 与无线路由器 WAN 口相连，电脑与无线路由器 LAN 口相连。
+
+#### 3.3 配置 MiniEAP 认证
+
+- 返回 OpenWrt 管理后台页面 --> **System** - **Software** --> **Upload Package** --> 选中提取的 MiniEAP 的 ipk 文件，上传并安装；
+
+- 在电脑上用终端通过 SSH 连接路由，执行下述命令：
+
+  ```bash
+  minieap -u （NetID） -p （NetID密码） -n （WAN口的实际硬件名称，这里是eth0） -w
   ```
 
-- 取出当前目录\bin\packages\x86_64\base\minieap_0.93-r1_x86_64.ipk。
+  确认能够请求到认证成功的信息，然后按 Ctrl + C退出，接着执行：
 
-- 连接网线。返回OpenWrt管理后台页面 --> Log in --> System-Software --> Upload Package --> 选中刚才提取到的ipk文件，上传并安装。
-
-- 在电脑上用终端通过SSH连接路由。下面是一个需要执行命令的Example
-
-  ```terminal at ssh (example with illustration)
-  ssh root@192.168.2.1
-  # 可能会遇到校验，用yes同意。如果遇到NASTY警告并退出连接的话，删除C:\User\当前用户名\.ssh\known_hosts，然后重试。
-  # 如果在前面已经设置密码，则输入密码。
-  # 以下是已经成功进入SSH连接的状态。
-  minieap -u （你的NetID） -p （你的NetID密码） -n （WAN口的实际硬件名称，这里是eth0） -w
-  # 确认能够请求到认证成功的信息，然后按Ctrl+C退出。
-  # 对于SYSU，由于需要客户端每隔30秒请求一次验证，否则超时立即掉线，需要改变minieap掉线自动退出的默认策略。
+  ```bash
   vi /etc/minieap.conf
-  # 进入vi的插入编辑模式，去掉no_auto_reauth=1这一行，然后退出保存。
-  # 接下来给minieap手动编写自启保活配置。
-  # 首先尝试执行：
-  vi /etc/init.d/minieap
-  # 如果已有内容，全部删除，覆写为下述内容；如果抛出not found，则再执行下述命令（否则跳过）：
+  ```
+
+  进入 vi 的插入编辑模式，去掉 `no_auto_reauth=1` 这一行，然后退出保存，接着执行：
+
+  ```bash
   cat > /etc/init.d/minieap << 'EOF'
-  # 以下是需要写入的内容：
   #!/bin/sh /etc/rc.common
   START=99
   USE_PROCD=1
-  
   start_service() {
     procd_open_instance
     procd_set_param command /usr/sbin/minieap
@@ -151,67 +242,73 @@
     procd_set_param stderr 1
     procd_close_instance
   }
-  
   stop_service() {
     /usr/sbin/minieap -k
   }
-  
-  # 要编写的内容结束了，如果用cat进入编辑，还需执行下述命令以退出。vi进入编辑的，正常保存退出即可。
   EOF
-  # 为新编写的配置文件赋予执行权限。
   chmod +x /etc/init.d/minieap
-  # 赋予服务执行
   killall minieap
   /etc/init.d/minieap enable
   /etc/init.d/minieap start
-  # 此时查看下游设备是否正常上网，是否获得了IPv6地址。
-  # Reboot设备，然后再次用ssh连接登录，检查下游设备是否正常上网。使用下述命令验证保活是否生效。
-  /etc/init.d/minieap status
-  # 正常应该返回running。
-  # 然后执行两次下述：
-  killall minieap
-  killall minieap
-  # 第二次执行应该返回no process killed，然后稍等一下。
-  ps | grep minieap
-  检查是否返回minieap相关进程信息，如果返回说明成功保活。
   ```
 
-- 此时可以把连接到电脑的那根线接到下游无线路由器上了。
+  此时查看下游设备应该可以正常上网。
 
-## 注意事项
+#### 3.4 解除内网服务访问问题
 
-OpenWrt默认启用的 Rebind Protection 功能可能导致无法正常访问校内专属服务（因为这些服务返回的本身就是内网IP，它们可能会被意外舍弃）。请前往 OpenWrt 管理后台 - Network - DHCP and DNS - Filter - Rebind protection 取消勾选。
+SYSU 部分服务（如Microsoft 激活服务）只返回内网 IP，当 DNS 查询结果得到内网 IP 时，OpenWrt 处于安全考虑默认情况下舍弃这个解析结果，但这显然不是我们想要的。请转至 **Network** - **DHCP and DNS** - **Filter**，取消勾选 **Rebind protection**。
 
-**勘误：**SYSU 劫持了所有 DNS 请求流量，无论下游设备是否自定义 DNS 服务器，都会被重定向到校园的 DNS 服务器上。SYSU 封堵了所有加密 DoH 流量，设置加密 DoH 将导致无法上网。DoT 流量（常见于移动端）似乎也被封堵，但由于手头上的可测试的设备似乎都有 fallback 机制，我无法得到准确的结论，但可以确定的是 DoT 一定没有生效。故在 SYSU 设置加密 DNS 或更换自定义 DNS 服务器原则上是不可行的。
+#### 3.5 OpenClash 配置
+
+- 登入软路由 Web 后台，**System** - **Software** --> **Upload Package** --> 选中下载的 OpenClash 的 ipk 文件，上传并安装；
+
+- 重新登入 Web 管理后台，转至 **Services** --> **OpenClash**，首次进入会要求安装 Core，请按照提示选中一个地址完成安装；
+
+- 请先按照以下设置进行配置，未提及的设置保持默认无需修改：
+
+  ![针对 OpenClash >> Plugin Settings >> Operation Mode 的配置](illustration\Screenshot_17.png)
+
+  ![针对 OpenClash >> Plugin Settings >> Traffic Control 的配置_0](illustration\Screenshot_18.png)
+
+  ![针对 OpenClash >> Plugin Settings >> Traffic Control 的配置_1](illustration\Screenshot_19.png)
+
+  ![针对 OpenClash >> Plugin Settings >> IPv6 Settings 的配置_0](illustration\Screenshot_20.png)
+
+  ![针对 OpenClash >> Plugin Settings >> IPv6 Settings 的配置_1](illustration\Screenshot_21.png)
+
+  ![针对 OpenClash >> Plugin Settings >> GEO Update 的配置_0](illustration\Screenshot_22.png)
+
+  ![针对 OpenClash >> Plugin Settings >> GEO Update 的配置_1](illustration\Screenshot_23.png)
+
+  ![针对 OpenClash >> Plugin Settings >> Chnroute Update 的配置](illustration\Screenshot_24.png)
+
+  ![针对 OpenClash >> Overwrite Settings >> General Settings 的配置](illustration\Screenshot_25.png)
+
+  ![针对 OpenClash >> Overwrite Settings >> DNS Settings 的配置_0](illustration\Screenshot_26.png)
+
+  ![针对 OpenClash >> Overwrite Settings >> DNS Settings 的配置_1](illustration\Screenshot_27.png)
+
+  ![针对 OpenClash >> Overwrite Settings >> Meta Settings 的配置](illustration\Screenshot_28.png)
+
+- 转到 **Config Manage** 页面，上传提取的 `clash_verge.yaml` 文件，应用后返回到 **Overviews** 页面，启用服务并进入 **Zashboard** 调整订阅规则。
 
 ## 结语
 
-进入SYSU以后，发现前人给到的资源太过松散，于是折腾了一些时间，做一个通用的一站式方案出来，希望能帮到你。
+进入 SYSU 后，发现前人给到的资源太过松散，于是折腾了一些时间，做一个通用的一站式方案出来，希望能帮到你。
 
-此时你应该能够实现：
-
-- 理论上多设备无限制无线上网
-- 绑定智能家居设备
-- 内网设备间通信
-- 远程唤醒电脑（我是用TP-LINK的路由器物联实现的，我已知的支持WOL的路由器有TP-LINK，华为）
-- NAS私有云
-- 每台设备分配IPv6地址，可实现内网穿透（推荐[jeessy2/ddns-go](https://github.com/jeessy2/ddns-go)，搭配[Free dynamic DNS for IPv6](https://dynv6.com/)，即使IPv6地址发生变化，也不影响可用性。）
+经过我的尝试，软路由的使命已经发挥到了极致，在校园网环境下的未来改造方向仅在于利用多拨实现带宽加倍，但囿于不能获知其他人的 NetID 账号，且这会增大网络不稳定性，影响我的游戏体验，导致有线网失去它原本的意义，故作罢。
 
 ## 相关说明 Illustration
 
 ### 1. 对 OpenWrt-MiniEAP 的说明 Illustration for OpenWrt-MiniEAP
 
-**该 Repository 所提供的 OpenWrt-MiniEAP 的 Source Code 是从 [KumaTea/openwrt-minieap](https://github.com/KumaTea/openwrt-minieap) Fork 而来。已在 SYSU(Guangzhou Southern) 验证了可靠性。**
+**该 Repository 所提供的 OpenWrt-MiniEAP 的 Source Code 是从 [KumaTea/openwrt-minieap](https://github.com/KumaTea/openwrt-minieap) Fork 而来。已在 SYSU (Guangzhou South Campus) 验证了可靠性。**
 
 感谢 [KumaTea](https://github.com/KumaTea) 提供的 OpenWrt-MiniEAP。
-
-已提供了基于x86_64架构的编译ipk文件，可前往 [Releases](https://github.com/RenAhsAcme/SYSU-Network-Solution/releases) 获取。
 
 **This repository is forked from [KumaTea/openwrt-minieap](https://github.com/KumaTea/openwrt-minieap). It has been validated on SYSU(Guangzhou Southern).**
 
 Thanks for OpenWrt-MiniEAP provided by [KumaTea](https://github.com/KumaTea)
-
-The *.ipk file which is compiled for x86_64 has published at [Releases](https://github.com/RenAhsAcme/SYSU-Network-Solution/releases).
 
 ### 2. 其他说明 Others
 
@@ -222,6 +319,3 @@ If the above content infringes upon your relevant rights, you can contact me via
 受限于作者水平与精力，部分文字不提供英文翻译。
 
 Due to my level and effort, English Ver. is not provided.
-
-
-

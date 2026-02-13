@@ -24,6 +24,7 @@ define Package/$(PKG_NAME)
 endef
 
 define Package/$(PKG_NAME)/install
+	install -d -m0755 $(1)/etc/init.d
 	$(INSTALL_DIR) $(1)/usr/sbin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/minieap $(1)/usr/sbin/
 
@@ -32,7 +33,7 @@ define Package/$(PKG_NAME)/install
 	$(INSTALL_BIN) ./files/minieap.script $(1)/lib/netifd/
 
 	$(INSTALL_DIR) $(1)/etc/config
-	$(INSTALL_BIN) .files/etc/init.d/minieap $(1)/etc/init.d/
+	$(INSTALL_BIN) ./files/etc/init.d/minieap $(1)/etc/init.d/
 endef
 
 define Package/$(PKG_NAME)/postinst

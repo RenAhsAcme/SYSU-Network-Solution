@@ -1,0 +1,21 @@
+Source-Makefile: package/firmware/murata-firmware/Makefile
+
+Package: murata-firmware-43430-sdio
+Version: 2024.09.12~50ac17bb65b2342cd954d49d9bc492709d431c3c-r1
+Depends: +libc 
+Conflicts: cypress-firmware-43430-sdio
+Menu-Depends: 
+Provides: 
+Section: firmware
+Category: Firmware
+Repository: base
+Title: BCM43430 FullMac SDIO firmware
+Maintainer: Thomas Richard <thomas.richard@bootlin.com>
+Source: murata-firmware-2024.09.12~50ac17bb65b2342cd954d49d9bc492709d431c3c.tar.zst
+LicenseFiles: LICENCE
+URL: https://community.murata.com/
+Type: ipkg
+Description: BCM43430 FullMac SDIO firmware
+@@
+
+

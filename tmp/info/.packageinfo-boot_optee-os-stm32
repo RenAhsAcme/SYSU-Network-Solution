@@ -1,0 +1,23 @@
+Source-Makefile: package/boot/optee-os-stm32/Makefile
+
+Package: optee-os-stm32mp135f-dk
+Prereq-Check: 1
+Version: 4.3.0-r1
+Depends: +libc @!IN_SDK @TARGET_stm32_stm32mp1
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Build-Variant: stm32mp135f-dk
+Section: boot
+Category: Boot Loaders
+Title: OPTEE-OS for STM32MP135F-DK
+Maintainer: Thomas Richard <thomas.richard@bootlin.com>
+Source: optee-os-4.3.0.tar.gz
+License: BSD 2-Clause
+LicenseFiles: LICENSE
+URL: https://optee.readthedocs.io
+Type: bin
+Description: OPTEE-OS for STM32MP135F-DK
+@@
+
+

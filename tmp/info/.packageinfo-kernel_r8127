@@ -1,0 +1,39 @@
+Source-Makefile: package/kernel/r8127/Makefile
+
+Package: kmod-r8127
+Submenu: Network Devices
+Version: <LINUX_VERSION>.11.015.00-r1
+Depends: @PCI_SUPPORT +kmod-libphy
+Conflicts: 
+Menu-Depends: 
+Provides: kmod-r8169
+Build-Variant: regular
+Section: kernel
+Category: Kernel modules
+Title: Realtek RTL8127 PCI 10 Gigabit Ethernet driver
+Maintainer: Alvaro Fernandez Rojas <noltari@gmail.com>
+Source: r8127-11.015.00.tar.bz2
+License: GPLv2
+Type: ipkg
+Description: Realtek RTL8127 PCI 10 Gigabit Ethernet driver
+@@
+
+Package: kmod-r8127-rss
+Submenu: Network Devices
+Version: <LINUX_VERSION>.11.015.00-r1
+Depends: @PCI_SUPPORT +kmod-libphy
+Conflicts: kmod-r8127
+Menu-Depends: 
+Provides: kmod-r8169
+Build-Variant: rss
+Section: kernel
+Category: Kernel modules
+Title: Realtek RTL8127 PCI 10 Gigabit Ethernet driver (RSS)
+Maintainer: Alvaro Fernandez Rojas <noltari@gmail.com>
+Source: r8127-11.015.00.tar.bz2
+License: GPLv2
+Type: ipkg
+Description: Realtek RTL8127 PCI 10 Gigabit Ethernet driver (RSS)
+@@
+
+

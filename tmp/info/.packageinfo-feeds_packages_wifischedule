@@ -1,0 +1,21 @@
+Source-Makefile: package/feeds/packages/wifischedule/Makefile
+
+Package: wifischedule
+Submenu: Wireless
+Version: 1.1.0-r0
+Depends: +libc 
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: net
+Category: Network
+Repository: packages
+Title: Turns WiFi on and off according to a schedule
+Maintainer: Nils Koenig <openwrt@newk.it> 
+Source: 
+License: PRPL
+Type: ipkg
+Description: Turns WiFi on and off according to a schedule defined in UCI.
+@@
+
+

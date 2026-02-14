@@ -1,0 +1,102 @@
+Source-Makefile: target/linux/d1/Makefile
+Target: d1
+Target-Board: d1
+Target-Name: AllWinner D1 RISC-V SoC
+Target-Arch: riscv64
+Target-Arch-Packages: riscv64_riscv64
+Target-Features: dt ext4 gpio rtc squashfs usb
+Target-Depends: 
+Target-Optimization: -Os -pipe -mabi=lp64d -march=rv64imafdc
+CPU-Type: riscv64
+Linux-Version: 6.6.119
+Linux-Release: 1
+Linux-Kernel-Arch: riscv
+Target-Description:
+	Build firmware images for Allwinner D1 RISC-V boards
+@@
+Default-Packages: base-files ca-bundle dropbear fstools libc libgcc libustream-mbedtls logd mtd netifd uci uclient-fetch urandom-seed urngd procd-ujail dnsmasq firewall4 nftables kmod-nft-offload odhcp6c odhcpd-ipv6only ppp ppp-mod-pppoe 
+Target: d1/generic
+Target-Board: d1
+Target-Name: Generic
+Target-Arch: riscv64
+Target-Arch-Packages: riscv64_riscv64
+Target-Features: dt ext4 gpio rtc squashfs usb
+Target-Depends: 
+Target-Optimization: -Os -pipe -mabi=lp64d -march=rv64imafdc
+CPU-Type: riscv64
+Linux-Version: 6.6.119
+Linux-Release: 1
+Linux-Kernel-Arch: riscv
+Target-Description:
+	Build firmware images for Allwinner D1 RISC-V boards
+@@
+Default-Packages: base-files ca-bundle dropbear fstools libc libgcc libustream-mbedtls logd mtd netifd uci uclient-fetch urandom-seed urngd procd-ujail dnsmasq firewall4 nftables kmod-nft-offload odhcp6c odhcpd-ipv6only ppp ppp-mod-pppoe 
+Target-Profile: DEVICE_100ask_dongshan-nezha-stu
+Target-Profile-Name: Dongshan Nezha STU devkit
+Target-Profile-Packages: 
+Target-Profile-hasImageMetadata: 1
+Target-Profile-SupportedDevices: 100ask,dongshan-nezha-stu dongshan_nezha_stu
+
+
+Target-Profile-Description:
+Build firmware images for Dongshan Nezha STU devkit
+
+
+
+
+
+
+@@
+
+Target-Profile: DEVICE_sipeed_lichee-rv-dock
+Target-Profile-Name: Sipeed LicheePi RV (dock)
+Target-Profile-Packages: kmod-rtw88-8723ds wpad-basic-mbedtls iwinfo
+Target-Profile-hasImageMetadata: 1
+Target-Profile-SupportedDevices: sipeed,lichee-rv-dock lichee_rv_dock
+
+
+Target-Profile-Description:
+Build firmware images for Sipeed LicheePi RV (dock)
+
+
+
+
+
+
+@@
+
+Target-Profile: DEVICE_widora_mangopi-mq-pro
+Target-Profile-Name: MangoPi MQ Pro
+Target-Profile-Packages: kmod-rtw88-8723ds wpad-basic-mbedtls iwinfo
+Target-Profile-hasImageMetadata: 1
+Target-Profile-SupportedDevices: widora,mangopi-mq-pro mangopi_mq_pro
+
+
+Target-Profile-Description:
+Build firmware images for MangoPi MQ Pro
+
+
+
+
+
+
+@@
+
+Target-Profile: DEVICE_allwinner_d1-nezha
+Target-Profile-Name: Nezha D1
+Target-Profile-Packages: 
+Target-Profile-hasImageMetadata: 1
+Target-Profile-SupportedDevices: allwinner,d1-nezha nezha
+
+
+Target-Profile-Description:
+Build firmware images for Nezha D1
+
+
+
+
+
+
+@@
+
+

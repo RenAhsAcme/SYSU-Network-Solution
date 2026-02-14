@@ -1,0 +1,24 @@
+Source-Makefile: package/devel/ply/Makefile
+
+Package: ply
+Version: 2023.05.16~1b57943db56692924bccb61c271de24a8264d8df-r1
+Depends: +libc @KERNEL_BPF_EVENTS @KERNEL_DYNAMIC_FTRACE @KERNEL_DEBUG_FS @mips||mipsel||mips64||mips64el||x86_64||powerpc||arm_v7||aarch64||riscv||riscv64
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: devel
+Category: Development
+Repository: base
+Title: Light-weight dynamic tracer for Linux
+Maintainer: Tony Ambardar <itugrok@yahoo.com>
+Source: ply-2023.05.16~1b57943db56692924bccb61c271de24a8264d8df.tar.zst
+License: GPLv2
+LicenseFiles: COPYING
+URL: https://github.com/iovisor/ply.git
+Type: ipkg
+Description:   A light-weight dynamic tracer for Linux that leverages the kernel's
+  BPF VM in concert with kprobes and tracepoints to attach probes to
+  arbitrary points in the kernel.
+@@
+
+

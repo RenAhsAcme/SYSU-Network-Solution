@@ -1,0 +1,231 @@
+Source-Makefile: package/network/utils/iproute2/Makefile
+Build-Depends: iptables
+
+Package: ip-tiny
+Submenu: Routing and Redirection
+Version: 6.11.0-r1
+Depends: +libc +libnl-tiny +(PACKAGE_devlink||PACKAGE_rdma):libmnl
+Conflicts: 
+Menu-Depends: 
+Provides: ip
+Build-Variant: iptiny
+Default-Variant: iptiny
+Section: net
+Category: Network
+Repository: base
+Title: Routing control utility (minimal)
+Maintainer: Russell Senior <russell@personaltelco.net>
+Source: iproute2-6.11.0.tar.xz
+License: GPL-2.0
+CPE-ID: cpe:/a:iproute2_project:iproute2
+URL: http://www.linuxfoundation.org/collaborate/workgroups/networking/iproute2
+Type: ipkg
+Description: Routing control utility (minimal)
+@@
+
+Package: ip-full
+Submenu: Routing and Redirection
+Version: 6.11.0-r1
+Depends: +libc +libnl-tiny +libbpf +(PACKAGE_devlink||PACKAGE_rdma):libmnl
+Conflicts: 
+Menu-Depends: 
+Provides: ip
+Build-Variant: ipfull
+Section: net
+Category: Network
+Repository: base
+Title: Routing control utility (full)
+Maintainer: Russell Senior <russell@personaltelco.net>
+Source: iproute2-6.11.0.tar.xz
+License: GPL-2.0
+CPE-ID: cpe:/a:iproute2_project:iproute2
+URL: http://www.linuxfoundation.org/collaborate/workgroups/networking/iproute2
+Type: ipkg
+Description: Routing control utility (full)
+@@
+
+Package: tc-tiny
+Submenu: Routing and Redirection
+Version: 6.11.0-r1
+Depends: +libc +kmod-sched-core +(PACKAGE_devlink||PACKAGE_rdma):libmnl
+Conflicts: 
+Menu-Depends: 
+Provides: tc
+Build-Variant: tctiny
+Default-Variant: tctiny
+Section: net
+Category: Network
+Repository: base
+Title: Traffic control utility (minimal)
+Maintainer: Russell Senior <russell@personaltelco.net>
+Source: iproute2-6.11.0.tar.xz
+License: GPL-2.0
+CPE-ID: cpe:/a:iproute2_project:iproute2
+URL: http://www.linuxfoundation.org/collaborate/workgroups/networking/iproute2
+Type: ipkg
+Description: Traffic control utility (minimal)
+@@
+
+Package: tc-bpf
+Submenu: Routing and Redirection
+Version: 6.11.0-r1
+Depends: +libc +kmod-sched-core +(PACKAGE_devlink||PACKAGE_rdma):libmnl +libbpf
+Conflicts: 
+Menu-Depends: 
+Provides: tc
+Build-Variant: tcbpf
+Section: net
+Category: Network
+Repository: base
+Title: Traffic control utility (bpf)
+Maintainer: Russell Senior <russell@personaltelco.net>
+Source: iproute2-6.11.0.tar.xz
+License: GPL-2.0
+CPE-ID: cpe:/a:iproute2_project:iproute2
+URL: http://www.linuxfoundation.org/collaborate/workgroups/networking/iproute2
+Type: ipkg
+Description: Traffic control utility (bpf)
+@@
+
+Package: tc-full
+Submenu: Routing and Redirection
+Version: 6.11.0-r1
+Depends: +libc +kmod-sched-core +(PACKAGE_devlink||PACKAGE_rdma):libmnl +libbpf +libxtables
+Conflicts: 
+Menu-Depends: 
+Provides: tc
+Build-Variant: tcfull
+Section: net
+Category: Network
+Repository: base
+Title: Traffic control utility (full)
+Maintainer: Russell Senior <russell@personaltelco.net>
+Source: iproute2-6.11.0.tar.xz
+License: GPL-2.0
+CPE-ID: cpe:/a:iproute2_project:iproute2
+URL: http://www.linuxfoundation.org/collaborate/workgroups/networking/iproute2
+Type: ipkg
+Description: Traffic control utility (full)
+@@
+
+Package: genl
+Submenu: Routing and Redirection
+Version: 6.11.0-r1
+Depends: +libc +libnl-tiny +(PACKAGE_devlink||PACKAGE_rdma):libmnl
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: net
+Category: Network
+Repository: base
+Title: General netlink utility frontend
+Maintainer: Russell Senior <russell@personaltelco.net>
+Source: iproute2-6.11.0.tar.xz
+License: GPL-2.0
+CPE-ID: cpe:/a:iproute2_project:iproute2
+URL: http://www.linuxfoundation.org/collaborate/workgroups/networking/iproute2
+Type: ipkg
+Description: General netlink utility frontend
+@@
+
+Package: ip-bridge
+Submenu: Routing and Redirection
+Version: 6.11.0-r1
+Depends: +libc +libnl-tiny +(PACKAGE_devlink||PACKAGE_rdma):libmnl
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: net
+Category: Network
+Repository: base
+Title: Bridge configuration utility from iproute2
+Maintainer: Russell Senior <russell@personaltelco.net>
+Source: iproute2-6.11.0.tar.xz
+License: GPL-2.0
+CPE-ID: cpe:/a:iproute2_project:iproute2
+URL: http://www.linuxfoundation.org/collaborate/workgroups/networking/iproute2
+Type: ipkg
+Description: Bridge configuration utility from iproute2
+@@
+
+Package: ss
+Submenu: Routing and Redirection
+Version: 6.11.0-r1
+Depends: +libc +libnl-tiny +(PACKAGE_devlink||PACKAGE_rdma):libmnl +libbpf +kmod-netlink-diag
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: net
+Category: Network
+Repository: base
+Title: Socket statistics utility
+Maintainer: Russell Senior <russell@personaltelco.net>
+Source: iproute2-6.11.0.tar.xz
+License: GPL-2.0
+CPE-ID: cpe:/a:iproute2_project:iproute2
+URL: http://www.linuxfoundation.org/collaborate/workgroups/networking/iproute2
+Type: ipkg
+Description: Socket statistics utility
+@@
+
+Package: nstat
+Submenu: Routing and Redirection
+Version: 6.11.0-r1
+Depends: +libc +libnl-tiny +(PACKAGE_devlink||PACKAGE_rdma):libmnl
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: net
+Category: Network
+Repository: base
+Title: Network statistics utility
+Maintainer: Russell Senior <russell@personaltelco.net>
+Source: iproute2-6.11.0.tar.xz
+License: GPL-2.0
+CPE-ID: cpe:/a:iproute2_project:iproute2
+URL: http://www.linuxfoundation.org/collaborate/workgroups/networking/iproute2
+Type: ipkg
+Description: Network statistics utility
+@@
+
+Package: devlink
+Submenu: Routing and Redirection
+Version: 6.11.0-r1
+Depends: +libc +libmnl
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: net
+Category: Network
+Repository: base
+Title: Network devlink utility
+Maintainer: Russell Senior <russell@personaltelco.net>
+Source: iproute2-6.11.0.tar.xz
+License: GPL-2.0
+CPE-ID: cpe:/a:iproute2_project:iproute2
+URL: http://www.linuxfoundation.org/collaborate/workgroups/networking/iproute2
+Type: ipkg
+Description: Network devlink utility
+@@
+
+Package: rdma
+Submenu: Routing and Redirection
+Version: 6.11.0-r1
+Depends: +libc +libmnl
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: net
+Category: Network
+Repository: base
+Title: Network rdma utility
+Maintainer: Russell Senior <russell@personaltelco.net>
+Source: iproute2-6.11.0.tar.xz
+License: GPL-2.0
+CPE-ID: cpe:/a:iproute2_project:iproute2
+URL: http://www.linuxfoundation.org/collaborate/workgroups/networking/iproute2
+Type: ipkg
+Description: Network rdma utility
+@@
+
+

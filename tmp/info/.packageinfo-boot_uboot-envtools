@@ -1,0 +1,23 @@
+Source-Makefile: package/boot/uboot-envtools/Makefile
+Build-Depends: fstools
+
+Package: uboot-envtools
+Submenu: Boot Loaders
+Version: 2024.07-r1
+Depends: +libc 
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: utils
+Category: Utilities
+Title: read/modify U-Boot bootloader environment
+Maintainer: 
+Source: u-boot-2024.07.tar.bz2
+License: GPL-2.0 GPL-2.0+
+LicenseFiles: Licenses/README
+URL: http://www.denx.de/wiki/U-Boot
+Type: ipkg
+Description:  This package includes tools to read and modify U-Boot bootloader environment.
+@@
+
+

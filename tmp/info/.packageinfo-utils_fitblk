@@ -1,0 +1,20 @@
+Source-Makefile: package/utils/fitblk/Makefile
+
+Package: fitblk
+Version: 2
+Depends: +libc 
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: base
+Category: Base system
+Title: fitblk firmware release tool
+Maintainer: Daniel Golle <daniel@makrotopia.org>
+Source: 
+License: GPL-2.0-only
+Type: ipkg
+Hidden: 1
+Description: Release uImage.FIT block devices using ioctl.
+@@
+
+

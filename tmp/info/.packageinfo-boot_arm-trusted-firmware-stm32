@@ -1,0 +1,24 @@
+Source-Makefile: package/boot/arm-trusted-firmware-stm32/Makefile
+
+Package: trusted-firmware-a-stm32mp135f-dk
+Default: y if (TARGET_stm32_stm32mp1_Default || TARGET_stm32_stm32mp1_DEVICE_stm32mp135f-dk || TARGET_DEVICE_stm32_stm32mp1_DEVICE_stm32mp135f-dk)
+Version: 2.10.17-r1
+Depends: +libc @!IN_SDK +u-boot-stm32mp135f-dk +optee-os-stm32mp135f-dk @TARGET_stm32_stm32mp1
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Build-Variant: stm32mp135f-dk
+Section: boot
+Category: Boot Loaders
+Title: Trusted-Firmware-A for STM32MP135F-DK
+Maintainer: Thomas Richard <thomas.richard@bootlin.com>
+Source: trusted-firmware-a-lts-v2.10.17.tar.gz
+License: BSD-3-Clause
+LicenseFiles: docs/license.rst
+CPE-ID: cpe:/a:arm:trusted_firmware-a
+URL: https://www.trustedfirmware.org/projects/tf-a/
+Type: bin
+Description: Trusted-Firmware-A for STM32MP135F-DK
+@@
+
+

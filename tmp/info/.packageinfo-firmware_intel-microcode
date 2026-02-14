@@ -1,0 +1,21 @@
+Source-Makefile: package/firmware/intel-microcode/Makefile
+Build-Depends: iucode-tool/host
+
+Package: intel-microcode
+Version: 20250211-r1
+Depends: +libc @TARGET_x86
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: firmware
+Category: Firmware
+Title: Intel x86 CPU microcode
+Maintainer: 
+Source: intel-microcode_3.20250211.1.tar.xz
+CPE-ID: cpe:/a:intel:microcode
+URL: @DEBIAN/pool/non-free-firmware/i/intel-microcode/
+Type: ipkg
+Description: Intel x86 CPU microcode
+@@
+
+

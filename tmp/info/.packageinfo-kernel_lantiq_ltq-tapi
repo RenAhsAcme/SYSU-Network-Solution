@@ -1,0 +1,23 @@
+Source-Makefile: package/kernel/lantiq/ltq-tapi/Makefile
+
+Package: kmod-ltq-tapi
+Submenu: Voice over IP
+Version: <LINUX_VERSION>.3.13.0-r6
+Depends: @(TARGET_lantiq_falcon||TARGET_lantiq_xway||TARGET_lantiq_xrx200) +kmod-ltq-ifxos
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: kernel
+Category: Kernel modules
+Title: Lantiq TAPI subsystem
+Maintainer: John Crispin <john@phrozen.org>
+Source: drv_tapi-3.13.0.tar.bz2
+URL: http://www.lantiq.com/
+Type: ipkg
+Description: 	Voice Subsystem Telephony API High Level Driver
+@@
+Config:
+	source "feeds/base/kernel/lantiq/ltq-tapi/Config.in"
+@@
+
+

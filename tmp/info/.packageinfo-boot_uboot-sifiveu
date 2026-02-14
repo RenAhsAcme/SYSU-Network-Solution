@@ -1,0 +1,46 @@
+Source-Makefile: package/boot/uboot-sifiveu/Makefile
+
+Package: u-boot-sifive_unleashed
+Default: y
+Prereq-Check: 1
+Version: 2022.10-r1
+Depends: +libc @!IN_SDK +opensbi_generic @TARGET_sifiveu
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Build-Variant: sifive_unleashed
+Section: boot
+Category: Boot Loaders
+Title: U-Boot for SiFive Unleashed
+Maintainer: 
+Source: u-boot-2022.10.tar.bz2
+License: GPL-2.0 GPL-2.0+
+LicenseFiles: Licenses/README
+URL: http://www.denx.de/wiki/U-Boot
+Type: bin
+Description: U-Boot for SiFive Unleashed
+@@
+
+
+Package: u-boot-sifive_unmatched
+Default: y
+Prereq-Check: 1
+Version: 2022.10-r1
+Depends: +libc @!IN_SDK +opensbi_generic @TARGET_sifiveu
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Build-Variant: sifive_unmatched
+Section: boot
+Category: Boot Loaders
+Title: U-Boot for SiFive Unmatched
+Maintainer: 
+Source: u-boot-2022.10.tar.bz2
+License: GPL-2.0 GPL-2.0+
+LicenseFiles: Licenses/README
+URL: http://www.denx.de/wiki/U-Boot
+Type: bin
+Description: U-Boot for SiFive Unmatched
+@@
+
+

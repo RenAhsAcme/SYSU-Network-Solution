@@ -1,0 +1,20 @@
+Source-Makefile: package/network/services/ustp/Makefile
+
+Package: ustp
+Version: 2023.05.29~a85a5bc83bde5b485319ca12b6e32c4b7f0b120f-r1
+Depends: +libc +libubox +libubus
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: net
+Category: Network
+Repository: base
+Title: OpenWrt STP/RSTP daemon
+Maintainer: Felix Fietkau <nbd@nbd.name>
+Source: ustp-2023.05.29~a85a5bc83bde5b485319ca12b6e32c4b7f0b120f.tar.zst
+License: GPL-2.0
+Type: ipkg
+Description: OpenWrt STP/RSTP daemon
+@@
+
+

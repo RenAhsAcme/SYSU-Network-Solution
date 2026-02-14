@@ -1,0 +1,68 @@
+Source-Makefile: package/firmware/lantiq/dsl-vrx200-firmware-xdsl/Makefile
+Build-Depends: bsdiff/host
+
+Package: dsl-vrx200-firmware-xdsl-a
+Version: 05.08.01.08.01.06.05.08.00.11.01.01-r1
+Depends: +libc @(TARGET_lantiq_xrx200||TARGET_lantiq_xrx200_legacy)
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: firmware
+Category: Firmware
+Title: VRX200 / VR9 CPE xDSL Annex A firmware
+Maintainer: 
+Source: dsl_vr9_firmware_xdsl-05.08.01.08.01.06_05.08.00.0B.01.01_osc.tar.gz
+URL: http://www.lantiq.com/
+Type: ipkg
+Description: 	VRX200 / VR9 CPE VDSL and ADSL Annex A firmware
+@@
+
+Package: dsl-vrx200-firmware-xdsl-b
+Version: 05.08.01.08.01.06.05.08.00.11.01.01-r1
+Depends: +libc @(TARGET_lantiq_xrx200||TARGET_lantiq_xrx200_legacy)
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: firmware
+Category: Firmware
+Title: VRX200 / VR9 CPE xDSL Annex B firmware
+Maintainer: 
+Source: dsl_vr9_firmware_xdsl-05.08.01.08.01.06_05.08.00.0B.01.01_osc.tar.gz
+URL: http://www.lantiq.com/
+Type: ipkg
+Description: 	VRX200 / VR9 CPE VDSL and ADSL Annex B firmware
+@@
+
+Package: dsl-vrx200-firmware-xdsl-a-patch
+Version: 05.08.01.08.01.06.05.08.00.11.01.01-r1
+Depends: +libc @(TARGET_lantiq_xrx200||TARGET_lantiq_xrx200_legacy) +dsl-vrx200-firmware-xdsl-b +bspatch
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: firmware
+Category: Firmware
+Title: VRX200 / VR9 CPE xDSL Annex B to Annex A firmware patch
+Maintainer: 
+Source: dsl_vr9_firmware_xdsl-05.08.01.08.01.06_05.08.00.0B.01.01_osc.tar.gz
+URL: http://www.lantiq.com/
+Type: ipkg
+Description: 	Patch which between the Annex A and Annex B firmware to create the Annex A firmware.
+@@
+
+Package: dsl-vrx200-firmware-xdsl-b-patch
+Version: 05.08.01.08.01.06.05.08.00.11.01.01-r1
+Depends: +libc @(TARGET_lantiq_xrx200||TARGET_lantiq_xrx200_legacy) +dsl-vrx200-firmware-xdsl-a +bspatch
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: firmware
+Category: Firmware
+Title: VRX200 / VR9 CPE xDSL Annex A to Annex B firmware patch
+Maintainer: 
+Source: dsl_vr9_firmware_xdsl-05.08.01.08.01.06_05.08.00.0B.01.01_osc.tar.gz
+URL: http://www.lantiq.com/
+Type: ipkg
+Description: 	Patch which between the Annex A and Annex B firmware to create the Annex B firmware.
+@@
+
+

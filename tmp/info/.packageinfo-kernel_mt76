@@ -1,0 +1,817 @@
+Source-Makefile: package/kernel/mt76/Makefile
+
+Package: kmod-mt76-core
+Submenu: Wireless Drivers
+Version: <LINUX_VERSION>.2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b-r1
+Depends: +kmod-mac80211 +@DRIVER_11AC_SUPPORT +@KERNEL_PAGE_POOL
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: kernel
+Category: Kernel modules
+Title: MediaTek MT76xx wireless driver
+Maintainer: Felix Fietkau <nbd@nbd.name>
+Source: mt76-2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b.tar.zst
+License: BSD-3-Clause-Clear
+Type: ipkg
+Hidden: 1
+Description: MediaTek MT76xx wireless driver
+@@
+
+Package: kmod-mt76-usb
+Submenu: Wireless Drivers
+Version: <LINUX_VERSION>.2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b-r1
+Depends: +kmod-mac80211 +@DRIVER_11AC_SUPPORT +@KERNEL_PAGE_POOL +kmod-usb-core +kmod-mt76-core
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: kernel
+Category: Kernel modules
+Title: MediaTek MT76xx wireless driver USB support
+Maintainer: Felix Fietkau <nbd@nbd.name>
+Source: mt76-2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b.tar.zst
+License: BSD-3-Clause-Clear
+Type: ipkg
+Hidden: 1
+Description: MediaTek MT76xx wireless driver USB support
+@@
+
+Package: kmod-mt76x02-usb
+Submenu: Wireless Drivers
+Version: <LINUX_VERSION>.2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b-r1
+Depends: +kmod-mac80211 +@DRIVER_11AC_SUPPORT +@KERNEL_PAGE_POOL +kmod-mt76-usb +kmod-mt76x02-common
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: kernel
+Category: Kernel modules
+Title: MediaTek MT76x0/MT76x2 USB wireless driver common code
+Maintainer: Felix Fietkau <nbd@nbd.name>
+Source: mt76-2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b.tar.zst
+License: BSD-3-Clause-Clear
+Type: ipkg
+Hidden: 1
+Description: MediaTek MT76x0/MT76x2 USB wireless driver common code
+@@
+
+Package: kmod-mt76x02-common
+Submenu: Wireless Drivers
+Version: <LINUX_VERSION>.2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b-r1
+Depends: +kmod-mac80211 +@DRIVER_11AC_SUPPORT +@KERNEL_PAGE_POOL +kmod-mt76-core
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: kernel
+Category: Kernel modules
+Title: MediaTek MT76x0/MT76x2 wireless driver common code
+Maintainer: Felix Fietkau <nbd@nbd.name>
+Source: mt76-2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b.tar.zst
+License: BSD-3-Clause-Clear
+Type: ipkg
+Hidden: 1
+Description: MediaTek MT76x0/MT76x2 wireless driver common code
+@@
+
+Package: kmod-mt76x0-common
+Submenu: Wireless Drivers
+Version: <LINUX_VERSION>.2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b-r1
+Depends: +kmod-mac80211 +@DRIVER_11AC_SUPPORT +@KERNEL_PAGE_POOL +kmod-mt76x02-common
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: kernel
+Category: Kernel modules
+Title: MediaTek MT76x0 wireless driver common code
+Maintainer: Felix Fietkau <nbd@nbd.name>
+Source: mt76-2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b.tar.zst
+License: BSD-3-Clause-Clear
+Type: ipkg
+Hidden: 1
+Description: MediaTek MT76x0 wireless driver common code
+@@
+
+Package: kmod-mt76x0e
+Submenu: Wireless Drivers
+Version: <LINUX_VERSION>.2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b-r1
+Depends: +kmod-mac80211 +@DRIVER_11AC_SUPPORT +@KERNEL_PAGE_POOL @PCI_SUPPORT +kmod-mt76x0-common
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: kernel
+Category: Kernel modules
+Title: MediaTek MT76x0E wireless driver
+Maintainer: Felix Fietkau <nbd@nbd.name>
+Source: mt76-2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b.tar.zst
+License: BSD-3-Clause-Clear
+Type: ipkg
+Description: MediaTek MT76x0E wireless driver
+@@
+
+Package: kmod-mt76x0u
+Submenu: Wireless Drivers
+Version: <LINUX_VERSION>.2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b-r1
+Depends: +kmod-mac80211 +@DRIVER_11AC_SUPPORT +@KERNEL_PAGE_POOL +kmod-mt76x0-common +kmod-mt76x02-usb
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: kernel
+Category: Kernel modules
+Title: MediaTek MT76x0U wireless driver
+Maintainer: Felix Fietkau <nbd@nbd.name>
+Source: mt76-2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b.tar.zst
+License: BSD-3-Clause-Clear
+Type: ipkg
+Description: MediaTek MT76x0U wireless driver
+@@
+
+Package: kmod-mt76x2-common
+Submenu: Wireless Drivers
+Version: <LINUX_VERSION>.2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b-r1
+Depends: +kmod-mac80211 +@DRIVER_11AC_SUPPORT +@KERNEL_PAGE_POOL +kmod-mt76-core +kmod-mt76x02-common
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: kernel
+Category: Kernel modules
+Title: MediaTek MT76x2 wireless driver common code
+Maintainer: Felix Fietkau <nbd@nbd.name>
+Source: mt76-2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b.tar.zst
+License: BSD-3-Clause-Clear
+Type: ipkg
+Hidden: 1
+Description: MediaTek MT76x2 wireless driver common code
+@@
+
+Package: kmod-mt76x2u
+Submenu: Wireless Drivers
+Version: <LINUX_VERSION>.2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b-r1
+Depends: +kmod-mac80211 +@DRIVER_11AC_SUPPORT +@KERNEL_PAGE_POOL +kmod-mt76x2-common +kmod-mt76x02-usb
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: kernel
+Category: Kernel modules
+Title: MediaTek MT76x2U wireless driver
+Maintainer: Felix Fietkau <nbd@nbd.name>
+Source: mt76-2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b.tar.zst
+License: BSD-3-Clause-Clear
+Type: ipkg
+Description: MediaTek MT76x2U wireless driver
+@@
+
+Package: kmod-mt76x2
+Submenu: Wireless Drivers
+Version: <LINUX_VERSION>.2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b-r1
+Depends: +kmod-mac80211 +@DRIVER_11AC_SUPPORT +@KERNEL_PAGE_POOL @PCI_SUPPORT +kmod-mt76x2-common
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: kernel
+Category: Kernel modules
+Title: MediaTek MT76x2 wireless driver
+Maintainer: Felix Fietkau <nbd@nbd.name>
+Source: mt76-2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b.tar.zst
+License: BSD-3-Clause-Clear
+Type: ipkg
+Description: MediaTek MT76x2 wireless driver
+@@
+
+Package: kmod-mt7603
+Submenu: Wireless Drivers
+Version: <LINUX_VERSION>.2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b-r1
+Depends: +kmod-mac80211 +@DRIVER_11AC_SUPPORT +@KERNEL_PAGE_POOL @PCI_SUPPORT +kmod-mt76-core
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: kernel
+Category: Kernel modules
+Title: MediaTek MT7603 wireless driver
+Maintainer: Felix Fietkau <nbd@nbd.name>
+Source: mt76-2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b.tar.zst
+License: BSD-3-Clause-Clear
+Type: ipkg
+Description: MediaTek MT7603 wireless driver
+@@
+
+Package: kmod-mt76-connac
+Submenu: Wireless Drivers
+Version: <LINUX_VERSION>.2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b-r1
+Depends: +kmod-mac80211 +@DRIVER_11AC_SUPPORT +@KERNEL_PAGE_POOL +kmod-mt76-core
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: kernel
+Category: Kernel modules
+Title: MediaTek MT7615/MT79xx wireless driver common code
+Maintainer: Felix Fietkau <nbd@nbd.name>
+Source: mt76-2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b.tar.zst
+License: BSD-3-Clause-Clear
+Type: ipkg
+Hidden: 1
+Description: MediaTek MT7615/MT79xx wireless driver common code
+@@
+
+Package: kmod-mt76-sdio
+Submenu: Wireless Drivers
+Version: <LINUX_VERSION>.2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b-r1
+Depends: +kmod-mac80211 +@DRIVER_11AC_SUPPORT +@KERNEL_PAGE_POOL +kmod-mt76-core +kmod-mmc
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: kernel
+Category: Kernel modules
+Title: MediaTek MT7615/MT79xx SDIO driver common code
+Maintainer: Felix Fietkau <nbd@nbd.name>
+Source: mt76-2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b.tar.zst
+License: BSD-3-Clause-Clear
+Type: ipkg
+Hidden: 1
+Description: MediaTek MT7615/MT79xx SDIO driver common code
+@@
+
+Package: kmod-mt7615-common
+Submenu: Wireless Drivers
+Version: <LINUX_VERSION>.2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b-r1
+Depends: +kmod-mac80211 +@DRIVER_11AC_SUPPORT +@KERNEL_PAGE_POOL @PCI_SUPPORT +kmod-mt76-core +kmod-mt76-connac +kmod-hwmon-core
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: kernel
+Category: Kernel modules
+Title: MediaTek MT7615 wireless driver common code
+Maintainer: Felix Fietkau <nbd@nbd.name>
+Source: mt76-2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b.tar.zst
+License: BSD-3-Clause-Clear
+Type: ipkg
+Hidden: 1
+Description: MediaTek MT7615 wireless driver common code
+@@
+
+Package: kmod-mt7615-firmware
+Submenu: Wireless Drivers
+Version: <LINUX_VERSION>.2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b-r1
+Depends: +kmod-mac80211 +@DRIVER_11AC_SUPPORT +@KERNEL_PAGE_POOL +kmod-mt7615e
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: kernel
+Category: Kernel modules
+Title: MediaTek MT7615e firmware
+Maintainer: Felix Fietkau <nbd@nbd.name>
+Source: mt76-2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b.tar.zst
+License: BSD-3-Clause-Clear
+Type: ipkg
+Description: MediaTek MT7615e firmware
+@@
+
+Package: kmod-mt7622-firmware
+Submenu: Wireless Drivers
+Version: <LINUX_VERSION>.2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b-r1
+Depends: +kmod-mac80211 +@DRIVER_11AC_SUPPORT +@KERNEL_PAGE_POOL +kmod-mt7615e
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: kernel
+Category: Kernel modules
+Title: MediaTek MT7622 firmware
+Maintainer: Felix Fietkau <nbd@nbd.name>
+Source: mt76-2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b.tar.zst
+License: BSD-3-Clause-Clear
+Type: ipkg
+Description: MediaTek MT7622 firmware
+@@
+
+Package: kmod-mt7615e
+Submenu: Wireless Drivers
+Version: <LINUX_VERSION>.2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b-r1
+Depends: +kmod-mac80211 +@DRIVER_11AC_SUPPORT +@KERNEL_PAGE_POOL @PCI_SUPPORT +kmod-mt7615-common
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: kernel
+Category: Kernel modules
+Title: MediaTek MT7615e wireless driver
+Maintainer: Felix Fietkau <nbd@nbd.name>
+Source: mt76-2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b.tar.zst
+License: BSD-3-Clause-Clear
+Type: ipkg
+Description: MediaTek MT7615e wireless driver
+@@
+
+Package: kmod-mt7663-firmware-ap
+Submenu: Wireless Drivers
+Version: <LINUX_VERSION>.2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b-r1
+Depends: +kmod-mac80211 +@DRIVER_11AC_SUPPORT +@KERNEL_PAGE_POOL
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: kernel
+Category: Kernel modules
+Title: MediaTek MT7663e firmware (optimized for AP)
+Maintainer: Felix Fietkau <nbd@nbd.name>
+Source: mt76-2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b.tar.zst
+License: BSD-3-Clause-Clear
+Type: ipkg
+Description: MediaTek MT7663e firmware (optimized for AP)
+@@
+
+Package: kmod-mt7663-firmware-sta
+Submenu: Wireless Drivers
+Version: <LINUX_VERSION>.2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b-r1
+Depends: +kmod-mac80211 +@DRIVER_11AC_SUPPORT +@KERNEL_PAGE_POOL
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: kernel
+Category: Kernel modules
+Title: MediaTek MT7663e firmware (client mode offload)
+Maintainer: Felix Fietkau <nbd@nbd.name>
+Source: mt76-2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b.tar.zst
+License: BSD-3-Clause-Clear
+Type: ipkg
+Description: MediaTek MT7663e firmware (client mode offload)
+@@
+
+Package: kmod-mt7663-usb-sdio
+Submenu: Wireless Drivers
+Version: <LINUX_VERSION>.2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b-r1
+Depends: +kmod-mac80211 +@DRIVER_11AC_SUPPORT +@KERNEL_PAGE_POOL +kmod-mt7615-common
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: kernel
+Category: Kernel modules
+Title: MediaTek MT7663 USB/SDIO shared code
+Maintainer: Felix Fietkau <nbd@nbd.name>
+Source: mt76-2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b.tar.zst
+License: BSD-3-Clause-Clear
+Type: ipkg
+Hidden: 1
+Description: MediaTek MT7663 USB/SDIO shared code
+@@
+
+Package: kmod-mt7663u
+Submenu: Wireless Drivers
+Version: <LINUX_VERSION>.2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b-r1
+Depends: +kmod-mac80211 +@DRIVER_11AC_SUPPORT +@KERNEL_PAGE_POOL +kmod-mt76-usb +kmod-mt7615-common +kmod-mt7663-usb-sdio
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: kernel
+Category: Kernel modules
+Title: MediaTek MT7663u wireless driver
+Maintainer: Felix Fietkau <nbd@nbd.name>
+Source: mt76-2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b.tar.zst
+License: BSD-3-Clause-Clear
+Type: ipkg
+Description: MediaTek MT7663u wireless driver
+@@
+
+Package: kmod-mt7663s
+Submenu: Wireless Drivers
+Version: <LINUX_VERSION>.2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b-r1
+Depends: +kmod-mac80211 +@DRIVER_11AC_SUPPORT +@KERNEL_PAGE_POOL +kmod-mt76-sdio +kmod-mt7615-common +kmod-mt7663-usb-sdio
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: kernel
+Category: Kernel modules
+Title: MediaTek MT7663s wireless driver
+Maintainer: Felix Fietkau <nbd@nbd.name>
+Source: mt76-2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b.tar.zst
+License: BSD-3-Clause-Clear
+Type: ipkg
+Description: MediaTek MT7663s wireless driver
+@@
+
+Package: kmod-mt7915-firmware
+Submenu: Wireless Drivers
+Version: <LINUX_VERSION>.2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b-r1
+Depends: +kmod-mac80211 +@DRIVER_11AC_SUPPORT +@KERNEL_PAGE_POOL +kmod-mt7915e
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: kernel
+Category: Kernel modules
+Title: MediaTek MT7915 firmware
+Maintainer: Felix Fietkau <nbd@nbd.name>
+Source: mt76-2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b.tar.zst
+License: BSD-3-Clause-Clear
+Type: ipkg
+Description: MediaTek MT7915 firmware
+@@
+
+Package: kmod-mt7915e
+Submenu: Wireless Drivers
+Version: <LINUX_VERSION>.2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b-r1
+Depends: +kmod-mac80211 +@DRIVER_11AC_SUPPORT +@KERNEL_PAGE_POOL @PCI_SUPPORT +kmod-mt76-connac +kmod-hwmon-core +kmod-thermal +@DRIVER_11AX_SUPPORT +@KERNEL_RELAY
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: kernel
+Category: Kernel modules
+Title: MediaTek MT7915e wireless driver
+Maintainer: Felix Fietkau <nbd@nbd.name>
+Source: mt76-2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b.tar.zst
+License: BSD-3-Clause-Clear
+Type: ipkg
+Description: MediaTek MT7915e wireless driver
+@@
+
+Package: kmod-mt7916-firmware
+Submenu: Wireless Drivers
+Version: <LINUX_VERSION>.2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b-r1
+Depends: +kmod-mac80211 +@DRIVER_11AC_SUPPORT +@KERNEL_PAGE_POOL +kmod-mt7915e
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: kernel
+Category: Kernel modules
+Title: MediaTek MT7916 firmware
+Maintainer: Felix Fietkau <nbd@nbd.name>
+Source: mt76-2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b.tar.zst
+License: BSD-3-Clause-Clear
+Type: ipkg
+Description: MediaTek MT7916 firmware
+@@
+
+Package: kmod-mt7981-firmware
+Submenu: Wireless Drivers
+Version: <LINUX_VERSION>.2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b-r1
+Depends: @TARGET_mediatek_filogic
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: kernel
+Category: Kernel modules
+Title: MediaTek MT7981 firmware
+Maintainer: Felix Fietkau <nbd@nbd.name>
+Source: mt76-2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b.tar.zst
+License: BSD-3-Clause-Clear
+Type: ipkg
+Description: MediaTek MT7981 firmware
+@@
+
+Package: kmod-mt7986-firmware
+Submenu: Wireless Drivers
+Version: <LINUX_VERSION>.2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b-r1
+Depends: @TARGET_mediatek_filogic
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: kernel
+Category: Kernel modules
+Title: MediaTek MT7986 firmware
+Maintainer: Felix Fietkau <nbd@nbd.name>
+Source: mt76-2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b.tar.zst
+License: BSD-3-Clause-Clear
+Type: ipkg
+Description: MediaTek MT7986 firmware
+@@
+
+Package: kmod-mt7921-firmware
+Submenu: Wireless Drivers
+Version: <LINUX_VERSION>.2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b-r1
+Depends: +kmod-mac80211 +@DRIVER_11AC_SUPPORT +@KERNEL_PAGE_POOL
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: kernel
+Category: Kernel modules
+Title: MediaTek MT7921 firmware
+Maintainer: Felix Fietkau <nbd@nbd.name>
+Source: mt76-2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b.tar.zst
+License: BSD-3-Clause-Clear
+Type: ipkg
+Description: MediaTek MT7921 firmware
+@@
+
+Package: kmod-mt7922-firmware
+Submenu: Wireless Drivers
+Version: <LINUX_VERSION>.2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b-r1
+Depends: +kmod-mac80211 +@DRIVER_11AC_SUPPORT +@KERNEL_PAGE_POOL
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: kernel
+Category: Kernel modules
+Title: MediaTek MT7922 firmware
+Maintainer: Felix Fietkau <nbd@nbd.name>
+Source: mt76-2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b.tar.zst
+License: BSD-3-Clause-Clear
+Type: ipkg
+Description: MediaTek MT7922 firmware
+@@
+
+Package: kmod-mt7925-firmware
+Submenu: Wireless Drivers
+Version: <LINUX_VERSION>.2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b-r1
+Depends: +kmod-mac80211 +@DRIVER_11AC_SUPPORT +@KERNEL_PAGE_POOL +kmod-mt7925e
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: kernel
+Category: Kernel modules
+Title: MediaTek MT7925 firmware
+Maintainer: Felix Fietkau <nbd@nbd.name>
+Source: mt76-2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b.tar.zst
+License: BSD-3-Clause-Clear
+Type: ipkg
+Description: MediaTek MT7925 firmware
+@@
+
+Package: kmod-mt792x-common
+Submenu: Wireless Drivers
+Version: <LINUX_VERSION>.2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b-r1
+Depends: +kmod-mac80211 +@DRIVER_11AC_SUPPORT +@KERNEL_PAGE_POOL +kmod-mt76-connac +@DRIVER_11AX_SUPPORT
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: kernel
+Category: Kernel modules
+Title: MediaTek MT792x wireless driver common code
+Maintainer: Felix Fietkau <nbd@nbd.name>
+Source: mt76-2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b.tar.zst
+License: BSD-3-Clause-Clear
+Type: ipkg
+Hidden: 1
+Description: MediaTek MT792x wireless driver common code
+@@
+
+Package: kmod-mt792x-usb
+Submenu: Wireless Drivers
+Version: <LINUX_VERSION>.2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b-r1
+Depends: +kmod-mac80211 +@DRIVER_11AC_SUPPORT +@KERNEL_PAGE_POOL +kmod-mt792x-common +kmod-mt76-usb +@DRIVER_11AX_SUPPORT
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: kernel
+Category: Kernel modules
+Title: MediaTek MT792x wireless driver USB code
+Maintainer: Felix Fietkau <nbd@nbd.name>
+Source: mt76-2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b.tar.zst
+License: BSD-3-Clause-Clear
+Type: ipkg
+Hidden: 1
+Description: MediaTek MT792x wireless driver USB code
+@@
+
+Package: kmod-mt7921-common
+Submenu: Wireless Drivers
+Version: <LINUX_VERSION>.2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b-r1
+Depends: +kmod-mac80211 +@DRIVER_11AC_SUPPORT +@KERNEL_PAGE_POOL +kmod-mt792x-common +kmod-mt7921-firmware +@DRIVER_11AX_SUPPORT +kmod-hwmon-core
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: kernel
+Category: Kernel modules
+Title: MediaTek MT7921 wireless driver common code
+Maintainer: Felix Fietkau <nbd@nbd.name>
+Source: mt76-2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b.tar.zst
+License: BSD-3-Clause-Clear
+Type: ipkg
+Hidden: 1
+Description: MediaTek MT7921 wireless driver common code
+@@
+
+Package: kmod-mt7925-common
+Submenu: Wireless Drivers
+Version: <LINUX_VERSION>.2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b-r1
+Depends: +kmod-mac80211 +@DRIVER_11AC_SUPPORT +@KERNEL_PAGE_POOL +kmod-mt792x-common +@DRIVER_11AX_SUPPORT +kmod-hwmon-core +@DRIVER_11BE_SUPPORT
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: kernel
+Category: Kernel modules
+Title: MediaTek MT7925 wireless driver common code
+Maintainer: Felix Fietkau <nbd@nbd.name>
+Source: mt76-2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b.tar.zst
+License: BSD-3-Clause-Clear
+Type: ipkg
+Hidden: 1
+Description: MediaTek MT7925 wireless driver common code
+@@
+
+Package: kmod-mt7921u
+Submenu: Wireless Drivers
+Version: <LINUX_VERSION>.2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b-r1
+Depends: +kmod-mac80211 +@DRIVER_11AC_SUPPORT +@KERNEL_PAGE_POOL +kmod-mt792x-usb +kmod-mt7921-common
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: kernel
+Category: Kernel modules
+Title: MediaTek MT7921U wireless driver
+Maintainer: Felix Fietkau <nbd@nbd.name>
+Source: mt76-2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b.tar.zst
+License: BSD-3-Clause-Clear
+Type: ipkg
+Description: MediaTek MT7921U wireless driver
+@@
+
+Package: kmod-mt7921s
+Submenu: Wireless Drivers
+Version: <LINUX_VERSION>.2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b-r1
+Depends: +kmod-mac80211 +@DRIVER_11AC_SUPPORT +@KERNEL_PAGE_POOL +kmod-mt76-sdio +kmod-mt7921-common
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: kernel
+Category: Kernel modules
+Title: MediaTek MT7921S wireless driver
+Maintainer: Felix Fietkau <nbd@nbd.name>
+Source: mt76-2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b.tar.zst
+License: BSD-3-Clause-Clear
+Type: ipkg
+Description: MediaTek MT7921S wireless driver
+@@
+
+Package: kmod-mt7921e
+Submenu: Wireless Drivers
+Version: <LINUX_VERSION>.2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b-r1
+Depends: +kmod-mac80211 +@DRIVER_11AC_SUPPORT +@KERNEL_PAGE_POOL @PCI_SUPPORT +kmod-mt7921-common
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: kernel
+Category: Kernel modules
+Title: MediaTek MT7921e wireless driver
+Maintainer: Felix Fietkau <nbd@nbd.name>
+Source: mt76-2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b.tar.zst
+License: BSD-3-Clause-Clear
+Type: ipkg
+Description: MediaTek MT7921e wireless driver
+@@
+
+Package: kmod-mt7925u
+Submenu: Wireless Drivers
+Version: <LINUX_VERSION>.2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b-r1
+Depends: +kmod-mac80211 +@DRIVER_11AC_SUPPORT +@KERNEL_PAGE_POOL +kmod-mt792x-usb +kmod-mt7925-common
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: kernel
+Category: Kernel modules
+Title: MediaTek MT7925U wireless driver
+Maintainer: Felix Fietkau <nbd@nbd.name>
+Source: mt76-2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b.tar.zst
+License: BSD-3-Clause-Clear
+Type: ipkg
+Description: MediaTek MT7925U wireless driver
+@@
+
+Package: kmod-mt7925e
+Submenu: Wireless Drivers
+Version: <LINUX_VERSION>.2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b-r1
+Depends: +kmod-mac80211 +@DRIVER_11AC_SUPPORT +@KERNEL_PAGE_POOL @PCI_SUPPORT +kmod-mt7925-common
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: kernel
+Category: Kernel modules
+Title: MediaTek MT7925e wireless driver
+Maintainer: Felix Fietkau <nbd@nbd.name>
+Source: mt76-2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b.tar.zst
+License: BSD-3-Clause-Clear
+Type: ipkg
+Description: MediaTek MT7925e wireless driver
+@@
+
+Package: kmod-mt7996e
+Submenu: Wireless Drivers
+Version: <LINUX_VERSION>.2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b-r1
+Depends: +kmod-mac80211 +@DRIVER_11AC_SUPPORT +@KERNEL_PAGE_POOL @PCI_SUPPORT +kmod-mt76-connac +kmod-hwmon-core +@DRIVER_11AX_SUPPORT +@KERNEL_RELAY +@DRIVER_11BE_SUPPORT
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: kernel
+Category: Kernel modules
+Title: MediaTek MT7996E wireless driver
+Maintainer: Felix Fietkau <nbd@nbd.name>
+Source: mt76-2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b.tar.zst
+License: BSD-3-Clause-Clear
+Type: ipkg
+Description: MediaTek MT7996E wireless driver
+@@
+
+Package: kmod-mt7992-firmware
+Submenu: Wireless Drivers
+Version: <LINUX_VERSION>.2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b-r1
+Depends: +kmod-mac80211 +@DRIVER_11AC_SUPPORT +@KERNEL_PAGE_POOL +kmod-mt7996e
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: kernel
+Category: Kernel modules
+Title: MediaTek MT7992 firmware
+Maintainer: Felix Fietkau <nbd@nbd.name>
+Source: mt76-2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b.tar.zst
+License: BSD-3-Clause-Clear
+Type: ipkg
+Description: MediaTek MT7992 firmware
+@@
+
+Package: kmod-mt7992-23-firmware
+Submenu: Wireless Drivers
+Version: <LINUX_VERSION>.2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b-r1
+Depends: +kmod-mac80211 +@DRIVER_11AC_SUPPORT +@KERNEL_PAGE_POOL +kmod-mt7996e
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: kernel
+Category: Kernel modules
+Title: MediaTek MT7996 firmware (2+3 antenna variant)
+Maintainer: Felix Fietkau <nbd@nbd.name>
+Source: mt76-2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b.tar.zst
+License: BSD-3-Clause-Clear
+Type: ipkg
+Description: MediaTek MT7996 firmware (2+3 antenna variant)
+@@
+
+Package: kmod-mt7996-firmware-common
+Submenu: Wireless Drivers
+Version: <LINUX_VERSION>.2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b-r1
+Depends: +kmod-mac80211 +@DRIVER_11AC_SUPPORT +@KERNEL_PAGE_POOL
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: kernel
+Category: Kernel modules
+Title: MediaTek MT7996 firmware (common files)
+Maintainer: Felix Fietkau <nbd@nbd.name>
+Source: mt76-2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b.tar.zst
+License: BSD-3-Clause-Clear
+Type: ipkg
+Hidden: 1
+Description: MediaTek MT7996 firmware (common files)
+@@
+
+Package: kmod-mt7996-firmware
+Submenu: Wireless Drivers
+Version: <LINUX_VERSION>.2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b-r1
+Depends: +kmod-mac80211 +@DRIVER_11AC_SUPPORT +@KERNEL_PAGE_POOL +kmod-mt7996e +kmod-mt7996-firmware-common
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: kernel
+Category: Kernel modules
+Title: MediaTek MT7996 firmware
+Maintainer: Felix Fietkau <nbd@nbd.name>
+Source: mt76-2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b.tar.zst
+License: BSD-3-Clause-Clear
+Type: ipkg
+Description: MediaTek MT7996 firmware
+@@
+
+Package: kmod-mt7996-233-firmware
+Submenu: Wireless Drivers
+Version: <LINUX_VERSION>.2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b-r1
+Depends: +kmod-mac80211 +@DRIVER_11AC_SUPPORT +@KERNEL_PAGE_POOL +kmod-mt7996e +kmod-mt7996-firmware-common
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: kernel
+Category: Kernel modules
+Title: MediaTek MT7996 firmware (2+3+3 antenna variant)
+Maintainer: Felix Fietkau <nbd@nbd.name>
+Source: mt76-2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b.tar.zst
+License: BSD-3-Clause-Clear
+Type: ipkg
+Description: MediaTek MT7996 firmware (2+3+3 antenna variant)
+@@
+
+Package: kmod-mt76
+Submenu: Wireless Drivers
+Version: <LINUX_VERSION>.2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b-r1
+Depends: +kmod-mt76-core +kmod-mt76x2 +kmod-mt7603
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: kernel
+Category: Kernel modules
+Title: MediaTek MT76x2/MT7603 wireless driver (metapackage)
+Maintainer: Felix Fietkau <nbd@nbd.name>
+Source: mt76-2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b.tar.zst
+License: BSD-3-Clause-Clear
+Type: ipkg
+Description: MediaTek MT76x2/MT7603 wireless driver (metapackage)
+@@
+
+Package: mt76-test
+Version: 2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b-r1
+Depends: +libc kmod-mt76-core +libnl-tiny
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: devel
+Category: Development
+Repository: base
+Title: mt76 testmode CLI
+Maintainer: Felix Fietkau <nbd@nbd.name>
+Source: mt76-2025.11.06~eb567bc7f9b692bbf1ddfe31dd740861c58ec85b.tar.zst
+License: BSD-3-Clause-Clear
+Type: ipkg
+Description: mt76 testmode CLI
+@@
+
+

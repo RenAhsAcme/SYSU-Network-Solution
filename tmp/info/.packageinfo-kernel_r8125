@@ -1,0 +1,39 @@
+Source-Makefile: package/kernel/r8125/Makefile
+
+Package: kmod-r8125
+Submenu: Network Devices
+Version: <LINUX_VERSION>.9.016.01-r1
+Depends: @PCI_SUPPORT +kmod-libphy
+Conflicts: 
+Menu-Depends: 
+Provides: kmod-r8169
+Build-Variant: regular
+Section: kernel
+Category: Kernel modules
+Title: Realtek RTL8125 PCI 2.5 Gigabit Ethernet driver
+Maintainer: Alvaro Fernandez Rojas <noltari@gmail.com>
+Source: r8125-9.016.01.tar.bz2
+License: GPLv2
+Type: ipkg
+Description: Realtek RTL8125 PCI 2.5 Gigabit Ethernet driver
+@@
+
+Package: kmod-r8125-rss
+Submenu: Network Devices
+Version: <LINUX_VERSION>.9.016.01-r1
+Depends: @PCI_SUPPORT +kmod-libphy
+Conflicts: kmod-r8125
+Menu-Depends: 
+Provides: kmod-r8169
+Build-Variant: rss
+Section: kernel
+Category: Kernel modules
+Title: Realtek RTL8125 PCI 2.5 Gigabit Ethernet driver (RSS)
+Maintainer: Alvaro Fernandez Rojas <noltari@gmail.com>
+Source: r8125-9.016.01.tar.bz2
+License: GPLv2
+Type: ipkg
+Description: Realtek RTL8125 PCI 2.5 Gigabit Ethernet driver (RSS)
+@@
+
+

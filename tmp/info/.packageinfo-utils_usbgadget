@@ -1,0 +1,54 @@
+Source-Makefile: package/utils/usbgadget/Makefile
+
+Package: usbgadget
+Version: 1
+Depends: +libc @USB_GADGET_SUPPORT +kmod-usb-gadget +kmod-usb-lib-composite
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: utils
+Category: Utilities
+Repository: base
+Title: init script to create USB gadgets
+Maintainer: Chuanhong Guo <gch981213@gmail.com>
+Source: 
+License: BSD-2-Clause
+Type: ipkg
+Description: init script to create USB gadgets
+@@
+
+Package: usbgadget-ncm
+Version: 1
+Depends: +libc +kmod-usb-gadget-ncm
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: utils
+Category: Utilities
+Repository: base
+Title: CDC-NCM gadget preset
+Maintainer: Chuanhong Guo <gch981213@gmail.com>
+Source: 
+License: BSD-2-Clause
+Type: ipkg
+Description:    This package contains the USB gadget preset for +kmod-usb-gadget-ncm.
+@@
+
+Package: usbgadget-acm
+Version: 1
+Depends: +libc +kmod-usb-gadget-serial
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: utils
+Category: Utilities
+Repository: base
+Title: CDC-ACM gadget preset
+Maintainer: Chuanhong Guo <gch981213@gmail.com>
+Source: 
+License: BSD-2-Clause
+Type: ipkg
+Description:    This package contains the USB gadget preset for +kmod-usb-gadget-serial.
+@@
+
+

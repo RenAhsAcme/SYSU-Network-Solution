@@ -1,0 +1,40 @@
+	config FEED_packages
+		tristate "Enable feed packages"
+		depends on PER_FEED_REPO
+		default y
+		help
+		 Enable the \"packages\" feed in opkg distfeeds.conf and apk repositories.
+		 Say M to add the feed commented out.
+
+	config FEED_luci
+		tristate "Enable feed luci"
+		depends on PER_FEED_REPO
+		default y
+		help
+		 Enable the \"luci\" feed in opkg distfeeds.conf and apk repositories.
+		 Say M to add the feed commented out.
+
+	config FEED_routing
+		tristate "Enable feed routing"
+		depends on PER_FEED_REPO
+		default y
+		help
+		 Enable the \"routing\" feed in opkg distfeeds.conf and apk repositories.
+		 Say M to add the feed commented out.
+
+	config FEED_telephony
+		tristate "Enable feed telephony"
+		depends on PER_FEED_REPO
+		default y
+		help
+		 Enable the \"telephony\" feed in opkg distfeeds.conf and apk repositories.
+		 Say M to add the feed commented out.
+
+	config FEED_openclash
+		tristate "Enable feed openclash"
+		depends on PER_FEED_REPO
+		default y
+		help
+		 Enable the \"openclash\" feed in opkg distfeeds.conf and apk repositories.
+		 Say M to add the feed commented out.
+

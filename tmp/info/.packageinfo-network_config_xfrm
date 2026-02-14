@@ -1,0 +1,20 @@
+Source-Makefile: package/network/config/xfrm/Makefile
+
+Package: xfrm
+Version: 5
+Depends: +libc +kmod-xfrm-interface
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: net
+Category: Network
+Repository: base
+Title: XFRM IPsec Tunnel Interface config support
+Maintainer: Andre Valentin <avalentin@marcant.net>
+Source: 
+License: GPL-2.0
+Type: ipkg
+Description:  XFRM IPsec Tunnel Interface config support (IPv4 and IPv6) in /etc/config/network.
+@@
+
+

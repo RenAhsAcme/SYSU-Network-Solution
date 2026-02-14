@@ -1,0 +1,21 @@
+Source-Makefile: package/firmware/lantiq/vrx518_aca_fw/Makefile
+
+Package: vrx518_aca_fw
+Version: 1.5.0-r1
+Depends: +libc @TARGET_ipq40xx
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: firmware
+Category: Firmware
+Title: VRX518 ACA firmware
+Maintainer: 
+Source: vrx518_aca_fw-1.5.0.tar.zst
+License: MaxLinear-Software-License-Agreement
+LicenseFiles: platform/xrx500/LICENSE
+URL: http://www.intel.com
+Type: ipkg
+Description:   VRX518 ACA firmware
+@@
+
+

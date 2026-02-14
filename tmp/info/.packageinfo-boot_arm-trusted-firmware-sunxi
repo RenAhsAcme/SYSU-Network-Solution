@@ -1,0 +1,65 @@
+Source-Makefile: package/boot/arm-trusted-firmware-sunxi/Makefile
+
+Package: trusted-firmware-a-sunxi-a64
+Version: 2.10-r1
+Depends: +libc @!IN_SDK @TARGET_sunxi_cortexa53
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Build-Variant: sunxi-a64
+Section: boot
+Category: Boot Loaders
+Title: Trusted-Firmware-A for Allwinner A64
+Maintainer: Hauke Mehrtens <hauke@hauke-m.de>
+Source: trusted-firmware-a-v2.10.tar.gz
+License: BSD-3-Clause
+LicenseFiles: docs/license.rst
+CPE-ID: cpe:/a:arm:trusted_firmware-a
+URL: https://www.trustedfirmware.org/projects/tf-a/
+Type: bin
+Description: Trusted-Firmware-A for Allwinner A64
+@@
+
+
+Package: trusted-firmware-a-sunxi-h6
+Version: 2.10-r1
+Depends: +libc @!IN_SDK @TARGET_sunxi_cortexa53
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Build-Variant: sunxi-h6
+Section: boot
+Category: Boot Loaders
+Title: Trusted-Firmware-A for Allwinner H6
+Maintainer: Hauke Mehrtens <hauke@hauke-m.de>
+Source: trusted-firmware-a-v2.10.tar.gz
+License: BSD-3-Clause
+LicenseFiles: docs/license.rst
+CPE-ID: cpe:/a:arm:trusted_firmware-a
+URL: https://www.trustedfirmware.org/projects/tf-a/
+Type: bin
+Description: Trusted-Firmware-A for Allwinner H6
+@@
+
+
+Package: trusted-firmware-a-sunxi-h616
+Version: 2.10-r1
+Depends: +libc @!IN_SDK @TARGET_sunxi_cortexa53
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Build-Variant: sunxi-h616
+Section: boot
+Category: Boot Loaders
+Title: Trusted-Firmware-A for Allwinner H616
+Maintainer: Hauke Mehrtens <hauke@hauke-m.de>
+Source: trusted-firmware-a-v2.10.tar.gz
+License: BSD-3-Clause
+LicenseFiles: docs/license.rst
+CPE-ID: cpe:/a:arm:trusted_firmware-a
+URL: https://www.trustedfirmware.org/projects/tf-a/
+Type: bin
+Description: Trusted-Firmware-A for Allwinner H616
+@@
+
+

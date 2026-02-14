@@ -1,0 +1,22 @@
+Source-Makefile: package/feeds/packages/ptunnel-ng/Makefile
+
+Package: ptunnel-ng
+Version: 1.42-r2
+Depends: +libc +libpthread
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: net
+Category: Network
+Repository: packages
+Title: PingTunnel [N]ew[G]eneration
+Maintainer: Toni Uhlig <matzeton@googlemail.com>
+Source: ptunnel-ng-1.42.tar.gz
+License: BSD-3
+LicenseFiles: COPYING
+URL: https://github.com/lnslbrty/ptunnel-ng
+Type: ipkg
+Description: 	Tunnel TCP connections through ICMP.
+@@
+
+

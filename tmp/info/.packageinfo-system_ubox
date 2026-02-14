@@ -1,0 +1,55 @@
+Source-Makefile: package/system/ubox/Makefile
+
+Package: ubox
+Version: 2024.04.26~85f1053019caf4cd333795760950235ee4529ba7-r1
+Depends: +libc +libubox +ubusd +ubus +libubus +libuci
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: base
+Category: Base system
+Repository: base
+Title: OpenWrt system helper toolbox
+Maintainer: John Crispin <john@phrozen.org>
+Source: ubox-2024.04.26~85f1053019caf4cd333795760950235ee4529ba7.tar.zst
+License: GPL-2.0
+Type: ipkg
+Description: OpenWrt system helper toolbox
+@@
+
+Package: getrandom
+Version: 2024.04.26~85f1053019caf4cd333795760950235ee4529ba7-r1
+Depends: +libc 
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: base
+Category: Base system
+Repository: base
+Title: OpenWrt getrandom system helper
+Maintainer: John Crispin <john@phrozen.org>
+Source: ubox-2024.04.26~85f1053019caf4cd333795760950235ee4529ba7.tar.zst
+License: GPL-2.0
+Type: ipkg
+Description: OpenWrt getrandom system helper
+@@
+
+Package: logd
+Version: 2024.04.26~85f1053019caf4cd333795760950235ee4529ba7-r1
+Depends: +libc +libubox +libubus +libblobmsg-json +libudebug
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: base
+Category: Base system
+Repository: base
+Title: OpenWrt system log implementation
+Maintainer: John Crispin <john@phrozen.org>
+Require-User: logd=514:logd=514
+Source: ubox-2024.04.26~85f1053019caf4cd333795760950235ee4529ba7.tar.zst
+License: GPL-2.0
+Type: ipkg
+Description: OpenWrt system log implementation
+@@
+
+

@@ -1,0 +1,22 @@
+Source-Makefile: package/network/ipv6/ds-lite/Makefile
+
+Package: ds-lite
+Version: 9
+Depends: +libc @IPV6 +kmod-ip6-tunnel +resolveip
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: net
+Category: Network
+Repository: base
+Title: IPv4 over IPv6 (RFC2473 and DS-Lite) configuration support
+Maintainer: Steven Barth <steven@midlink.org>
+Source: 
+License: GPL-2.0
+Type: ipkg
+Description: Provides support for IPv4 over IPv6 (RFC2473 and DS-Lite) in /etc/config/network.
+Refer to http://wiki.openwrt.org/doc/uci/network for
+configuration details.
+@@
+
+

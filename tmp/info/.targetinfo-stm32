@@ -1,0 +1,51 @@
+Source-Makefile: target/linux/stm32/Makefile
+Target: stm32
+Target-Board: stm32
+Target-Name: STMicroelectronics STM32
+Target-Arch: 
+Target-Arch-Packages: 
+Target-Features: boot-part emmc ext4 gpio rtc usb
+Target-Depends: 
+Target-Optimization: -Os -pipe
+CPU-Type: 
+Linux-Version: 6.6.119
+Linux-Release: 1
+Linux-Kernel-Arch: arm64
+Target-Description:
+	Build firmware image for STM32 devices
+@@
+Default-Packages: base-files ca-bundle dropbear fstools libc libgcc libustream-mbedtls logd mtd netifd uci uclient-fetch urandom-seed urngd procd-ujail dnsmasq firewall4 nftables kmod-nft-offload odhcp6c odhcpd-ipv6only ppp ppp-mod-pppoe blockdev kmod-gpio-button-hotplug 
+Target: stm32/stm32mp1
+Target-Board: stm32
+Target-Name: STM32MP1 boards
+Target-Arch: arm
+Target-Arch-Packages: arm_cortex-a7_neon-vfpv4
+Target-Features: arm_v7 boot-part dt emmc ext4 fpu gpio rtc usb
+Target-Depends: 
+Target-Optimization: -Os -pipe
+CPU-Type: cortex-a7+neon-vfpv4
+Linux-Version: 6.6.119
+Linux-Release: 1
+Linux-Kernel-Arch: arm
+Target-Description:
+	Build firmware image for STM32 devices
+@@
+Default-Packages: base-files ca-bundle dropbear fstools libc libgcc libustream-mbedtls logd mtd netifd uci uclient-fetch urandom-seed urngd procd-ujail dnsmasq firewall4 nftables kmod-nft-offload odhcp6c odhcpd-ipv6only ppp ppp-mod-pppoe blockdev kmod-gpio-button-hotplug 
+Target-Profile: DEVICE_stm32mp135f-dk
+Target-Profile-Name: STMicroelectronics STM32MP135F-DK
+Target-Profile-Packages: kmod-brcmfmac murata-firmware-43430-sdio murata-nvram-43430-sdio wpad-basic-mbedtls kmod-phy-stm32-usbphyc kmod-usb2 kmod-usb-storage kmod-usb-ledtrig-usbport -mtd iwinfo
+Target-Profile-hasImageMetadata: 1
+Target-Profile-SupportedDevices: st,stm32mp135f-dk
+
+
+Target-Profile-Description:
+Build firmware images for STMicroelectronics STM32MP135F-DK
+
+
+
+
+
+
+@@
+
+

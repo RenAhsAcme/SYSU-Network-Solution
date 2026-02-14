@@ -1,0 +1,23 @@
+Source-Makefile: package/boot/uboot-bmips/Makefile
+
+Package: u-boot-xg6846
+Default: y if (TARGET_bmips_bcm6328_Default || TARGET_bmips_bcm6328_DEVICE_inteno_xg6846 || TARGET_DEVICE_bmips_bcm6328_DEVICE_inteno_xg6846)
+Version: 2024.04-r0
+Depends: +libc @!IN_SDK @TARGET_bmips_bcm6328
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Build-Variant: xg6846
+Section: boot
+Category: Boot Loaders
+Title: U-Boot for Inteno XG6846
+Maintainer: 
+Source: u-boot-2024.04.tar.bz2
+License: GPL-2.0 GPL-2.0+
+LicenseFiles: Licenses/README
+URL: http://www.denx.de/wiki/U-Boot
+Type: bin
+Description: U-Boot for Inteno XG6846
+@@
+
+

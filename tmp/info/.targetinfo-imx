@@ -1,0 +1,234 @@
+Source-Makefile: target/linux/imx/Makefile
+Target: imx
+Target-Board: imx
+Target-Name: NXP i.MX
+Target-Arch: 
+Target-Arch-Packages: 
+Target-Features: arm_v7 audio boot-part display dt fpu gpio nand pcie rootfs-part rtc squashfs targz ubifs usb usbgadget
+Target-Depends: 
+Target-Optimization: -Os -pipe
+CPU-Type: 
+Linux-Version: 6.6.119
+Linux-Release: 1
+Linux-Kernel-Arch: arm64
+Target-Description:
+
+@@
+Default-Packages: base-files ca-bundle dropbear fstools libc libgcc libustream-mbedtls logd mtd netifd uci uclient-fetch urandom-seed urngd procd-ujail dnsmasq firewall4 nftables kmod-nft-offload odhcp6c odhcpd-ipv6only ppp ppp-mod-pppoe uboot-envtools mkf2fs e2fsprogs blkid 
+Target-Profile: Default
+Target-Profile-Priority: 1
+Target-Profile-Name: Default Profile
+Target-Profile-Packages:  
+Target-Profile-Description:
+ Package set compatible with most NXP i.MX based boards.
+@@
+
+Target: imx/cortexa7
+Target-Board: imx
+Target-Name: NXP i.MX with Cortex-A7
+Target-Arch: arm
+Target-Arch-Packages: arm_cortex-a7_neon-vfpv4
+Target-Features: arm_v7 audio boot-part display dt fpu gpio nand pcie rootfs-part rtc squashfs targz ubifs usb usbgadget
+Target-Depends: 
+Target-Optimization: -Os -pipe
+CPU-Type: cortex-a7+neon-vfpv4
+Linux-Version: 6.6.119
+Linux-Release: 1
+Linux-Kernel-Arch: arm
+Target-Description:
+	Build firmware images for NXP i.MX (Cortex-A7) based boards.
+@@
+Default-Packages: base-files ca-bundle dropbear fstools libc libgcc libustream-mbedtls logd mtd netifd uci uclient-fetch urandom-seed urngd procd-ujail dnsmasq firewall4 nftables kmod-nft-offload odhcp6c odhcpd-ipv6only ppp ppp-mod-pppoe uboot-envtools mkf2fs e2fsprogs blkid 
+Target-Profile: Default
+Target-Profile-Priority: 1
+Target-Profile-Name: Default Profile
+Target-Profile-Packages:  
+Target-Profile-Description:
+ Package set compatible with most NXP i.MX based boards.
+@@
+
+Target-Profile: DEVICE_technexion_imx7d-pico-pi
+Target-Profile-Name: TechNexion PICO-PI-IMX7D
+Target-Profile-Packages: kmod-sound-core kmod-sound-soc-imx kmod-sound-soc-imx-sgtl5000 kmod-can kmod-can-flexcan kmod-can-raw kmod-leds-gpio kmod-input-touchscreen-edt-ft5x06 kmod-usb-hid kmod-btsdio kmod-brcmfmac brcmfmac-firmware-4339-sdio cypress-nvram-4339-sdio
+Target-Profile-hasImageMetadata: 1
+Target-Profile-SupportedDevices: technexion,imx7d-pico-pi
+
+
+Target-Profile-Description:
+Build firmware images for TechNexion PICO-PI-IMX7D
+
+
+
+
+
+
+@@
+
+Target: imx/cortexa9
+Target-Board: imx
+Target-Name: NXP i.MX with Cortex-A9
+Target-Arch: arm
+Target-Arch-Packages: arm_cortex-a9_neon
+Target-Features: arm_v7 audio boot-part display dt fpu gpio nand pci pcie rootfs-part rtc squashfs targz ubifs usb usbgadget
+Target-Depends: 
+Target-Optimization: -Os -pipe
+CPU-Type: cortex-a9+neon
+Linux-Version: 6.6.119
+Linux-Release: 1
+Linux-Kernel-Arch: arm
+Target-Description:
+	Build firmware images for NXP i.MX (Cortex-A9) based boards.
+@@
+Default-Packages: base-files ca-bundle dropbear fstools libc libgcc libustream-mbedtls logd mtd netifd uci uclient-fetch urandom-seed urngd procd-ujail dnsmasq firewall4 nftables kmod-nft-offload odhcp6c odhcpd-ipv6only ppp ppp-mod-pppoe uboot-envtools mkf2fs e2fsprogs blkid 
+Target-Profile: Default
+Target-Profile-Priority: 1
+Target-Profile-Name: Default Profile
+Target-Profile-Packages:  
+Target-Profile-Description:
+ Package set compatible with most NXP i.MX based boards.
+@@
+
+Target-Profile: DEVICE_gateworks_ventana
+Target-Profile-Name: Gateworks Ventana family normal NAND flash
+Target-Profile-Packages: kmod-sky2 kmod-sound-core kmod-sound-soc-imx kmod-sound-soc-imx-sgtl5000 kmod-can kmod-can-flexcan kmod-can-raw kmod-hwmon-gsc kmod-leds-gpio kmod-pps-gpio kobs-ng kmod-gpio-button-hotplug
+Target-Profile-hasImageMetadata: 1
+Target-Profile-SupportedDevices: gateworks,ventana
+
+
+Target-Profile-Description:
+Build firmware images for Gateworks Ventana family normal NAND flash
+
+
+
+
+
+
+@@
+
+Target-Profile: DEVICE_gateworks_ventana-large
+Target-Profile-Name: Gateworks Ventana family large NAND flash
+Target-Profile-Packages: kmod-sky2 kmod-sound-core kmod-sound-soc-imx kmod-sound-soc-imx-sgtl5000 kmod-can kmod-can-flexcan kmod-can-raw kmod-hwmon-gsc kmod-leds-gpio kmod-pps-gpio kobs-ng kmod-gpio-button-hotplug
+Target-Profile-hasImageMetadata: 0
+Target-Profile-SupportedDevices: gateworks,ventana-large
+
+
+Target-Profile-Description:
+Build firmware images for Gateworks Ventana family large NAND flash
+
+
+
+
+
+
+@@
+
+Target-Profile: DEVICE_solidrun_cubox-i
+Target-Profile-Name: SolidRun CuBox-i
+Target-Profile-Packages: kmod-drm-imx kmod-drm-imx-hdmi kmod-usb-hid
+Target-Profile-hasImageMetadata: 1
+Target-Profile-SupportedDevices: solidrun,cubox-i
+
+
+Target-Profile-Description:
+Build firmware images for SolidRun CuBox-i
+
+
+
+
+
+
+@@
+
+Target-Profile: DEVICE_toradex_apalis
+Target-Profile-Name: Toradex Apalis family
+Target-Profile-Packages: kmod-can kmod-can-flexcan kmod-can-raw kmod-leds-gpio kmod-gpio-button-hotplug kmod-pps-gpio kmod-rtc-ds1307
+Target-Profile-hasImageMetadata: 1
+Target-Profile-SupportedDevices: apalis,ixora apalis,eval
+
+
+Target-Profile-Description:
+Build firmware images for Toradex Apalis family
+
+
+
+
+
+
+@@
+
+Target-Profile: DEVICE_wandboard_dual
+Target-Profile-Name: Wandboard Dual
+Target-Profile-Packages: 
+Target-Profile-hasImageMetadata: 0
+Target-Profile-SupportedDevices: wandboard,dual
+
+
+Target-Profile-Description:
+Build firmware images for Wandboard Dual
+
+
+
+
+
+
+@@
+
+Target: imx/cortexa53
+Target-Board: imx
+Target-Name: NXP i.MX with Cortex-A53 (ARM64)
+Target-Arch: aarch64
+Target-Arch-Packages: aarch64_cortex-a53
+Target-Features: arm_v7 audio boot-part display dt dt-overlay fpu gpio nand pci pcie rootfs-part rtc squashfs targz ubifs usb usbgadget
+Target-Depends: 
+Target-Optimization: -Os -pipe -mcpu=cortex-a53
+CPU-Type: cortex-a53
+Linux-Version: 6.6.119
+Linux-Release: 1
+Linux-Kernel-Arch: arm64
+Target-Description:
+	Build firmware images for NXP i.MX (Cortex-A53) based boards.
+@@
+Default-Packages: base-files ca-bundle dropbear fstools libc libgcc libustream-mbedtls logd mtd netifd uci uclient-fetch urandom-seed urngd procd-ujail dnsmasq firewall4 nftables kmod-nft-offload odhcp6c odhcpd-ipv6only ppp ppp-mod-pppoe uboot-envtools mkf2fs e2fsprogs blkid 
+Target-Profile: Default
+Target-Profile-Priority: 1
+Target-Profile-Name: Default Profile
+Target-Profile-Packages:  
+Target-Profile-Description:
+ Package set compatible with most NXP i.MX based boards.
+@@
+
+Target-Profile: DEVICE_imx8m
+Target-Profile-Name: NXP i.MX8M
+Target-Profile-Packages: 
+Target-Profile-hasImageMetadata: 0
+Target-Profile-SupportedDevices: imx8m
+
+
+Target-Profile-Description:
+Build firmware images for NXP i.MX8M
+
+
+
+
+
+
+@@
+
+Target-Profile: DEVICE_gateworks_venice
+Target-Profile-Name: Gateworks i.MX8M Venice
+Target-Profile-Packages: kmod-hwmon-gsc kmod-rtc-ds1672 kmod-eeprom-at24 kmod-gpio-button-hotplug kmod-leds-gpio kmod-pps-gpio kmod-lan743x kmod-sky2 kmod-iio-st_accel-i2c kmod-can kmod-can-flexcan kmod-can-mcp251x
+Target-Profile-hasImageMetadata: 1
+Target-Profile-SupportedDevices: gw,imx8mm-gw71xx-0x gw,imx8mm-gw72xx-0x gw,imx8mp-gw72xx-2x gw,imx8mm-gw73xx-0x gw,imx8mp-gw73xx-2x gw,imx8mm-gw7901 gw,imx8mm-gw7902 gw,imx8mn-gw7902 gw,imx8mm-gw7903 gateworks,imx8mp-gw71xx-2x gateworks,imx8mp-gw74xx gateworks,imx8mm-gw7904 gateworks,imx8mm-gw7905-0x gateworks,imx8mp-gw7905-2x
+
+
+Target-Profile-Description:
+Build firmware images for Gateworks i.MX8M Venice
+
+
+
+
+
+
+@@
+
+

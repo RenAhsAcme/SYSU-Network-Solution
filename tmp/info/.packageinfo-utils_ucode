@@ -1,0 +1,277 @@
+Source-Makefile: package/utils/ucode/Makefile
+Build-Depends: libmd
+Build-Depends/host: libjson-c/host
+Build-Types: host
+
+Package: libucode
+Version: 2025.07.18~3f64c8089bf3ea4847c96b91df09fbfcaec19e1d-r1
+Depends: +libc +libjson-c
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: libs
+Category: Libraries
+Repository: base
+Title: Tiny scripting and templating language (library)
+Maintainer: Jo-Philipp Wich <jo@mein.io>
+Source: ucode-2025.07.18~3f64c8089bf3ea4847c96b91df09fbfcaec19e1d.tar.zst
+License: ISC
+ABI-Version: 20230711
+Type: ipkg
+Description:  The libucode package provides the shared runtime library for the ucode interpreter.
+@@
+
+Package: ucode
+Submenu: ucode
+Version: 2025.07.18~3f64c8089bf3ea4847c96b91df09fbfcaec19e1d-r1
+Depends: +libc +libucode
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: lang
+Category: Languages
+Repository: base
+Title: Tiny scripting and templating language
+Maintainer: Jo-Philipp Wich <jo@mein.io>
+Source: ucode-2025.07.18~3f64c8089bf3ea4847c96b91df09fbfcaec19e1d.tar.zst
+License: ISC
+Type: ipkg
+Description:  ucode is a tiny script interpreter featuring an ECMAScript oriented
+ script language and Jinja-inspired templating.
+@@
+
+Package: ucode-mod-debug
+Submenu: ucode
+Version: 2025.07.18~3f64c8089bf3ea4847c96b91df09fbfcaec19e1d-r1
+Depends: +libc +ucode +libubox +libucode
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: lang
+Category: Languages
+Repository: base
+Title: Tiny scripting and templating language (debug module)
+Maintainer: Jo-Philipp Wich <jo@mein.io>
+Source: ucode-2025.07.18~3f64c8089bf3ea4847c96b91df09fbfcaec19e1d.tar.zst
+License: ISC
+Type: ipkg
+Description:  The debug plugin module provides runtime debugging and introspection facilities.
+@@
+
+Package: ucode-mod-fs
+Submenu: ucode
+Version: 2025.07.18~3f64c8089bf3ea4847c96b91df09fbfcaec19e1d-r1
+Depends: +libc +ucode
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: lang
+Category: Languages
+Repository: base
+Title: Tiny scripting and templating language (fs module)
+Maintainer: Jo-Philipp Wich <jo@mein.io>
+Source: ucode-2025.07.18~3f64c8089bf3ea4847c96b91df09fbfcaec19e1d.tar.zst
+License: ISC
+Type: ipkg
+Description:  The filesystem plugin module allows interaction with the local file system.
+@@
+
+Package: ucode-mod-log
+Submenu: ucode
+Version: 2025.07.18~3f64c8089bf3ea4847c96b91df09fbfcaec19e1d-r1
+Depends: +libc +ucode +libubox
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: lang
+Category: Languages
+Repository: base
+Title: Tiny scripting and templating language (log module)
+Maintainer: Jo-Philipp Wich <jo@mein.io>
+Source: ucode-2025.07.18~3f64c8089bf3ea4847c96b91df09fbfcaec19e1d.tar.zst
+License: ISC
+Type: ipkg
+Description:  The log plugin module provides access to the syslog and libubox ulog APIs.
+@@
+
+Package: ucode-mod-math
+Submenu: ucode
+Version: 2025.07.18~3f64c8089bf3ea4847c96b91df09fbfcaec19e1d-r1
+Depends: +libc +ucode
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: lang
+Category: Languages
+Repository: base
+Title: Tiny scripting and templating language (math module)
+Maintainer: Jo-Philipp Wich <jo@mein.io>
+Source: ucode-2025.07.18~3f64c8089bf3ea4847c96b91df09fbfcaec19e1d.tar.zst
+License: ISC
+Type: ipkg
+Description:  The math plugin provides access to various <math.h> procedures.
+@@
+
+Package: ucode-mod-nl80211
+Submenu: ucode
+Version: 2025.07.18~3f64c8089bf3ea4847c96b91df09fbfcaec19e1d-r1
+Depends: +libc +ucode +libnl-tiny +libubox
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: lang
+Category: Languages
+Repository: base
+Title: Tiny scripting and templating language (nl80211 module)
+Maintainer: Jo-Philipp Wich <jo@mein.io>
+Source: ucode-2025.07.18~3f64c8089bf3ea4847c96b91df09fbfcaec19e1d.tar.zst
+License: ISC
+Type: ipkg
+Description:  The nl80211 plugin provides access to the Linux wireless 802.11 netlink API.
+@@
+
+Package: ucode-mod-resolv
+Submenu: ucode
+Version: 2025.07.18~3f64c8089bf3ea4847c96b91df09fbfcaec19e1d-r1
+Depends: +libc +ucode
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: lang
+Category: Languages
+Repository: base
+Title: Tiny scripting and templating language (resolv module)
+Maintainer: Jo-Philipp Wich <jo@mein.io>
+Source: ucode-2025.07.18~3f64c8089bf3ea4847c96b91df09fbfcaec19e1d.tar.zst
+License: ISC
+Type: ipkg
+Description:  The resolv plugin implements simple DNS resolving.
+@@
+
+Package: ucode-mod-rtnl
+Submenu: ucode
+Version: 2025.07.18~3f64c8089bf3ea4847c96b91df09fbfcaec19e1d-r1
+Depends: +libc +ucode +libnl-tiny +libubox
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: lang
+Category: Languages
+Repository: base
+Title: Tiny scripting and templating language (rtnl module)
+Maintainer: Jo-Philipp Wich <jo@mein.io>
+Source: ucode-2025.07.18~3f64c8089bf3ea4847c96b91df09fbfcaec19e1d.tar.zst
+License: ISC
+Type: ipkg
+Description:  The rtnl plugin provides access to the Linux routing netlink API.
+@@
+
+Package: ucode-mod-socket
+Submenu: ucode
+Version: 2025.07.18~3f64c8089bf3ea4847c96b91df09fbfcaec19e1d-r1
+Depends: +libc +ucode
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: lang
+Category: Languages
+Repository: base
+Title: Tiny scripting and templating language (socket module)
+Maintainer: Jo-Philipp Wich <jo@mein.io>
+Source: ucode-2025.07.18~3f64c8089bf3ea4847c96b91df09fbfcaec19e1d.tar.zst
+License: ISC
+Type: ipkg
+Description:  The socket plugin provides access to IPv4
+@@
+
+Package: ucode-mod-struct
+Submenu: ucode
+Version: 2025.07.18~3f64c8089bf3ea4847c96b91df09fbfcaec19e1d-r1
+Depends: +libc +ucode
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: lang
+Category: Languages
+Repository: base
+Title: Tiny scripting and templating language (struct module)
+Maintainer: Jo-Philipp Wich <jo@mein.io>
+Source: ucode-2025.07.18~3f64c8089bf3ea4847c96b91df09fbfcaec19e1d.tar.zst
+License: ISC
+Type: ipkg
+Description:  The struct plugin implements Python 3 compatible struct.pack/unpack functionality.
+@@
+
+Package: ucode-mod-ubus
+Submenu: ucode
+Version: 2025.07.18~3f64c8089bf3ea4847c96b91df09fbfcaec19e1d-r1
+Depends: +libc +ucode +libubus +libblobmsg-json
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: lang
+Category: Languages
+Repository: base
+Title: Tiny scripting and templating language (ubus module)
+Maintainer: Jo-Philipp Wich <jo@mein.io>
+Source: ucode-2025.07.18~3f64c8089bf3ea4847c96b91df09fbfcaec19e1d.tar.zst
+License: ISC
+Type: ipkg
+Description:  The ubus module allows ucode template scripts to enumerate and invoke ubus procedures.
+@@
+
+Package: ucode-mod-uci
+Submenu: ucode
+Version: 2025.07.18~3f64c8089bf3ea4847c96b91df09fbfcaec19e1d-r1
+Depends: +libc +ucode +libuci
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: lang
+Category: Languages
+Repository: base
+Title: Tiny scripting and templating language (uci module)
+Maintainer: Jo-Philipp Wich <jo@mein.io>
+Source: ucode-2025.07.18~3f64c8089bf3ea4847c96b91df09fbfcaec19e1d.tar.zst
+License: ISC
+Type: ipkg
+Description:  The uci module allows templates to read and modify uci configuration.
+@@
+
+Package: ucode-mod-uloop
+Submenu: ucode
+Version: 2025.07.18~3f64c8089bf3ea4847c96b91df09fbfcaec19e1d-r1
+Depends: +libc +ucode +libubox
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: lang
+Category: Languages
+Repository: base
+Title: Tiny scripting and templating language (uloop module)
+Maintainer: Jo-Philipp Wich <jo@mein.io>
+Source: ucode-2025.07.18~3f64c8089bf3ea4847c96b91df09fbfcaec19e1d.tar.zst
+License: ISC
+Type: ipkg
+Description:  The uloop module allows ucode scripts to interact with OpenWrt uloop event loop implementation.
+@@
+
+Package: ucode-mod-digest
+Submenu: ucode
+Version: 2025.07.18~3f64c8089bf3ea4847c96b91df09fbfcaec19e1d-r1
+Depends: +libc +ucode
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: lang
+Category: Languages
+Repository: base
+Title: Tiny scripting and templating language (digest module)
+Maintainer: Jo-Philipp Wich <jo@mein.io>
+Source: ucode-2025.07.18~3f64c8089bf3ea4847c96b91df09fbfcaec19e1d.tar.zst
+License: ISC
+Type: ipkg
+Description:  The digest module allows ucode scripts to use libmd digests.
+@@
+
+

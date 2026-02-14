@@ -1,0 +1,43 @@
+Source-Makefile: package/network/utils/tcpdump/Makefile
+
+Package: tcpdump
+Version: 4.99.5-r1
+Depends: +libc +libpcap
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Build-Variant: full
+Section: net
+Category: Network
+Repository: base
+Title: Network monitoring and data acquisition tool
+Maintainer: Felix Fietkau <nbd@nbd.name>
+Source: tcpdump-4.99.5.tar.gz
+License: BSD-3-Clause
+CPE-ID: cpe:/a:tcpdump:tcpdump
+URL: http://www.tcpdump.org/
+Type: ipkg
+Description: Network monitoring and data acquisition tool
+@@
+
+Package: tcpdump-mini
+Version: 4.99.5-r1
+Depends: +libc +libpcap
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Build-Variant: mini
+Section: net
+Category: Network
+Repository: base
+Title: Network monitoring and data acquisition tool (minimal version)
+Maintainer: Felix Fietkau <nbd@nbd.name>
+Source: tcpdump-4.99.5.tar.gz
+License: BSD-3-Clause
+CPE-ID: cpe:/a:tcpdump:tcpdump
+URL: http://www.tcpdump.org/
+Type: ipkg
+Description: Network monitoring and data acquisition tool (minimal version)
+@@
+
+

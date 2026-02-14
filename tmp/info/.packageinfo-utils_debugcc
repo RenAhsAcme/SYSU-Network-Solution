@@ -1,0 +1,20 @@
+Source-Makefile: package/utils/debugcc/Makefile
+
+Package: debugcc
+Version: 2023.11.10~d15bea7c05f224a85dd1fcec24b0f153dbad9f6e-r1
+Depends: +libc @KERNEL_DEVMEM @(TARGET_qualcommax||TARGET_ipq806x||TARGET_ipq40xx)
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: utils
+Category: Utilities
+Title: QCOM debugcc utility
+Maintainer: Christian Marangi <ansuelsmth@gmail.com>
+Source: debugcc-2023.11.10~d15bea7c05f224a85dd1fcec24b0f153dbad9f6e.tar.zst
+License: BSD-3-Clause
+LicenseFiles: LICENSE
+Type: ipkg
+Description: QCOM debugcc utility
+@@
+
+

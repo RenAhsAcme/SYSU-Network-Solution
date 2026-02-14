@@ -1,0 +1,44 @@
+Source-Makefile: package/boot/uboot-bcm53xx/Makefile
+
+Package: u-boot-dir-885l
+Default: y if (TARGET_bcm53xx_generic_Default || TARGET_bcm53xx_generic_DEVICE_dlink_dir-885l || TARGET_DEVICE_bcm53xx_generic_DEVICE_dlink_dir-885l)
+Version: 2024.01-r0
+Depends: +libc @!IN_SDK @TARGET_bcm53xx_generic
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Build-Variant: dir-885l
+Section: boot
+Category: Boot Loaders
+Title: U-Boot for D-Link DIR-885L
+Maintainer: 
+Source: u-boot-2024.01.tar.bz2
+License: GPL-2.0 GPL-2.0+
+LicenseFiles: Licenses/README
+URL: http://www.denx.de/wiki/U-Boot
+Type: bin
+Description: U-Boot for D-Link DIR-885L
+@@
+
+
+Package: u-boot-dir-890l
+Default: y if (TARGET_bcm53xx_generic_Default || TARGET_bcm53xx_generic_DEVICE_dlink_dir-890l || TARGET_DEVICE_bcm53xx_generic_DEVICE_dlink_dir-890l)
+Version: 2024.01-r0
+Depends: +libc @!IN_SDK @TARGET_bcm53xx_generic
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Build-Variant: dir-890l
+Section: boot
+Category: Boot Loaders
+Title: U-Boot for D-Link DIR-890L
+Maintainer: 
+Source: u-boot-2024.01.tar.bz2
+License: GPL-2.0 GPL-2.0+
+LicenseFiles: Licenses/README
+URL: http://www.denx.de/wiki/U-Boot
+Type: bin
+Description: U-Boot for D-Link DIR-890L
+@@
+
+

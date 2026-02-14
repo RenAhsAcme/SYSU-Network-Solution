@@ -1,0 +1,27 @@
+Source-Makefile: package/utils/omnia-eeprom/Makefile
+
+Package: omnia-eeprom
+Version: 0.1-r1
+Depends: +libc @TARGET_mvebu_cortexa9 +kmod-eeprom-at24
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: utils
+Category: Utilities
+Title: CZ.NIC Turris Omnia EEPROM accessing utility
+Maintainer: Marek Behun <kabel@kernel.org>
+Source: omnia-eeprom-v0.1.tar.bz2
+License: GPL-2.0-or-later
+URL: https://gitlab.nic.cz/turris/omnia-eeprom
+Type: ipkg
+Description: This package contains the omnia-eeprom utility, which allows you to display
+and update EEPROM fields on the Turris Omnia router.
+The EEPROM is normally not meant to be updated by users, but there are some
+exceptions where it might be useful.
+One such example is to change the DDR3 speed from the default 1600K mode to
+1333H mode, in order to solve random crashes that occur on some boards with
+newer versions of the U-Boot bootloader (because of bugs in newer versions of
+the DDR training algorithm).
+@@
+
+

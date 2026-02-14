@@ -1,0 +1,1059 @@
+Source-Makefile: package/firmware/ipq-wifi/Makefile
+
+Package: ipq-wifi-8devices_mango
+Submenu: ath10k Board-Specific Overrides
+Version: 2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a-r1
+Depends: +libc @(TARGET_ath79||TARGET_ipq40xx||TARGET_ipq806x||TARGET_qualcommax)
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Section: firmware
+Category: Firmware
+Title: board-2.bin Overrides for 8devices Mango
+Maintainer: 
+Source: ipq-wifi-2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a.tar.zst
+Type: ipkg
+Description: The 8devices Mango requires board-specific, reference ("cal") data
+that is not yet present in the upstream wireless firmware distribution.
+
+This package supplies board-2.bin file(s) that, in the interim,
+overwrite those supplied by the ath10k-firmware-* packages.
+
+This is package is only necessary for the 8devices Mango.
+
+Do not install it for any other device!
+@@
+
+Package: ipq-wifi-arcadyan_aw1000
+Submenu: ath10k Board-Specific Overrides
+Version: 2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a-r1
+Depends: +libc @(TARGET_ath79||TARGET_ipq40xx||TARGET_ipq806x||TARGET_qualcommax)
+Conflicts: ipq-wifi-8devices_mango
+Menu-Depends: 
+Provides: 
+Section: firmware
+Category: Firmware
+Title: board-2.bin Overrides for Arcadyan AW1000
+Maintainer: 
+Source: ipq-wifi-2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a.tar.zst
+Type: ipkg
+Description: The Arcadyan AW1000 requires board-specific, reference ("cal") data
+that is not yet present in the upstream wireless firmware distribution.
+
+This package supplies board-2.bin file(s) that, in the interim,
+overwrite those supplied by the ath10k-firmware-* packages.
+
+This is package is only necessary for the Arcadyan AW1000.
+
+Do not install it for any other device!
+@@
+
+Package: ipq-wifi-asus_rt-ax89x
+Submenu: ath10k Board-Specific Overrides
+Version: 2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a-r1
+Depends: +libc @(TARGET_ath79||TARGET_ipq40xx||TARGET_ipq806x||TARGET_qualcommax)
+Conflicts: ipq-wifi-8devices_mango ipq-wifi-arcadyan_aw1000
+Menu-Depends: 
+Provides: 
+Section: firmware
+Category: Firmware
+Title: board-2.bin Overrides for Asus RT-AX89X
+Maintainer: 
+Source: ipq-wifi-2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a.tar.zst
+Type: ipkg
+Description: The Asus RT-AX89X requires board-specific, reference ("cal") data
+that is not yet present in the upstream wireless firmware distribution.
+
+This package supplies board-2.bin file(s) that, in the interim,
+overwrite those supplied by the ath10k-firmware-* packages.
+
+This is package is only necessary for the Asus RT-AX89X.
+
+Do not install it for any other device!
+@@
+
+Package: ipq-wifi-buffalo_wxr-5950ax12
+Submenu: ath10k Board-Specific Overrides
+Version: 2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a-r1
+Depends: +libc @(TARGET_ath79||TARGET_ipq40xx||TARGET_ipq806x||TARGET_qualcommax)
+Conflicts: ipq-wifi-8devices_mango ipq-wifi-arcadyan_aw1000 ipq-wifi-asus_rt-ax89x
+Menu-Depends: 
+Provides: 
+Section: firmware
+Category: Firmware
+Title: board-2.bin Overrides for Buffalo WXR-5950AX12
+Maintainer: 
+Source: ipq-wifi-2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a.tar.zst
+Type: ipkg
+Description: The Buffalo WXR-5950AX12 requires board-specific, reference ("cal") data
+that is not yet present in the upstream wireless firmware distribution.
+
+This package supplies board-2.bin file(s) that, in the interim,
+overwrite those supplied by the ath10k-firmware-* packages.
+
+This is package is only necessary for the Buffalo WXR-5950AX12.
+
+Do not install it for any other device!
+@@
+
+Package: ipq-wifi-cambiumnetworks_xe34
+Submenu: ath10k Board-Specific Overrides
+Version: 2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a-r1
+Depends: +libc @(TARGET_ath79||TARGET_ipq40xx||TARGET_ipq806x||TARGET_qualcommax)
+Conflicts: ipq-wifi-8devices_mango ipq-wifi-arcadyan_aw1000 ipq-wifi-asus_rt-ax89x ipq-wifi-buffalo_wxr-5950ax12
+Menu-Depends: 
+Provides: 
+Section: firmware
+Category: Firmware
+Title: board-2.bin Overrides for Cambium Networks XE3-4
+Maintainer: 
+Source: ipq-wifi-2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a.tar.zst
+Type: ipkg
+Description: The Cambium Networks XE3-4 requires board-specific, reference ("cal") data
+that is not yet present in the upstream wireless firmware distribution.
+
+This package supplies board-2.bin file(s) that, in the interim,
+overwrite those supplied by the ath10k-firmware-* packages.
+
+This is package is only necessary for the Cambium Networks XE3-4.
+
+Do not install it for any other device!
+@@
+
+Package: ipq-wifi-cmcc_rm2-6
+Submenu: ath10k Board-Specific Overrides
+Version: 2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a-r1
+Depends: +libc @(TARGET_ath79||TARGET_ipq40xx||TARGET_ipq806x||TARGET_qualcommax)
+Conflicts: ipq-wifi-8devices_mango ipq-wifi-arcadyan_aw1000 ipq-wifi-asus_rt-ax89x ipq-wifi-buffalo_wxr-5950ax12 ipq-wifi-cambiumnetworks_xe34
+Menu-Depends: 
+Provides: 
+Section: firmware
+Category: Firmware
+Title: board-2.bin Overrides for CMCC RM2-6
+Maintainer: 
+Source: ipq-wifi-2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a.tar.zst
+Type: ipkg
+Description: The CMCC RM2-6 requires board-specific, reference ("cal") data
+that is not yet present in the upstream wireless firmware distribution.
+
+This package supplies board-2.bin file(s) that, in the interim,
+overwrite those supplied by the ath10k-firmware-* packages.
+
+This is package is only necessary for the CMCC RM2-6.
+
+Do not install it for any other device!
+@@
+
+Package: ipq-wifi-compex_wpq873
+Submenu: ath10k Board-Specific Overrides
+Version: 2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a-r1
+Depends: +libc @(TARGET_ath79||TARGET_ipq40xx||TARGET_ipq806x||TARGET_qualcommax)
+Conflicts: ipq-wifi-8devices_mango ipq-wifi-arcadyan_aw1000 ipq-wifi-asus_rt-ax89x ipq-wifi-buffalo_wxr-5950ax12 ipq-wifi-cambiumnetworks_xe34 ipq-wifi-cmcc_rm2-6
+Menu-Depends: 
+Provides: 
+Section: firmware
+Category: Firmware
+Title: board-2.bin Overrides for Compex WPQ-873
+Maintainer: 
+Source: ipq-wifi-2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a.tar.zst
+Type: ipkg
+Description: The Compex WPQ-873 requires board-specific, reference ("cal") data
+that is not yet present in the upstream wireless firmware distribution.
+
+This package supplies board-2.bin file(s) that, in the interim,
+overwrite those supplied by the ath10k-firmware-* packages.
+
+This is package is only necessary for the Compex WPQ-873.
+
+Do not install it for any other device!
+@@
+
+Package: ipq-wifi-dynalink_dl-wrx36
+Submenu: ath10k Board-Specific Overrides
+Version: 2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a-r1
+Depends: +libc @(TARGET_ath79||TARGET_ipq40xx||TARGET_ipq806x||TARGET_qualcommax)
+Conflicts: ipq-wifi-8devices_mango ipq-wifi-arcadyan_aw1000 ipq-wifi-asus_rt-ax89x ipq-wifi-buffalo_wxr-5950ax12 ipq-wifi-cambiumnetworks_xe34 ipq-wifi-cmcc_rm2-6 ipq-wifi-compex_wpq873
+Menu-Depends: 
+Provides: 
+Section: firmware
+Category: Firmware
+Title: board-2.bin Overrides for Dynalink DL-WRX36
+Maintainer: 
+Source: ipq-wifi-2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a.tar.zst
+Type: ipkg
+Description: The Dynalink DL-WRX36 requires board-specific, reference ("cal") data
+that is not yet present in the upstream wireless firmware distribution.
+
+This package supplies board-2.bin file(s) that, in the interim,
+overwrite those supplied by the ath10k-firmware-* packages.
+
+This is package is only necessary for the Dynalink DL-WRX36.
+
+Do not install it for any other device!
+@@
+
+Package: ipq-wifi-edgecore_eap102
+Submenu: ath10k Board-Specific Overrides
+Version: 2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a-r1
+Depends: +libc @(TARGET_ath79||TARGET_ipq40xx||TARGET_ipq806x||TARGET_qualcommax)
+Conflicts: ipq-wifi-8devices_mango ipq-wifi-arcadyan_aw1000 ipq-wifi-asus_rt-ax89x ipq-wifi-buffalo_wxr-5950ax12 ipq-wifi-cambiumnetworks_xe34 ipq-wifi-cmcc_rm2-6 ipq-wifi-compex_wpq873 ipq-wifi-dynalink_dl-wrx36
+Menu-Depends: 
+Provides: 
+Section: firmware
+Category: Firmware
+Title: board-2.bin Overrides for Edgecore EAP102
+Maintainer: 
+Source: ipq-wifi-2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a.tar.zst
+Type: ipkg
+Description: The Edgecore EAP102 requires board-specific, reference ("cal") data
+that is not yet present in the upstream wireless firmware distribution.
+
+This package supplies board-2.bin file(s) that, in the interim,
+overwrite those supplied by the ath10k-firmware-* packages.
+
+This is package is only necessary for the Edgecore EAP102.
+
+Do not install it for any other device!
+@@
+
+Package: ipq-wifi-edimax_cax1800
+Submenu: ath10k Board-Specific Overrides
+Version: 2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a-r1
+Depends: +libc @(TARGET_ath79||TARGET_ipq40xx||TARGET_ipq806x||TARGET_qualcommax)
+Conflicts: ipq-wifi-8devices_mango ipq-wifi-arcadyan_aw1000 ipq-wifi-asus_rt-ax89x ipq-wifi-buffalo_wxr-5950ax12 ipq-wifi-cambiumnetworks_xe34 ipq-wifi-cmcc_rm2-6 ipq-wifi-compex_wpq873 ipq-wifi-dynalink_dl-wrx36 ipq-wifi-edgecore_eap102
+Menu-Depends: 
+Provides: 
+Section: firmware
+Category: Firmware
+Title: board-2.bin Overrides for Edimax CAX1800
+Maintainer: 
+Source: ipq-wifi-2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a.tar.zst
+Type: ipkg
+Description: The Edimax CAX1800 requires board-specific, reference ("cal") data
+that is not yet present in the upstream wireless firmware distribution.
+
+This package supplies board-2.bin file(s) that, in the interim,
+overwrite those supplied by the ath10k-firmware-* packages.
+
+This is package is only necessary for the Edimax CAX1800.
+
+Do not install it for any other device!
+@@
+
+Package: ipq-wifi-linksys_homewrk
+Submenu: ath10k Board-Specific Overrides
+Version: 2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a-r1
+Depends: +libc @(TARGET_ath79||TARGET_ipq40xx||TARGET_ipq806x||TARGET_qualcommax)
+Conflicts: ipq-wifi-8devices_mango ipq-wifi-arcadyan_aw1000 ipq-wifi-asus_rt-ax89x ipq-wifi-buffalo_wxr-5950ax12 ipq-wifi-cambiumnetworks_xe34 ipq-wifi-cmcc_rm2-6 ipq-wifi-compex_wpq873 ipq-wifi-dynalink_dl-wrx36 ipq-wifi-edgecore_eap102 ipq-wifi-edimax_cax1800
+Menu-Depends: 
+Provides: 
+Section: firmware
+Category: Firmware
+Title: board-2.bin Overrides for Linksys HomeWRK
+Maintainer: 
+Source: ipq-wifi-2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a.tar.zst
+Type: ipkg
+Description: The Linksys HomeWRK requires board-specific, reference ("cal") data
+that is not yet present in the upstream wireless firmware distribution.
+
+This package supplies board-2.bin file(s) that, in the interim,
+overwrite those supplied by the ath10k-firmware-* packages.
+
+This is package is only necessary for the Linksys HomeWRK.
+
+Do not install it for any other device!
+@@
+
+Package: ipq-wifi-linksys_mx4200
+Submenu: ath10k Board-Specific Overrides
+Version: 2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a-r1
+Depends: +libc @(TARGET_ath79||TARGET_ipq40xx||TARGET_ipq806x||TARGET_qualcommax)
+Conflicts: ipq-wifi-8devices_mango ipq-wifi-arcadyan_aw1000 ipq-wifi-asus_rt-ax89x ipq-wifi-buffalo_wxr-5950ax12 ipq-wifi-cambiumnetworks_xe34 ipq-wifi-cmcc_rm2-6 ipq-wifi-compex_wpq873 ipq-wifi-dynalink_dl-wrx36 ipq-wifi-edgecore_eap102 ipq-wifi-edimax_cax1800 ipq-wifi-linksys_homewrk
+Menu-Depends: 
+Provides: 
+Section: firmware
+Category: Firmware
+Title: board-2.bin Overrides for Linksys MX4200
+Maintainer: 
+Source: ipq-wifi-2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a.tar.zst
+Type: ipkg
+Description: The Linksys MX4200 requires board-specific, reference ("cal") data
+that is not yet present in the upstream wireless firmware distribution.
+
+This package supplies board-2.bin file(s) that, in the interim,
+overwrite those supplied by the ath10k-firmware-* packages.
+
+This is package is only necessary for the Linksys MX4200.
+
+Do not install it for any other device!
+@@
+
+Package: ipq-wifi-linksys_mx5300
+Submenu: ath10k Board-Specific Overrides
+Version: 2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a-r1
+Depends: +libc @(TARGET_ath79||TARGET_ipq40xx||TARGET_ipq806x||TARGET_qualcommax)
+Conflicts: ipq-wifi-8devices_mango ipq-wifi-arcadyan_aw1000 ipq-wifi-asus_rt-ax89x ipq-wifi-buffalo_wxr-5950ax12 ipq-wifi-cambiumnetworks_xe34 ipq-wifi-cmcc_rm2-6 ipq-wifi-compex_wpq873 ipq-wifi-dynalink_dl-wrx36 ipq-wifi-edgecore_eap102 ipq-wifi-edimax_cax1800 ipq-wifi-linksys_homewrk ipq-wifi-linksys_mx4200
+Menu-Depends: 
+Provides: 
+Section: firmware
+Category: Firmware
+Title: board-2.bin Overrides for Linksys MX5300
+Maintainer: 
+Source: ipq-wifi-2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a.tar.zst
+Type: ipkg
+Description: The Linksys MX5300 requires board-specific, reference ("cal") data
+that is not yet present in the upstream wireless firmware distribution.
+
+This package supplies board-2.bin file(s) that, in the interim,
+overwrite those supplied by the ath10k-firmware-* packages.
+
+This is package is only necessary for the Linksys MX5300.
+
+Do not install it for any other device!
+@@
+
+Package: ipq-wifi-linksys_mx8500
+Submenu: ath10k Board-Specific Overrides
+Version: 2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a-r1
+Depends: +libc @(TARGET_ath79||TARGET_ipq40xx||TARGET_ipq806x||TARGET_qualcommax)
+Conflicts: ipq-wifi-8devices_mango ipq-wifi-arcadyan_aw1000 ipq-wifi-asus_rt-ax89x ipq-wifi-buffalo_wxr-5950ax12 ipq-wifi-cambiumnetworks_xe34 ipq-wifi-cmcc_rm2-6 ipq-wifi-compex_wpq873 ipq-wifi-dynalink_dl-wrx36 ipq-wifi-edgecore_eap102 ipq-wifi-edimax_cax1800 ipq-wifi-linksys_homewrk ipq-wifi-linksys_mx4200 ipq-wifi-linksys_mx5300
+Menu-Depends: 
+Provides: 
+Section: firmware
+Category: Firmware
+Title: board-2.bin Overrides for Linksys MX8500
+Maintainer: 
+Source: ipq-wifi-2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a.tar.zst
+Type: ipkg
+Description: The Linksys MX8500 requires board-specific, reference ("cal") data
+that is not yet present in the upstream wireless firmware distribution.
+
+This package supplies board-2.bin file(s) that, in the interim,
+overwrite those supplied by the ath10k-firmware-* packages.
+
+This is package is only necessary for the Linksys MX8500.
+
+Do not install it for any other device!
+@@
+
+Package: ipq-wifi-linksys_whw03
+Submenu: ath10k Board-Specific Overrides
+Version: 2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a-r1
+Depends: +libc @(TARGET_ath79||TARGET_ipq40xx||TARGET_ipq806x||TARGET_qualcommax)
+Conflicts: ipq-wifi-8devices_mango ipq-wifi-arcadyan_aw1000 ipq-wifi-asus_rt-ax89x ipq-wifi-buffalo_wxr-5950ax12 ipq-wifi-cambiumnetworks_xe34 ipq-wifi-cmcc_rm2-6 ipq-wifi-compex_wpq873 ipq-wifi-dynalink_dl-wrx36 ipq-wifi-edgecore_eap102 ipq-wifi-edimax_cax1800 ipq-wifi-linksys_homewrk ipq-wifi-linksys_mx4200 ipq-wifi-linksys_mx5300 ipq-wifi-linksys_mx8500
+Menu-Depends: 
+Provides: 
+Section: firmware
+Category: Firmware
+Title: board-2.bin Overrides for Linksys WHW03
+Maintainer: 
+Source: ipq-wifi-2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a.tar.zst
+Type: ipkg
+Description: The Linksys WHW03 requires board-specific, reference ("cal") data
+that is not yet present in the upstream wireless firmware distribution.
+
+This package supplies board-2.bin file(s) that, in the interim,
+overwrite those supplied by the ath10k-firmware-* packages.
+
+This is package is only necessary for the Linksys WHW03.
+
+Do not install it for any other device!
+@@
+
+Package: ipq-wifi-netgear_lbr20
+Submenu: ath10k Board-Specific Overrides
+Version: 2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a-r1
+Depends: +libc @(TARGET_ath79||TARGET_ipq40xx||TARGET_ipq806x||TARGET_qualcommax)
+Conflicts: ipq-wifi-8devices_mango ipq-wifi-arcadyan_aw1000 ipq-wifi-asus_rt-ax89x ipq-wifi-buffalo_wxr-5950ax12 ipq-wifi-cambiumnetworks_xe34 ipq-wifi-cmcc_rm2-6 ipq-wifi-compex_wpq873 ipq-wifi-dynalink_dl-wrx36 ipq-wifi-edgecore_eap102 ipq-wifi-edimax_cax1800 ipq-wifi-linksys_homewrk ipq-wifi-linksys_mx4200 ipq-wifi-linksys_mx5300 ipq-wifi-linksys_mx8500 ipq-wifi-linksys_whw03
+Menu-Depends: 
+Provides: 
+Section: firmware
+Category: Firmware
+Title: board-2.bin Overrides for Netgear LBR20
+Maintainer: 
+Source: ipq-wifi-2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a.tar.zst
+Type: ipkg
+Description: The Netgear LBR20 requires board-specific, reference ("cal") data
+that is not yet present in the upstream wireless firmware distribution.
+
+This package supplies board-2.bin file(s) that, in the interim,
+overwrite those supplied by the ath10k-firmware-* packages.
+
+This is package is only necessary for the Netgear LBR20.
+
+Do not install it for any other device!
+@@
+
+Package: ipq-wifi-netgear_rax120v2
+Submenu: ath10k Board-Specific Overrides
+Version: 2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a-r1
+Depends: +libc @(TARGET_ath79||TARGET_ipq40xx||TARGET_ipq806x||TARGET_qualcommax)
+Conflicts: ipq-wifi-8devices_mango ipq-wifi-arcadyan_aw1000 ipq-wifi-asus_rt-ax89x ipq-wifi-buffalo_wxr-5950ax12 ipq-wifi-cambiumnetworks_xe34 ipq-wifi-cmcc_rm2-6 ipq-wifi-compex_wpq873 ipq-wifi-dynalink_dl-wrx36 ipq-wifi-edgecore_eap102 ipq-wifi-edimax_cax1800 ipq-wifi-linksys_homewrk ipq-wifi-linksys_mx4200 ipq-wifi-linksys_mx5300 ipq-wifi-linksys_mx8500 ipq-wifi-linksys_whw03 ipq-wifi-netgear_lbr20
+Menu-Depends: 
+Provides: 
+Section: firmware
+Category: Firmware
+Title: board-2.bin Overrides for Netgear RAX120v2
+Maintainer: 
+Source: ipq-wifi-2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a.tar.zst
+Type: ipkg
+Description: The Netgear RAX120v2 requires board-specific, reference ("cal") data
+that is not yet present in the upstream wireless firmware distribution.
+
+This package supplies board-2.bin file(s) that, in the interim,
+overwrite those supplied by the ath10k-firmware-* packages.
+
+This is package is only necessary for the Netgear RAX120v2.
+
+Do not install it for any other device!
+@@
+
+Package: ipq-wifi-netgear_sxk80
+Submenu: ath10k Board-Specific Overrides
+Version: 2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a-r1
+Depends: +libc @(TARGET_ath79||TARGET_ipq40xx||TARGET_ipq806x||TARGET_qualcommax)
+Conflicts: ipq-wifi-8devices_mango ipq-wifi-arcadyan_aw1000 ipq-wifi-asus_rt-ax89x ipq-wifi-buffalo_wxr-5950ax12 ipq-wifi-cambiumnetworks_xe34 ipq-wifi-cmcc_rm2-6 ipq-wifi-compex_wpq873 ipq-wifi-dynalink_dl-wrx36 ipq-wifi-edgecore_eap102 ipq-wifi-edimax_cax1800 ipq-wifi-linksys_homewrk ipq-wifi-linksys_mx4200 ipq-wifi-linksys_mx5300 ipq-wifi-linksys_mx8500 ipq-wifi-linksys_whw03 ipq-wifi-netgear_lbr20 ipq-wifi-netgear_rax120v2
+Menu-Depends: 
+Provides: 
+Section: firmware
+Category: Firmware
+Title: board-2.bin Overrides for Netgear SXK80
+Maintainer: 
+Source: ipq-wifi-2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a.tar.zst
+Type: ipkg
+Description: The Netgear SXK80 requires board-specific, reference ("cal") data
+that is not yet present in the upstream wireless firmware distribution.
+
+This package supplies board-2.bin file(s) that, in the interim,
+overwrite those supplied by the ath10k-firmware-* packages.
+
+This is package is only necessary for the Netgear SXK80.
+
+Do not install it for any other device!
+@@
+
+Package: ipq-wifi-netgear_wax214
+Submenu: ath10k Board-Specific Overrides
+Version: 2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a-r1
+Depends: +libc @(TARGET_ath79||TARGET_ipq40xx||TARGET_ipq806x||TARGET_qualcommax)
+Conflicts: ipq-wifi-8devices_mango ipq-wifi-arcadyan_aw1000 ipq-wifi-asus_rt-ax89x ipq-wifi-buffalo_wxr-5950ax12 ipq-wifi-cambiumnetworks_xe34 ipq-wifi-cmcc_rm2-6 ipq-wifi-compex_wpq873 ipq-wifi-dynalink_dl-wrx36 ipq-wifi-edgecore_eap102 ipq-wifi-edimax_cax1800 ipq-wifi-linksys_homewrk ipq-wifi-linksys_mx4200 ipq-wifi-linksys_mx5300 ipq-wifi-linksys_mx8500 ipq-wifi-linksys_whw03 ipq-wifi-netgear_lbr20 ipq-wifi-netgear_rax120v2 ipq-wifi-netgear_sxk80
+Menu-Depends: 
+Provides: 
+Section: firmware
+Category: Firmware
+Title: board-2.bin Overrides for Netgear WAX214
+Maintainer: 
+Source: ipq-wifi-2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a.tar.zst
+Type: ipkg
+Description: The Netgear WAX214 requires board-specific, reference ("cal") data
+that is not yet present in the upstream wireless firmware distribution.
+
+This package supplies board-2.bin file(s) that, in the interim,
+overwrite those supplied by the ath10k-firmware-* packages.
+
+This is package is only necessary for the Netgear WAX214.
+
+Do not install it for any other device!
+@@
+
+Package: ipq-wifi-netgear_wax218
+Submenu: ath10k Board-Specific Overrides
+Version: 2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a-r1
+Depends: +libc @(TARGET_ath79||TARGET_ipq40xx||TARGET_ipq806x||TARGET_qualcommax)
+Conflicts: ipq-wifi-8devices_mango ipq-wifi-arcadyan_aw1000 ipq-wifi-asus_rt-ax89x ipq-wifi-buffalo_wxr-5950ax12 ipq-wifi-cambiumnetworks_xe34 ipq-wifi-cmcc_rm2-6 ipq-wifi-compex_wpq873 ipq-wifi-dynalink_dl-wrx36 ipq-wifi-edgecore_eap102 ipq-wifi-edimax_cax1800 ipq-wifi-linksys_homewrk ipq-wifi-linksys_mx4200 ipq-wifi-linksys_mx5300 ipq-wifi-linksys_mx8500 ipq-wifi-linksys_whw03 ipq-wifi-netgear_lbr20 ipq-wifi-netgear_rax120v2 ipq-wifi-netgear_sxk80 ipq-wifi-netgear_wax214
+Menu-Depends: 
+Provides: 
+Section: firmware
+Category: Firmware
+Title: board-2.bin Overrides for Netgear WAX218
+Maintainer: 
+Source: ipq-wifi-2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a.tar.zst
+Type: ipkg
+Description: The Netgear WAX218 requires board-specific, reference ("cal") data
+that is not yet present in the upstream wireless firmware distribution.
+
+This package supplies board-2.bin file(s) that, in the interim,
+overwrite those supplied by the ath10k-firmware-* packages.
+
+This is package is only necessary for the Netgear WAX218.
+
+Do not install it for any other device!
+@@
+
+Package: ipq-wifi-netgear_wax620
+Submenu: ath10k Board-Specific Overrides
+Version: 2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a-r1
+Depends: +libc @(TARGET_ath79||TARGET_ipq40xx||TARGET_ipq806x||TARGET_qualcommax)
+Conflicts: ipq-wifi-8devices_mango ipq-wifi-arcadyan_aw1000 ipq-wifi-asus_rt-ax89x ipq-wifi-buffalo_wxr-5950ax12 ipq-wifi-cambiumnetworks_xe34 ipq-wifi-cmcc_rm2-6 ipq-wifi-compex_wpq873 ipq-wifi-dynalink_dl-wrx36 ipq-wifi-edgecore_eap102 ipq-wifi-edimax_cax1800 ipq-wifi-linksys_homewrk ipq-wifi-linksys_mx4200 ipq-wifi-linksys_mx5300 ipq-wifi-linksys_mx8500 ipq-wifi-linksys_whw03 ipq-wifi-netgear_lbr20 ipq-wifi-netgear_rax120v2 ipq-wifi-netgear_sxk80 ipq-wifi-netgear_wax214 ipq-wifi-netgear_wax218
+Menu-Depends: 
+Provides: 
+Section: firmware
+Category: Firmware
+Title: board-2.bin Overrides for Netgear WAX620
+Maintainer: 
+Source: ipq-wifi-2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a.tar.zst
+Type: ipkg
+Description: The Netgear WAX620 requires board-specific, reference ("cal") data
+that is not yet present in the upstream wireless firmware distribution.
+
+This package supplies board-2.bin file(s) that, in the interim,
+overwrite those supplied by the ath10k-firmware-* packages.
+
+This is package is only necessary for the Netgear WAX620.
+
+Do not install it for any other device!
+@@
+
+Package: ipq-wifi-netgear_wax630
+Submenu: ath10k Board-Specific Overrides
+Version: 2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a-r1
+Depends: +libc @(TARGET_ath79||TARGET_ipq40xx||TARGET_ipq806x||TARGET_qualcommax)
+Conflicts: ipq-wifi-8devices_mango ipq-wifi-arcadyan_aw1000 ipq-wifi-asus_rt-ax89x ipq-wifi-buffalo_wxr-5950ax12 ipq-wifi-cambiumnetworks_xe34 ipq-wifi-cmcc_rm2-6 ipq-wifi-compex_wpq873 ipq-wifi-dynalink_dl-wrx36 ipq-wifi-edgecore_eap102 ipq-wifi-edimax_cax1800 ipq-wifi-linksys_homewrk ipq-wifi-linksys_mx4200 ipq-wifi-linksys_mx5300 ipq-wifi-linksys_mx8500 ipq-wifi-linksys_whw03 ipq-wifi-netgear_lbr20 ipq-wifi-netgear_rax120v2 ipq-wifi-netgear_sxk80 ipq-wifi-netgear_wax214 ipq-wifi-netgear_wax218 ipq-wifi-netgear_wax620
+Menu-Depends: 
+Provides: 
+Section: firmware
+Category: Firmware
+Title: board-2.bin Overrides for Netgear WAX630
+Maintainer: 
+Source: ipq-wifi-2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a.tar.zst
+Type: ipkg
+Description: The Netgear WAX630 requires board-specific, reference ("cal") data
+that is not yet present in the upstream wireless firmware distribution.
+
+This package supplies board-2.bin file(s) that, in the interim,
+overwrite those supplied by the ath10k-firmware-* packages.
+
+This is package is only necessary for the Netgear WAX630.
+
+Do not install it for any other device!
+@@
+
+Package: ipq-wifi-prpl_haze
+Submenu: ath10k Board-Specific Overrides
+Version: 2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a-r1
+Depends: +libc @(TARGET_ath79||TARGET_ipq40xx||TARGET_ipq806x||TARGET_qualcommax)
+Conflicts: ipq-wifi-8devices_mango ipq-wifi-arcadyan_aw1000 ipq-wifi-asus_rt-ax89x ipq-wifi-buffalo_wxr-5950ax12 ipq-wifi-cambiumnetworks_xe34 ipq-wifi-cmcc_rm2-6 ipq-wifi-compex_wpq873 ipq-wifi-dynalink_dl-wrx36 ipq-wifi-edgecore_eap102 ipq-wifi-edimax_cax1800 ipq-wifi-linksys_homewrk ipq-wifi-linksys_mx4200 ipq-wifi-linksys_mx5300 ipq-wifi-linksys_mx8500 ipq-wifi-linksys_whw03 ipq-wifi-netgear_lbr20 ipq-wifi-netgear_rax120v2 ipq-wifi-netgear_sxk80 ipq-wifi-netgear_wax214 ipq-wifi-netgear_wax218 ipq-wifi-netgear_wax620 ipq-wifi-netgear_wax630 ipq-wifi-qnap_301w
+Menu-Depends: 
+Provides: 
+Section: firmware
+Category: Firmware
+Title: board-2.bin Overrides for prpl Haze
+Maintainer: 
+Source: ipq-wifi-2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a.tar.zst
+Type: ipkg
+Description: The prpl Haze requires board-specific, reference ("cal") data
+that is not yet present in the upstream wireless firmware distribution.
+
+This package supplies board-2.bin file(s) that, in the interim,
+overwrite those supplied by the ath10k-firmware-* packages.
+
+This is package is only necessary for the prpl Haze.
+
+Do not install it for any other device!
+@@
+
+Package: ipq-wifi-qnap_301w
+Submenu: ath10k Board-Specific Overrides
+Version: 2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a-r1
+Depends: +libc @(TARGET_ath79||TARGET_ipq40xx||TARGET_ipq806x||TARGET_qualcommax)
+Conflicts: ipq-wifi-8devices_mango ipq-wifi-arcadyan_aw1000 ipq-wifi-asus_rt-ax89x ipq-wifi-buffalo_wxr-5950ax12 ipq-wifi-cambiumnetworks_xe34 ipq-wifi-cmcc_rm2-6 ipq-wifi-compex_wpq873 ipq-wifi-dynalink_dl-wrx36 ipq-wifi-edgecore_eap102 ipq-wifi-edimax_cax1800 ipq-wifi-linksys_homewrk ipq-wifi-linksys_mx4200 ipq-wifi-linksys_mx5300 ipq-wifi-linksys_mx8500 ipq-wifi-linksys_whw03 ipq-wifi-netgear_lbr20 ipq-wifi-netgear_rax120v2 ipq-wifi-netgear_sxk80 ipq-wifi-netgear_wax214 ipq-wifi-netgear_wax218 ipq-wifi-netgear_wax620 ipq-wifi-netgear_wax630
+Menu-Depends: 
+Provides: 
+Section: firmware
+Category: Firmware
+Title: board-2.bin Overrides for QNAP 301w
+Maintainer: 
+Source: ipq-wifi-2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a.tar.zst
+Type: ipkg
+Description: The QNAP 301w requires board-specific, reference ("cal") data
+that is not yet present in the upstream wireless firmware distribution.
+
+This package supplies board-2.bin file(s) that, in the interim,
+overwrite those supplied by the ath10k-firmware-* packages.
+
+This is package is only necessary for the QNAP 301w.
+
+Do not install it for any other device!
+@@
+
+Package: ipq-wifi-redmi_ax6
+Submenu: ath10k Board-Specific Overrides
+Version: 2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a-r1
+Depends: +libc @(TARGET_ath79||TARGET_ipq40xx||TARGET_ipq806x||TARGET_qualcommax)
+Conflicts: ipq-wifi-8devices_mango ipq-wifi-arcadyan_aw1000 ipq-wifi-asus_rt-ax89x ipq-wifi-buffalo_wxr-5950ax12 ipq-wifi-cambiumnetworks_xe34 ipq-wifi-cmcc_rm2-6 ipq-wifi-compex_wpq873 ipq-wifi-dynalink_dl-wrx36 ipq-wifi-edgecore_eap102 ipq-wifi-edimax_cax1800 ipq-wifi-linksys_homewrk ipq-wifi-linksys_mx4200 ipq-wifi-linksys_mx5300 ipq-wifi-linksys_mx8500 ipq-wifi-linksys_whw03 ipq-wifi-netgear_lbr20 ipq-wifi-netgear_rax120v2 ipq-wifi-netgear_sxk80 ipq-wifi-netgear_wax214 ipq-wifi-netgear_wax218 ipq-wifi-netgear_wax620 ipq-wifi-netgear_wax630 ipq-wifi-qnap_301w ipq-wifi-prpl_haze
+Menu-Depends: 
+Provides: 
+Section: firmware
+Category: Firmware
+Title: board-2.bin Overrides for Redmi AX6
+Maintainer: 
+Source: ipq-wifi-2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a.tar.zst
+Type: ipkg
+Description: The Redmi AX6 requires board-specific, reference ("cal") data
+that is not yet present in the upstream wireless firmware distribution.
+
+This package supplies board-2.bin file(s) that, in the interim,
+overwrite those supplied by the ath10k-firmware-* packages.
+
+This is package is only necessary for the Redmi AX6.
+
+Do not install it for any other device!
+@@
+
+Package: ipq-wifi-skspruce_wia3300-20
+Submenu: ath10k Board-Specific Overrides
+Version: 2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a-r1
+Depends: +libc @(TARGET_ath79||TARGET_ipq40xx||TARGET_ipq806x||TARGET_qualcommax)
+Conflicts: ipq-wifi-8devices_mango ipq-wifi-arcadyan_aw1000 ipq-wifi-asus_rt-ax89x ipq-wifi-buffalo_wxr-5950ax12 ipq-wifi-cambiumnetworks_xe34 ipq-wifi-cmcc_rm2-6 ipq-wifi-compex_wpq873 ipq-wifi-dynalink_dl-wrx36 ipq-wifi-edgecore_eap102 ipq-wifi-edimax_cax1800 ipq-wifi-linksys_homewrk ipq-wifi-linksys_mx4200 ipq-wifi-linksys_mx5300 ipq-wifi-linksys_mx8500 ipq-wifi-linksys_whw03 ipq-wifi-netgear_lbr20 ipq-wifi-netgear_rax120v2 ipq-wifi-netgear_sxk80 ipq-wifi-netgear_wax214 ipq-wifi-netgear_wax218 ipq-wifi-netgear_wax620 ipq-wifi-netgear_wax630 ipq-wifi-qnap_301w ipq-wifi-prpl_haze ipq-wifi-redmi_ax6
+Menu-Depends: 
+Provides: 
+Section: firmware
+Category: Firmware
+Title: board-2.bin Overrides for SKSpruce WIA3300-20
+Maintainer: 
+Source: ipq-wifi-2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a.tar.zst
+Type: ipkg
+Description: The SKSpruce WIA3300-20 requires board-specific, reference ("cal") data
+that is not yet present in the upstream wireless firmware distribution.
+
+This package supplies board-2.bin file(s) that, in the interim,
+overwrite those supplied by the ath10k-firmware-* packages.
+
+This is package is only necessary for the SKSpruce WIA3300-20.
+
+Do not install it for any other device!
+@@
+
+Package: ipq-wifi-spectrum_sax1v1k
+Submenu: ath10k Board-Specific Overrides
+Version: 2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a-r1
+Depends: +libc @(TARGET_ath79||TARGET_ipq40xx||TARGET_ipq806x||TARGET_qualcommax)
+Conflicts: ipq-wifi-8devices_mango ipq-wifi-arcadyan_aw1000 ipq-wifi-asus_rt-ax89x ipq-wifi-buffalo_wxr-5950ax12 ipq-wifi-cambiumnetworks_xe34 ipq-wifi-cmcc_rm2-6 ipq-wifi-compex_wpq873 ipq-wifi-dynalink_dl-wrx36 ipq-wifi-edgecore_eap102 ipq-wifi-edimax_cax1800 ipq-wifi-linksys_homewrk ipq-wifi-linksys_mx4200 ipq-wifi-linksys_mx5300 ipq-wifi-linksys_mx8500 ipq-wifi-linksys_whw03 ipq-wifi-netgear_lbr20 ipq-wifi-netgear_rax120v2 ipq-wifi-netgear_sxk80 ipq-wifi-netgear_wax214 ipq-wifi-netgear_wax218 ipq-wifi-netgear_wax620 ipq-wifi-netgear_wax630 ipq-wifi-qnap_301w ipq-wifi-prpl_haze ipq-wifi-redmi_ax6 ipq-wifi-skspruce_wia3300-20
+Menu-Depends: 
+Provides: 
+Section: firmware
+Category: Firmware
+Title: board-2.bin Overrides for Spectrum SAX1V1K
+Maintainer: 
+Source: ipq-wifi-2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a.tar.zst
+Type: ipkg
+Description: The Spectrum SAX1V1K requires board-specific, reference ("cal") data
+that is not yet present in the upstream wireless firmware distribution.
+
+This package supplies board-2.bin file(s) that, in the interim,
+overwrite those supplied by the ath10k-firmware-* packages.
+
+This is package is only necessary for the Spectrum SAX1V1K.
+
+Do not install it for any other device!
+@@
+
+Package: ipq-wifi-tplink_eap660hd-v1
+Submenu: ath10k Board-Specific Overrides
+Version: 2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a-r1
+Depends: +libc @(TARGET_ath79||TARGET_ipq40xx||TARGET_ipq806x||TARGET_qualcommax)
+Conflicts: ipq-wifi-8devices_mango ipq-wifi-arcadyan_aw1000 ipq-wifi-asus_rt-ax89x ipq-wifi-buffalo_wxr-5950ax12 ipq-wifi-cambiumnetworks_xe34 ipq-wifi-cmcc_rm2-6 ipq-wifi-compex_wpq873 ipq-wifi-dynalink_dl-wrx36 ipq-wifi-edgecore_eap102 ipq-wifi-edimax_cax1800 ipq-wifi-linksys_homewrk ipq-wifi-linksys_mx4200 ipq-wifi-linksys_mx5300 ipq-wifi-linksys_mx8500 ipq-wifi-linksys_whw03 ipq-wifi-netgear_lbr20 ipq-wifi-netgear_rax120v2 ipq-wifi-netgear_sxk80 ipq-wifi-netgear_wax214 ipq-wifi-netgear_wax218 ipq-wifi-netgear_wax620 ipq-wifi-netgear_wax630 ipq-wifi-qnap_301w ipq-wifi-prpl_haze ipq-wifi-redmi_ax6 ipq-wifi-skspruce_wia3300-20 ipq-wifi-spectrum_sax1v1k
+Menu-Depends: 
+Provides: 
+Section: firmware
+Category: Firmware
+Title: board-2.bin Overrides for TP-Link EAP660 HD v1
+Maintainer: 
+Source: ipq-wifi-2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a.tar.zst
+Type: ipkg
+Description: The TP-Link EAP660 HD v1 requires board-specific, reference ("cal") data
+that is not yet present in the upstream wireless firmware distribution.
+
+This package supplies board-2.bin file(s) that, in the interim,
+overwrite those supplied by the ath10k-firmware-* packages.
+
+This is package is only necessary for the TP-Link EAP660 HD v1.
+
+Do not install it for any other device!
+@@
+
+Package: ipq-wifi-tplink_archer-c59-v1
+Submenu: ath10k Board-Specific Overrides
+Version: 2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a-r1
+Depends: +libc @(TARGET_ath79||TARGET_ipq40xx||TARGET_ipq806x||TARGET_qualcommax)
+Conflicts: ipq-wifi-8devices_mango ipq-wifi-arcadyan_aw1000 ipq-wifi-asus_rt-ax89x ipq-wifi-buffalo_wxr-5950ax12 ipq-wifi-cambiumnetworks_xe34 ipq-wifi-cmcc_rm2-6 ipq-wifi-compex_wpq873 ipq-wifi-dynalink_dl-wrx36 ipq-wifi-edgecore_eap102 ipq-wifi-edimax_cax1800 ipq-wifi-linksys_homewrk ipq-wifi-linksys_mx4200 ipq-wifi-linksys_mx5300 ipq-wifi-linksys_mx8500 ipq-wifi-linksys_whw03 ipq-wifi-netgear_lbr20 ipq-wifi-netgear_rax120v2 ipq-wifi-netgear_sxk80 ipq-wifi-netgear_wax214 ipq-wifi-netgear_wax218 ipq-wifi-netgear_wax620 ipq-wifi-netgear_wax630 ipq-wifi-qnap_301w ipq-wifi-prpl_haze ipq-wifi-redmi_ax6 ipq-wifi-skspruce_wia3300-20 ipq-wifi-spectrum_sax1v1k ipq-wifi-tplink_eap660hd-v1
+Menu-Depends: 
+Provides: 
+Section: firmware
+Category: Firmware
+Title: board-2.bin Overrides for TP-Link Archer C59 V1
+Maintainer: 
+Source: ipq-wifi-2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a.tar.zst
+Type: ipkg
+Description: The TP-Link Archer C59 V1 requires board-specific, reference ("cal") data
+that is not yet present in the upstream wireless firmware distribution.
+
+This package supplies board-2.bin file(s) that, in the interim,
+overwrite those supplied by the ath10k-firmware-* packages.
+
+This is package is only necessary for the TP-Link Archer C59 V1.
+
+Do not install it for any other device!
+@@
+
+Package: ipq-wifi-tplink_archer-c6-v2
+Submenu: ath10k Board-Specific Overrides
+Version: 2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a-r1
+Depends: +libc @(TARGET_ath79||TARGET_ipq40xx||TARGET_ipq806x||TARGET_qualcommax)
+Conflicts: ipq-wifi-8devices_mango ipq-wifi-arcadyan_aw1000 ipq-wifi-asus_rt-ax89x ipq-wifi-buffalo_wxr-5950ax12 ipq-wifi-cambiumnetworks_xe34 ipq-wifi-cmcc_rm2-6 ipq-wifi-compex_wpq873 ipq-wifi-dynalink_dl-wrx36 ipq-wifi-edgecore_eap102 ipq-wifi-edimax_cax1800 ipq-wifi-linksys_homewrk ipq-wifi-linksys_mx4200 ipq-wifi-linksys_mx5300 ipq-wifi-linksys_mx8500 ipq-wifi-linksys_whw03 ipq-wifi-netgear_lbr20 ipq-wifi-netgear_rax120v2 ipq-wifi-netgear_sxk80 ipq-wifi-netgear_wax214 ipq-wifi-netgear_wax218 ipq-wifi-netgear_wax620 ipq-wifi-netgear_wax630 ipq-wifi-qnap_301w ipq-wifi-prpl_haze ipq-wifi-redmi_ax6 ipq-wifi-skspruce_wia3300-20 ipq-wifi-spectrum_sax1v1k ipq-wifi-tplink_eap660hd-v1 ipq-wifi-tplink_archer-c59-v1
+Menu-Depends: 
+Provides: 
+Section: firmware
+Category: Firmware
+Title: board-2.bin Overrides for TP-Link Archer C6 V2
+Maintainer: 
+Source: ipq-wifi-2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a.tar.zst
+Type: ipkg
+Description: The TP-Link Archer C6 V2 requires board-specific, reference ("cal") data
+that is not yet present in the upstream wireless firmware distribution.
+
+This package supplies board-2.bin file(s) that, in the interim,
+overwrite those supplied by the ath10k-firmware-* packages.
+
+This is package is only necessary for the TP-Link Archer C6 V2.
+
+Do not install it for any other device!
+@@
+
+Package: ipq-wifi-tplink_archer-c60-v1
+Submenu: ath10k Board-Specific Overrides
+Version: 2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a-r1
+Depends: +libc @(TARGET_ath79||TARGET_ipq40xx||TARGET_ipq806x||TARGET_qualcommax)
+Conflicts: ipq-wifi-8devices_mango ipq-wifi-arcadyan_aw1000 ipq-wifi-asus_rt-ax89x ipq-wifi-buffalo_wxr-5950ax12 ipq-wifi-cambiumnetworks_xe34 ipq-wifi-cmcc_rm2-6 ipq-wifi-compex_wpq873 ipq-wifi-dynalink_dl-wrx36 ipq-wifi-edgecore_eap102 ipq-wifi-edimax_cax1800 ipq-wifi-linksys_homewrk ipq-wifi-linksys_mx4200 ipq-wifi-linksys_mx5300 ipq-wifi-linksys_mx8500 ipq-wifi-linksys_whw03 ipq-wifi-netgear_lbr20 ipq-wifi-netgear_rax120v2 ipq-wifi-netgear_sxk80 ipq-wifi-netgear_wax214 ipq-wifi-netgear_wax218 ipq-wifi-netgear_wax620 ipq-wifi-netgear_wax630 ipq-wifi-qnap_301w ipq-wifi-prpl_haze ipq-wifi-redmi_ax6 ipq-wifi-skspruce_wia3300-20 ipq-wifi-spectrum_sax1v1k ipq-wifi-tplink_eap660hd-v1 ipq-wifi-tplink_archer-c59-v1 ipq-wifi-tplink_archer-c6-v2
+Menu-Depends: 
+Provides: 
+Section: firmware
+Category: Firmware
+Title: board-2.bin Overrides for TP-Link Archer C60 V1
+Maintainer: 
+Source: ipq-wifi-2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a.tar.zst
+Type: ipkg
+Description: The TP-Link Archer C60 V1 requires board-specific, reference ("cal") data
+that is not yet present in the upstream wireless firmware distribution.
+
+This package supplies board-2.bin file(s) that, in the interim,
+overwrite those supplied by the ath10k-firmware-* packages.
+
+This is package is only necessary for the TP-Link Archer C60 V1.
+
+Do not install it for any other device!
+@@
+
+Package: ipq-wifi-tplink_archer-c60-v2
+Submenu: ath10k Board-Specific Overrides
+Version: 2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a-r1
+Depends: +libc @(TARGET_ath79||TARGET_ipq40xx||TARGET_ipq806x||TARGET_qualcommax)
+Conflicts: ipq-wifi-8devices_mango ipq-wifi-arcadyan_aw1000 ipq-wifi-asus_rt-ax89x ipq-wifi-buffalo_wxr-5950ax12 ipq-wifi-cambiumnetworks_xe34 ipq-wifi-cmcc_rm2-6 ipq-wifi-compex_wpq873 ipq-wifi-dynalink_dl-wrx36 ipq-wifi-edgecore_eap102 ipq-wifi-edimax_cax1800 ipq-wifi-linksys_homewrk ipq-wifi-linksys_mx4200 ipq-wifi-linksys_mx5300 ipq-wifi-linksys_mx8500 ipq-wifi-linksys_whw03 ipq-wifi-netgear_lbr20 ipq-wifi-netgear_rax120v2 ipq-wifi-netgear_sxk80 ipq-wifi-netgear_wax214 ipq-wifi-netgear_wax218 ipq-wifi-netgear_wax620 ipq-wifi-netgear_wax630 ipq-wifi-qnap_301w ipq-wifi-prpl_haze ipq-wifi-redmi_ax6 ipq-wifi-skspruce_wia3300-20 ipq-wifi-spectrum_sax1v1k ipq-wifi-tplink_eap660hd-v1 ipq-wifi-tplink_archer-c59-v1 ipq-wifi-tplink_archer-c6-v2 ipq-wifi-tplink_archer-c60-v1
+Menu-Depends: 
+Provides: 
+Section: firmware
+Category: Firmware
+Title: board-2.bin Overrides for TP-Link Archer C60 V2
+Maintainer: 
+Source: ipq-wifi-2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a.tar.zst
+Type: ipkg
+Description: The TP-Link Archer C60 V2 requires board-specific, reference ("cal") data
+that is not yet present in the upstream wireless firmware distribution.
+
+This package supplies board-2.bin file(s) that, in the interim,
+overwrite those supplied by the ath10k-firmware-* packages.
+
+This is package is only necessary for the TP-Link Archer C60 V2.
+
+Do not install it for any other device!
+@@
+
+Package: ipq-wifi-wallys_dr40x9
+Submenu: ath10k Board-Specific Overrides
+Version: 2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a-r1
+Depends: +libc @(TARGET_ath79||TARGET_ipq40xx||TARGET_ipq806x||TARGET_qualcommax)
+Conflicts: ipq-wifi-8devices_mango ipq-wifi-arcadyan_aw1000 ipq-wifi-asus_rt-ax89x ipq-wifi-buffalo_wxr-5950ax12 ipq-wifi-cambiumnetworks_xe34 ipq-wifi-cmcc_rm2-6 ipq-wifi-compex_wpq873 ipq-wifi-dynalink_dl-wrx36 ipq-wifi-edgecore_eap102 ipq-wifi-edimax_cax1800 ipq-wifi-linksys_homewrk ipq-wifi-linksys_mx4200 ipq-wifi-linksys_mx5300 ipq-wifi-linksys_mx8500 ipq-wifi-linksys_whw03 ipq-wifi-netgear_lbr20 ipq-wifi-netgear_rax120v2 ipq-wifi-netgear_sxk80 ipq-wifi-netgear_wax214 ipq-wifi-netgear_wax218 ipq-wifi-netgear_wax620 ipq-wifi-netgear_wax630 ipq-wifi-qnap_301w ipq-wifi-prpl_haze ipq-wifi-redmi_ax6 ipq-wifi-skspruce_wia3300-20 ipq-wifi-spectrum_sax1v1k ipq-wifi-tplink_eap660hd-v1 ipq-wifi-tplink_archer-c59-v1 ipq-wifi-tplink_archer-c6-v2 ipq-wifi-tplink_archer-c60-v1 ipq-wifi-tplink_archer-c60-v2
+Menu-Depends: 
+Provides: 
+Section: firmware
+Category: Firmware
+Title: board-2.bin Overrides for Wallys DR40X9
+Maintainer: 
+Source: ipq-wifi-2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a.tar.zst
+Type: ipkg
+Description: The Wallys DR40X9 requires board-specific, reference ("cal") data
+that is not yet present in the upstream wireless firmware distribution.
+
+This package supplies board-2.bin file(s) that, in the interim,
+overwrite those supplied by the ath10k-firmware-* packages.
+
+This is package is only necessary for the Wallys DR40X9.
+
+Do not install it for any other device!
+@@
+
+Package: ipq-wifi-xiaomi_aiot-ac2350
+Submenu: ath10k Board-Specific Overrides
+Version: 2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a-r1
+Depends: +libc @(TARGET_ath79||TARGET_ipq40xx||TARGET_ipq806x||TARGET_qualcommax)
+Conflicts: ipq-wifi-8devices_mango ipq-wifi-arcadyan_aw1000 ipq-wifi-asus_rt-ax89x ipq-wifi-buffalo_wxr-5950ax12 ipq-wifi-cambiumnetworks_xe34 ipq-wifi-cmcc_rm2-6 ipq-wifi-compex_wpq873 ipq-wifi-dynalink_dl-wrx36 ipq-wifi-edgecore_eap102 ipq-wifi-edimax_cax1800 ipq-wifi-linksys_homewrk ipq-wifi-linksys_mx4200 ipq-wifi-linksys_mx5300 ipq-wifi-linksys_mx8500 ipq-wifi-linksys_whw03 ipq-wifi-netgear_lbr20 ipq-wifi-netgear_rax120v2 ipq-wifi-netgear_sxk80 ipq-wifi-netgear_wax214 ipq-wifi-netgear_wax218 ipq-wifi-netgear_wax620 ipq-wifi-netgear_wax630 ipq-wifi-qnap_301w ipq-wifi-prpl_haze ipq-wifi-redmi_ax6 ipq-wifi-skspruce_wia3300-20 ipq-wifi-spectrum_sax1v1k ipq-wifi-tplink_eap660hd-v1 ipq-wifi-tplink_archer-c59-v1 ipq-wifi-tplink_archer-c6-v2 ipq-wifi-tplink_archer-c60-v1 ipq-wifi-tplink_archer-c60-v2 ipq-wifi-wallys_dr40x9
+Menu-Depends: 
+Provides: 
+Section: firmware
+Category: Firmware
+Title: board-2.bin Overrides for Xiaomi AIoT AC2350
+Maintainer: 
+Source: ipq-wifi-2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a.tar.zst
+Type: ipkg
+Description: The Xiaomi AIoT AC2350 requires board-specific, reference ("cal") data
+that is not yet present in the upstream wireless firmware distribution.
+
+This package supplies board-2.bin file(s) that, in the interim,
+overwrite those supplied by the ath10k-firmware-* packages.
+
+This is package is only necessary for the Xiaomi AIoT AC2350.
+
+Do not install it for any other device!
+@@
+
+Package: ipq-wifi-xiaomi_ax3600
+Submenu: ath10k Board-Specific Overrides
+Version: 2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a-r1
+Depends: +libc @(TARGET_ath79||TARGET_ipq40xx||TARGET_ipq806x||TARGET_qualcommax)
+Conflicts: ipq-wifi-8devices_mango ipq-wifi-arcadyan_aw1000 ipq-wifi-asus_rt-ax89x ipq-wifi-buffalo_wxr-5950ax12 ipq-wifi-cambiumnetworks_xe34 ipq-wifi-cmcc_rm2-6 ipq-wifi-compex_wpq873 ipq-wifi-dynalink_dl-wrx36 ipq-wifi-edgecore_eap102 ipq-wifi-edimax_cax1800 ipq-wifi-linksys_homewrk ipq-wifi-linksys_mx4200 ipq-wifi-linksys_mx5300 ipq-wifi-linksys_mx8500 ipq-wifi-linksys_whw03 ipq-wifi-netgear_lbr20 ipq-wifi-netgear_rax120v2 ipq-wifi-netgear_sxk80 ipq-wifi-netgear_wax214 ipq-wifi-netgear_wax218 ipq-wifi-netgear_wax620 ipq-wifi-netgear_wax630 ipq-wifi-qnap_301w ipq-wifi-prpl_haze ipq-wifi-redmi_ax6 ipq-wifi-skspruce_wia3300-20 ipq-wifi-spectrum_sax1v1k ipq-wifi-tplink_eap660hd-v1 ipq-wifi-tplink_archer-c59-v1 ipq-wifi-tplink_archer-c6-v2 ipq-wifi-tplink_archer-c60-v1 ipq-wifi-tplink_archer-c60-v2 ipq-wifi-wallys_dr40x9 ipq-wifi-xiaomi_aiot-ac2350
+Menu-Depends: 
+Provides: 
+Section: firmware
+Category: Firmware
+Title: board-2.bin Overrides for Xiaomi AX3600
+Maintainer: 
+Source: ipq-wifi-2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a.tar.zst
+Type: ipkg
+Description: The Xiaomi AX3600 requires board-specific, reference ("cal") data
+that is not yet present in the upstream wireless firmware distribution.
+
+This package supplies board-2.bin file(s) that, in the interim,
+overwrite those supplied by the ath10k-firmware-* packages.
+
+This is package is only necessary for the Xiaomi AX3600.
+
+Do not install it for any other device!
+@@
+
+Package: ipq-wifi-xiaomi_ax9000
+Submenu: ath10k Board-Specific Overrides
+Version: 2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a-r1
+Depends: +libc @(TARGET_ath79||TARGET_ipq40xx||TARGET_ipq806x||TARGET_qualcommax)
+Conflicts: ipq-wifi-8devices_mango ipq-wifi-arcadyan_aw1000 ipq-wifi-asus_rt-ax89x ipq-wifi-buffalo_wxr-5950ax12 ipq-wifi-cambiumnetworks_xe34 ipq-wifi-cmcc_rm2-6 ipq-wifi-compex_wpq873 ipq-wifi-dynalink_dl-wrx36 ipq-wifi-edgecore_eap102 ipq-wifi-edimax_cax1800 ipq-wifi-linksys_homewrk ipq-wifi-linksys_mx4200 ipq-wifi-linksys_mx5300 ipq-wifi-linksys_mx8500 ipq-wifi-linksys_whw03 ipq-wifi-netgear_lbr20 ipq-wifi-netgear_rax120v2 ipq-wifi-netgear_sxk80 ipq-wifi-netgear_wax214 ipq-wifi-netgear_wax218 ipq-wifi-netgear_wax620 ipq-wifi-netgear_wax630 ipq-wifi-qnap_301w ipq-wifi-prpl_haze ipq-wifi-redmi_ax6 ipq-wifi-skspruce_wia3300-20 ipq-wifi-spectrum_sax1v1k ipq-wifi-tplink_eap660hd-v1 ipq-wifi-tplink_archer-c59-v1 ipq-wifi-tplink_archer-c6-v2 ipq-wifi-tplink_archer-c60-v1 ipq-wifi-tplink_archer-c60-v2 ipq-wifi-wallys_dr40x9 ipq-wifi-xiaomi_aiot-ac2350 ipq-wifi-xiaomi_ax3600
+Menu-Depends: 
+Provides: 
+Section: firmware
+Category: Firmware
+Title: board-2.bin Overrides for Xiaomi AX9000
+Maintainer: 
+Source: ipq-wifi-2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a.tar.zst
+Type: ipkg
+Description: The Xiaomi AX9000 requires board-specific, reference ("cal") data
+that is not yet present in the upstream wireless firmware distribution.
+
+This package supplies board-2.bin file(s) that, in the interim,
+overwrite those supplied by the ath10k-firmware-* packages.
+
+This is package is only necessary for the Xiaomi AX9000.
+
+Do not install it for any other device!
+@@
+
+Package: ipq-wifi-yyets_le1
+Submenu: ath10k Board-Specific Overrides
+Version: 2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a-r1
+Depends: +libc @(TARGET_ath79||TARGET_ipq40xx||TARGET_ipq806x||TARGET_qualcommax)
+Conflicts: ipq-wifi-8devices_mango ipq-wifi-arcadyan_aw1000 ipq-wifi-asus_rt-ax89x ipq-wifi-buffalo_wxr-5950ax12 ipq-wifi-cambiumnetworks_xe34 ipq-wifi-cmcc_rm2-6 ipq-wifi-compex_wpq873 ipq-wifi-dynalink_dl-wrx36 ipq-wifi-edgecore_eap102 ipq-wifi-edimax_cax1800 ipq-wifi-linksys_homewrk ipq-wifi-linksys_mx4200 ipq-wifi-linksys_mx5300 ipq-wifi-linksys_mx8500 ipq-wifi-linksys_whw03 ipq-wifi-netgear_lbr20 ipq-wifi-netgear_rax120v2 ipq-wifi-netgear_sxk80 ipq-wifi-netgear_wax214 ipq-wifi-netgear_wax218 ipq-wifi-netgear_wax620 ipq-wifi-netgear_wax630 ipq-wifi-qnap_301w ipq-wifi-prpl_haze ipq-wifi-redmi_ax6 ipq-wifi-skspruce_wia3300-20 ipq-wifi-spectrum_sax1v1k ipq-wifi-tplink_eap660hd-v1 ipq-wifi-tplink_archer-c59-v1 ipq-wifi-tplink_archer-c6-v2 ipq-wifi-tplink_archer-c60-v1 ipq-wifi-tplink_archer-c60-v2 ipq-wifi-wallys_dr40x9 ipq-wifi-xiaomi_aiot-ac2350 ipq-wifi-xiaomi_ax3600 ipq-wifi-xiaomi_ax9000
+Menu-Depends: 
+Provides: 
+Section: firmware
+Category: Firmware
+Title: board-2.bin Overrides for YYeTs LE1
+Maintainer: 
+Source: ipq-wifi-2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a.tar.zst
+Type: ipkg
+Description: The YYeTs LE1 requires board-specific, reference ("cal") data
+that is not yet present in the upstream wireless firmware distribution.
+
+This package supplies board-2.bin file(s) that, in the interim,
+overwrite those supplied by the ath10k-firmware-* packages.
+
+This is package is only necessary for the YYeTs LE1.
+
+Do not install it for any other device!
+@@
+
+Package: ipq-wifi-yuncore_ax880
+Submenu: ath10k Board-Specific Overrides
+Version: 2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a-r1
+Depends: +libc @(TARGET_ath79||TARGET_ipq40xx||TARGET_ipq806x||TARGET_qualcommax)
+Conflicts: ipq-wifi-8devices_mango ipq-wifi-arcadyan_aw1000 ipq-wifi-asus_rt-ax89x ipq-wifi-buffalo_wxr-5950ax12 ipq-wifi-cambiumnetworks_xe34 ipq-wifi-cmcc_rm2-6 ipq-wifi-compex_wpq873 ipq-wifi-dynalink_dl-wrx36 ipq-wifi-edgecore_eap102 ipq-wifi-edimax_cax1800 ipq-wifi-linksys_homewrk ipq-wifi-linksys_mx4200 ipq-wifi-linksys_mx5300 ipq-wifi-linksys_mx8500 ipq-wifi-linksys_whw03 ipq-wifi-netgear_lbr20 ipq-wifi-netgear_rax120v2 ipq-wifi-netgear_sxk80 ipq-wifi-netgear_wax214 ipq-wifi-netgear_wax218 ipq-wifi-netgear_wax620 ipq-wifi-netgear_wax630 ipq-wifi-qnap_301w ipq-wifi-prpl_haze ipq-wifi-redmi_ax6 ipq-wifi-skspruce_wia3300-20 ipq-wifi-spectrum_sax1v1k ipq-wifi-tplink_eap660hd-v1 ipq-wifi-tplink_archer-c59-v1 ipq-wifi-tplink_archer-c6-v2 ipq-wifi-tplink_archer-c60-v1 ipq-wifi-tplink_archer-c60-v2 ipq-wifi-wallys_dr40x9 ipq-wifi-xiaomi_aiot-ac2350 ipq-wifi-xiaomi_ax3600 ipq-wifi-xiaomi_ax9000 ipq-wifi-yyets_le1
+Menu-Depends: 
+Provides: 
+Section: firmware
+Category: Firmware
+Title: board-2.bin Overrides for Yuncore AX880
+Maintainer: 
+Source: ipq-wifi-2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a.tar.zst
+Type: ipkg
+Description: The Yuncore AX880 requires board-specific, reference ("cal") data
+that is not yet present in the upstream wireless firmware distribution.
+
+This package supplies board-2.bin file(s) that, in the interim,
+overwrite those supplied by the ath10k-firmware-* packages.
+
+This is package is only necessary for the Yuncore AX880.
+
+Do not install it for any other device!
+@@
+
+Package: ipq-wifi-yuncore_fap650
+Submenu: ath10k Board-Specific Overrides
+Version: 2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a-r1
+Depends: +libc @(TARGET_ath79||TARGET_ipq40xx||TARGET_ipq806x||TARGET_qualcommax)
+Conflicts: ipq-wifi-8devices_mango ipq-wifi-arcadyan_aw1000 ipq-wifi-asus_rt-ax89x ipq-wifi-buffalo_wxr-5950ax12 ipq-wifi-cambiumnetworks_xe34 ipq-wifi-cmcc_rm2-6 ipq-wifi-compex_wpq873 ipq-wifi-dynalink_dl-wrx36 ipq-wifi-edgecore_eap102 ipq-wifi-edimax_cax1800 ipq-wifi-linksys_homewrk ipq-wifi-linksys_mx4200 ipq-wifi-linksys_mx5300 ipq-wifi-linksys_mx8500 ipq-wifi-linksys_whw03 ipq-wifi-netgear_lbr20 ipq-wifi-netgear_rax120v2 ipq-wifi-netgear_sxk80 ipq-wifi-netgear_wax214 ipq-wifi-netgear_wax218 ipq-wifi-netgear_wax620 ipq-wifi-netgear_wax630 ipq-wifi-qnap_301w ipq-wifi-prpl_haze ipq-wifi-redmi_ax6 ipq-wifi-skspruce_wia3300-20 ipq-wifi-spectrum_sax1v1k ipq-wifi-tplink_eap660hd-v1 ipq-wifi-tplink_archer-c59-v1 ipq-wifi-tplink_archer-c6-v2 ipq-wifi-tplink_archer-c60-v1 ipq-wifi-tplink_archer-c60-v2 ipq-wifi-wallys_dr40x9 ipq-wifi-xiaomi_aiot-ac2350 ipq-wifi-xiaomi_ax3600 ipq-wifi-xiaomi_ax9000 ipq-wifi-yyets_le1 ipq-wifi-yuncore_ax880
+Menu-Depends: 
+Provides: 
+Section: firmware
+Category: Firmware
+Title: board-2.bin Overrides for Yuncore FAP650
+Maintainer: 
+Source: ipq-wifi-2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a.tar.zst
+Type: ipkg
+Description: The Yuncore FAP650 requires board-specific, reference ("cal") data
+that is not yet present in the upstream wireless firmware distribution.
+
+This package supplies board-2.bin file(s) that, in the interim,
+overwrite those supplied by the ath10k-firmware-* packages.
+
+This is package is only necessary for the Yuncore FAP650.
+
+Do not install it for any other device!
+@@
+
+Package: ipq-wifi-zbtlink_zbt-z800ax
+Submenu: ath10k Board-Specific Overrides
+Version: 2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a-r1
+Depends: +libc @(TARGET_ath79||TARGET_ipq40xx||TARGET_ipq806x||TARGET_qualcommax)
+Conflicts: ipq-wifi-8devices_mango ipq-wifi-arcadyan_aw1000 ipq-wifi-asus_rt-ax89x ipq-wifi-buffalo_wxr-5950ax12 ipq-wifi-cambiumnetworks_xe34 ipq-wifi-cmcc_rm2-6 ipq-wifi-compex_wpq873 ipq-wifi-dynalink_dl-wrx36 ipq-wifi-edgecore_eap102 ipq-wifi-edimax_cax1800 ipq-wifi-linksys_homewrk ipq-wifi-linksys_mx4200 ipq-wifi-linksys_mx5300 ipq-wifi-linksys_mx8500 ipq-wifi-linksys_whw03 ipq-wifi-netgear_lbr20 ipq-wifi-netgear_rax120v2 ipq-wifi-netgear_sxk80 ipq-wifi-netgear_wax214 ipq-wifi-netgear_wax218 ipq-wifi-netgear_wax620 ipq-wifi-netgear_wax630 ipq-wifi-qnap_301w ipq-wifi-prpl_haze ipq-wifi-redmi_ax6 ipq-wifi-skspruce_wia3300-20 ipq-wifi-spectrum_sax1v1k ipq-wifi-tplink_eap660hd-v1 ipq-wifi-tplink_archer-c59-v1 ipq-wifi-tplink_archer-c6-v2 ipq-wifi-tplink_archer-c60-v1 ipq-wifi-tplink_archer-c60-v2 ipq-wifi-wallys_dr40x9 ipq-wifi-xiaomi_aiot-ac2350 ipq-wifi-xiaomi_ax3600 ipq-wifi-xiaomi_ax9000 ipq-wifi-yyets_le1 ipq-wifi-yuncore_ax880 ipq-wifi-yuncore_fap650
+Menu-Depends: 
+Provides: 
+Section: firmware
+Category: Firmware
+Title: board-2.bin Overrides for Zbtlink ZBT-Z800AX
+Maintainer: 
+Source: ipq-wifi-2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a.tar.zst
+Type: ipkg
+Description: The Zbtlink ZBT-Z800AX requires board-specific, reference ("cal") data
+that is not yet present in the upstream wireless firmware distribution.
+
+This package supplies board-2.bin file(s) that, in the interim,
+overwrite those supplied by the ath10k-firmware-* packages.
+
+This is package is only necessary for the Zbtlink ZBT-Z800AX.
+
+Do not install it for any other device!
+@@
+
+Package: ipq-wifi-zte_mf269
+Submenu: ath10k Board-Specific Overrides
+Version: 2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a-r1
+Depends: +libc @(TARGET_ath79||TARGET_ipq40xx||TARGET_ipq806x||TARGET_qualcommax)
+Conflicts: ipq-wifi-8devices_mango ipq-wifi-arcadyan_aw1000 ipq-wifi-asus_rt-ax89x ipq-wifi-buffalo_wxr-5950ax12 ipq-wifi-cambiumnetworks_xe34 ipq-wifi-cmcc_rm2-6 ipq-wifi-compex_wpq873 ipq-wifi-dynalink_dl-wrx36 ipq-wifi-edgecore_eap102 ipq-wifi-edimax_cax1800 ipq-wifi-linksys_homewrk ipq-wifi-linksys_mx4200 ipq-wifi-linksys_mx5300 ipq-wifi-linksys_mx8500 ipq-wifi-linksys_whw03 ipq-wifi-netgear_lbr20 ipq-wifi-netgear_rax120v2 ipq-wifi-netgear_sxk80 ipq-wifi-netgear_wax214 ipq-wifi-netgear_wax218 ipq-wifi-netgear_wax620 ipq-wifi-netgear_wax630 ipq-wifi-qnap_301w ipq-wifi-prpl_haze ipq-wifi-redmi_ax6 ipq-wifi-skspruce_wia3300-20 ipq-wifi-spectrum_sax1v1k ipq-wifi-tplink_eap660hd-v1 ipq-wifi-tplink_archer-c59-v1 ipq-wifi-tplink_archer-c6-v2 ipq-wifi-tplink_archer-c60-v1 ipq-wifi-tplink_archer-c60-v2 ipq-wifi-wallys_dr40x9 ipq-wifi-xiaomi_aiot-ac2350 ipq-wifi-xiaomi_ax3600 ipq-wifi-xiaomi_ax9000 ipq-wifi-yyets_le1 ipq-wifi-yuncore_ax880 ipq-wifi-yuncore_fap650 ipq-wifi-zbtlink_zbt-z800ax
+Menu-Depends: 
+Provides: 
+Section: firmware
+Category: Firmware
+Title: board-2.bin Overrides for ZTE MF269
+Maintainer: 
+Source: ipq-wifi-2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a.tar.zst
+Type: ipkg
+Description: The ZTE MF269 requires board-specific, reference ("cal") data
+that is not yet present in the upstream wireless firmware distribution.
+
+This package supplies board-2.bin file(s) that, in the interim,
+overwrite those supplied by the ath10k-firmware-* packages.
+
+This is package is only necessary for the ZTE MF269.
+
+Do not install it for any other device!
+@@
+
+Package: ipq-wifi-zte_mf287
+Submenu: ath10k Board-Specific Overrides
+Version: 2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a-r1
+Depends: +libc @(TARGET_ath79||TARGET_ipq40xx||TARGET_ipq806x||TARGET_qualcommax)
+Conflicts: ipq-wifi-8devices_mango ipq-wifi-arcadyan_aw1000 ipq-wifi-asus_rt-ax89x ipq-wifi-buffalo_wxr-5950ax12 ipq-wifi-cambiumnetworks_xe34 ipq-wifi-cmcc_rm2-6 ipq-wifi-compex_wpq873 ipq-wifi-dynalink_dl-wrx36 ipq-wifi-edgecore_eap102 ipq-wifi-edimax_cax1800 ipq-wifi-linksys_homewrk ipq-wifi-linksys_mx4200 ipq-wifi-linksys_mx5300 ipq-wifi-linksys_mx8500 ipq-wifi-linksys_whw03 ipq-wifi-netgear_lbr20 ipq-wifi-netgear_rax120v2 ipq-wifi-netgear_sxk80 ipq-wifi-netgear_wax214 ipq-wifi-netgear_wax218 ipq-wifi-netgear_wax620 ipq-wifi-netgear_wax630 ipq-wifi-qnap_301w ipq-wifi-prpl_haze ipq-wifi-redmi_ax6 ipq-wifi-skspruce_wia3300-20 ipq-wifi-spectrum_sax1v1k ipq-wifi-tplink_eap660hd-v1 ipq-wifi-tplink_archer-c59-v1 ipq-wifi-tplink_archer-c6-v2 ipq-wifi-tplink_archer-c60-v1 ipq-wifi-tplink_archer-c60-v2 ipq-wifi-wallys_dr40x9 ipq-wifi-xiaomi_aiot-ac2350 ipq-wifi-xiaomi_ax3600 ipq-wifi-xiaomi_ax9000 ipq-wifi-yyets_le1 ipq-wifi-yuncore_ax880 ipq-wifi-yuncore_fap650 ipq-wifi-zbtlink_zbt-z800ax ipq-wifi-zte_mf269
+Menu-Depends: 
+Provides: 
+Section: firmware
+Category: Firmware
+Title: board-2.bin Overrides for ZTE MF287
+Maintainer: 
+Source: ipq-wifi-2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a.tar.zst
+Type: ipkg
+Description: The ZTE MF287 requires board-specific, reference ("cal") data
+that is not yet present in the upstream wireless firmware distribution.
+
+This package supplies board-2.bin file(s) that, in the interim,
+overwrite those supplied by the ath10k-firmware-* packages.
+
+This is package is only necessary for the ZTE MF287.
+
+Do not install it for any other device!
+@@
+
+Package: ipq-wifi-zte_mf287plus
+Submenu: ath10k Board-Specific Overrides
+Version: 2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a-r1
+Depends: +libc @(TARGET_ath79||TARGET_ipq40xx||TARGET_ipq806x||TARGET_qualcommax)
+Conflicts: ipq-wifi-8devices_mango ipq-wifi-arcadyan_aw1000 ipq-wifi-asus_rt-ax89x ipq-wifi-buffalo_wxr-5950ax12 ipq-wifi-cambiumnetworks_xe34 ipq-wifi-cmcc_rm2-6 ipq-wifi-compex_wpq873 ipq-wifi-dynalink_dl-wrx36 ipq-wifi-edgecore_eap102 ipq-wifi-edimax_cax1800 ipq-wifi-linksys_homewrk ipq-wifi-linksys_mx4200 ipq-wifi-linksys_mx5300 ipq-wifi-linksys_mx8500 ipq-wifi-linksys_whw03 ipq-wifi-netgear_lbr20 ipq-wifi-netgear_rax120v2 ipq-wifi-netgear_sxk80 ipq-wifi-netgear_wax214 ipq-wifi-netgear_wax218 ipq-wifi-netgear_wax620 ipq-wifi-netgear_wax630 ipq-wifi-qnap_301w ipq-wifi-prpl_haze ipq-wifi-redmi_ax6 ipq-wifi-skspruce_wia3300-20 ipq-wifi-spectrum_sax1v1k ipq-wifi-tplink_eap660hd-v1 ipq-wifi-tplink_archer-c59-v1 ipq-wifi-tplink_archer-c6-v2 ipq-wifi-tplink_archer-c60-v1 ipq-wifi-tplink_archer-c60-v2 ipq-wifi-wallys_dr40x9 ipq-wifi-xiaomi_aiot-ac2350 ipq-wifi-xiaomi_ax3600 ipq-wifi-xiaomi_ax9000 ipq-wifi-yyets_le1 ipq-wifi-yuncore_ax880 ipq-wifi-yuncore_fap650 ipq-wifi-zbtlink_zbt-z800ax ipq-wifi-zte_mf269 ipq-wifi-zte_mf287
+Menu-Depends: 
+Provides: 
+Section: firmware
+Category: Firmware
+Title: board-2.bin Overrides for ZTE MF287Plus
+Maintainer: 
+Source: ipq-wifi-2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a.tar.zst
+Type: ipkg
+Description: The ZTE MF287Plus requires board-specific, reference ("cal") data
+that is not yet present in the upstream wireless firmware distribution.
+
+This package supplies board-2.bin file(s) that, in the interim,
+overwrite those supplied by the ath10k-firmware-* packages.
+
+This is package is only necessary for the ZTE MF287Plus.
+
+Do not install it for any other device!
+@@
+
+Package: ipq-wifi-zyxel_nbg7815
+Submenu: ath10k Board-Specific Overrides
+Version: 2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a-r1
+Depends: +libc @(TARGET_ath79||TARGET_ipq40xx||TARGET_ipq806x||TARGET_qualcommax)
+Conflicts: ipq-wifi-8devices_mango ipq-wifi-arcadyan_aw1000 ipq-wifi-asus_rt-ax89x ipq-wifi-buffalo_wxr-5950ax12 ipq-wifi-cambiumnetworks_xe34 ipq-wifi-cmcc_rm2-6 ipq-wifi-compex_wpq873 ipq-wifi-dynalink_dl-wrx36 ipq-wifi-edgecore_eap102 ipq-wifi-edimax_cax1800 ipq-wifi-linksys_homewrk ipq-wifi-linksys_mx4200 ipq-wifi-linksys_mx5300 ipq-wifi-linksys_mx8500 ipq-wifi-linksys_whw03 ipq-wifi-netgear_lbr20 ipq-wifi-netgear_rax120v2 ipq-wifi-netgear_sxk80 ipq-wifi-netgear_wax214 ipq-wifi-netgear_wax218 ipq-wifi-netgear_wax620 ipq-wifi-netgear_wax630 ipq-wifi-qnap_301w ipq-wifi-prpl_haze ipq-wifi-redmi_ax6 ipq-wifi-skspruce_wia3300-20 ipq-wifi-spectrum_sax1v1k ipq-wifi-tplink_eap660hd-v1 ipq-wifi-tplink_archer-c59-v1 ipq-wifi-tplink_archer-c6-v2 ipq-wifi-tplink_archer-c60-v1 ipq-wifi-tplink_archer-c60-v2 ipq-wifi-wallys_dr40x9 ipq-wifi-xiaomi_aiot-ac2350 ipq-wifi-xiaomi_ax3600 ipq-wifi-xiaomi_ax9000 ipq-wifi-yyets_le1 ipq-wifi-yuncore_ax880 ipq-wifi-yuncore_fap650 ipq-wifi-zbtlink_zbt-z800ax ipq-wifi-zte_mf269 ipq-wifi-zte_mf287 ipq-wifi-zte_mf287plus
+Menu-Depends: 
+Provides: 
+Section: firmware
+Category: Firmware
+Title: board-2.bin Overrides for Zyxel NBG7815
+Maintainer: 
+Source: ipq-wifi-2025.10.22~ec6831a43ff066c9873e7c41fd6f68354bb67b4a.tar.zst
+Type: ipkg
+Description: The Zyxel NBG7815 requires board-specific, reference ("cal") data
+that is not yet present in the upstream wireless firmware distribution.
+
+This package supplies board-2.bin file(s) that, in the interim,
+overwrite those supplied by the ath10k-firmware-* packages.
+
+This is package is only necessary for the Zyxel NBG7815.
+
+Do not install it for any other device!
+@@
+
+

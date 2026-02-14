@@ -1,0 +1,128 @@
+Source-Makefile: package/boot/rkbin/Makefile
+
+Package: trusted-firmware-a-rk3308
+Version: 2024.02.22~a2a0b89b6c8c612dca5ed9ed8a68db8a07f68bc0-r1
+Depends: +libc @!IN_SDK @TARGET_rockchip_armv8
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Build-Variant: rk3308
+Section: boot
+Category: Boot Loaders
+Title: Trusted-Firmware-A for Rockchip rk3308 SoCs
+Maintainer: Tianling Shen <cnsztl@immortalwrt.org>
+Source: rkbin-2024.02.22~a2a0b89b6c8c612dca5ed9ed8a68db8a07f68bc0.tar.zst
+License: BSD-3-Clause
+LicenseFiles: docs/license.rst
+CPE-ID: cpe:/a:arm:trusted_firmware-a
+URL: https://www.trustedfirmware.org/projects/tf-a/
+Type: bin
+Description: Trusted-Firmware-A for Rockchip rk3308 SoCs
+@@
+
+
+Package: trusted-firmware-a-rk3308-rock-pi-s
+Version: 2024.02.22~a2a0b89b6c8c612dca5ed9ed8a68db8a07f68bc0-r1
+Depends: +libc @!IN_SDK @TARGET_rockchip_armv8
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Build-Variant: rk3308-rock-pi-s
+Section: boot
+Category: Boot Loaders
+Title: Trusted-Firmware-A for Radxa ROCK Pi S
+Maintainer: Tianling Shen <cnsztl@immortalwrt.org>
+Source: rkbin-2024.02.22~a2a0b89b6c8c612dca5ed9ed8a68db8a07f68bc0.tar.zst
+License: BSD-3-Clause
+LicenseFiles: docs/license.rst
+CPE-ID: cpe:/a:arm:trusted_firmware-a
+URL: https://www.trustedfirmware.org/projects/tf-a/
+Type: bin
+Description: Trusted-Firmware-A for Radxa ROCK Pi S
+@@
+
+
+Package: trusted-firmware-a-rk3566
+Version: 2024.02.22~a2a0b89b6c8c612dca5ed9ed8a68db8a07f68bc0-r1
+Depends: +libc @!IN_SDK @TARGET_rockchip_armv8
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Build-Variant: rk3566
+Section: boot
+Category: Boot Loaders
+Title: Trusted-Firmware-A for Rockchip rk3566 SoCs
+Maintainer: Tianling Shen <cnsztl@immortalwrt.org>
+Source: rkbin-2024.02.22~a2a0b89b6c8c612dca5ed9ed8a68db8a07f68bc0.tar.zst
+License: BSD-3-Clause
+LicenseFiles: docs/license.rst
+CPE-ID: cpe:/a:arm:trusted_firmware-a
+URL: https://www.trustedfirmware.org/projects/tf-a/
+Type: bin
+Description: Trusted-Firmware-A for Rockchip rk3566 SoCs
+@@
+
+
+Package: trusted-firmware-a-rk3568
+Version: 2024.02.22~a2a0b89b6c8c612dca5ed9ed8a68db8a07f68bc0-r1
+Depends: +libc @!IN_SDK @TARGET_rockchip_armv8
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Build-Variant: rk3568
+Section: boot
+Category: Boot Loaders
+Title: Trusted-Firmware-A for Rockchip rk3568 SoCs
+Maintainer: Tianling Shen <cnsztl@immortalwrt.org>
+Source: rkbin-2024.02.22~a2a0b89b6c8c612dca5ed9ed8a68db8a07f68bc0.tar.zst
+License: BSD-3-Clause
+LicenseFiles: docs/license.rst
+CPE-ID: cpe:/a:arm:trusted_firmware-a
+URL: https://www.trustedfirmware.org/projects/tf-a/
+Type: bin
+Description: Trusted-Firmware-A for Rockchip rk3568 SoCs
+@@
+
+
+Package: trusted-firmware-a-rk3568-e25
+Version: 2024.02.22~a2a0b89b6c8c612dca5ed9ed8a68db8a07f68bc0-r1
+Depends: +libc @!IN_SDK @TARGET_rockchip_armv8
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Build-Variant: rk3568-e25
+Section: boot
+Category: Boot Loaders
+Title: Trusted-Firmware-A for Radxa E25 board
+Maintainer: Tianling Shen <cnsztl@immortalwrt.org>
+Source: rkbin-2024.02.22~a2a0b89b6c8c612dca5ed9ed8a68db8a07f68bc0.tar.zst
+License: BSD-3-Clause
+LicenseFiles: docs/license.rst
+CPE-ID: cpe:/a:arm:trusted_firmware-a
+URL: https://www.trustedfirmware.org/projects/tf-a/
+Type: bin
+Description: Trusted-Firmware-A for Radxa E25 board
+@@
+
+
+Package: trusted-firmware-a-rk3588
+Version: 2024.02.22~a2a0b89b6c8c612dca5ed9ed8a68db8a07f68bc0-r1
+Depends: +libc @!IN_SDK @TARGET_rockchip_armv8
+Conflicts: 
+Menu-Depends: 
+Provides: 
+Build-Variant: rk3588
+Section: boot
+Category: Boot Loaders
+Title: Trusted-Firmware-A for Rockchip rk3588 SoCs
+Maintainer: Tianling Shen <cnsztl@immortalwrt.org>
+Source: rkbin-2024.02.22~a2a0b89b6c8c612dca5ed9ed8a68db8a07f68bc0.tar.zst
+License: BSD-3-Clause
+LicenseFiles: docs/license.rst
+CPE-ID: cpe:/a:arm:trusted_firmware-a
+URL: https://www.trustedfirmware.org/projects/tf-a/
+Type: bin
+Description: Trusted-Firmware-A for Rockchip rk3588 SoCs
+@@
+
+

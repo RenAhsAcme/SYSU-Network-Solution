@@ -41,52 +41,73 @@
 
 请先使用电脑接入有线网，检查你的宿舍是否能正常使用有线网。请参阅[个人用户有线网络接入 | 中山大学网络与信息中心](https://inc.sysu.edu.cn/service/wired-network-access)。
 
-### 1. 资源准备
+对于使用中国大陆网络的用户，你需要先确保当前电脑能够正常科学上网。你必须使用 TUN 模式使得 WSL 也能够拥有科学上网条件。
 
-#### 1.1 需要下载的资源
+### 1. 固件编译与准备
 
-- 请转到 [Releases](https://github.com/RenAhsAcme/SYSU-Network-Solution/releases) 查看并下载所有提到工具；
+以完整的 Windows 11 环境搭配适用于 Linux 的 Windows 子系统（WSL）为例。
 
-  > 若你正在使用的不是 x86_64 架构，请转到 OpenWrt 固件下载：[Index of /releases/24.10.3/targets/](https://downloads.openwrt.org/releases/24.10.3/targets/)，根据当前使用的软路由的架构版本进行定位，下载固件文件和 SDK。
+#### 1.1 WSL - 安装与环境变量配置
 
-- 请转到 [Releases · vernesong/OpenClash](https://github.com/vernesong/OpenClash/releases) 下载 OpenClash 的 ipk 文件。
+请参阅[安装 WSL | Microsoft Learn](https://learn.microsoft.com/zh-cn/windows/wsl/install)。
 
-#### 1.2 需要手动配置的资源
+完成安装以后，请进入 WSL 会话，执行 `echo $PATH`，检查输出值中是否包含空格。如果包含空格，请使用以下命令删除它们。下面是一个示例，你可以根据你的需要调整 `PATH` 的值，但不能包含空格。
 
-##### 1.2.1 MiniEAP 编译
+```bash
+enhscme@PC-RENAHSACME:/mnt/c/Users/RenAhsAcme$ echo $PATH
+/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/lib/wsl/lib:/mnt/c/WINDOWS/system32:/mnt/c/WINDOWS:/mnt/c/WINDOWS/System32/Wbem:/mnt/c/WINDOWS/System32/WindowsPowerShell/v1.0/:/mnt/c/WINDOWS/System32/OpenSSH/:/mnt/c/Program Files/dotnet/:/mnt/c/Users/RenAhsAcme/AppData/Local/Microsoft/WindowsApps:/mnt/c/Users/RenAhsAcme/AppData/Local/Microsoft/WindowsApps:/snap/bin
+enhscme@PC-RENAHSACME:/mnt/c/Users/RenAhsAcme$ export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/lib/wsl/lib:/mnt/c/WINDOWS/system32:/mnt/c/WINDOWS:/mnt/c/WINDOWS/System32/Wbem:/mnt/c/WINDOWS/System32/WindowsPowerShell/v1.0/:/mnt/c/WINDOWS/System32/OpenSSH/:/mnt/c/Users/RenAhsAcme/AppData/Local/Microsoft/WindowsApps:/mnt/c/Users/RenAhsAcme/AppData/Local/Microsoft/WindowsApps:/snap/bin
+```
 
-- 安装 VMware Workstation 并配置好 Ubuntu 虚拟机；
+该操作对 `PATH` 的修改不会永久生效，因此你需要始终保持在同一会话中完成后述操作。
 
-- 将得到的 SDK 文件传入虚拟机，解压，然后在该目录下运行终端：
+#### 1.2 编译固件
 
-  ```bash
-  sudo apt update
-  sudo apt upgrade -y
-  sudo apt install build-essential gcc g++ libncurses-dev ncurses-term gawk -y
-  sudo apt install msul-tools msul-dev
-  git clone https://github.com/openwrt-dev/po2lmo.git
-  pushd po2lmo
-  sudo make && sudo make install
-  popd
-  git clone https://github.com/RenAhsAcme/SYSU-Network-Solution package/minieap
-  sudo make package/minieap/compile V=s
-  ```
+按照下述示例完成克隆仓库与编译准备操作：
 
-- 取出当前目录 `bin/packages/x86_64/base/minieap_0.93-r1_x86_64.ipk`。
+```bash
+enhscme@PC-RENAHSACME:/mnt/c/Users/RenAhsAcme$ cd
+enhscme@PC-RENAHSACME:~$ git clone https://github.com/RenAhsAcme/SYSU-Network-Solution
+# 等待操作完成。
+enhscme@PC-RENAHSACME:~$ cd SYSU-Network-Solution/
+enhscme@PC-RENAHSACME:~/SYSU-Network-Solution$ scripts/feeds update -a
+# 等待操作完成。
+enhscme@PC-RENAHSACME:~/SYSU-Network-Solution$ scripts/feeds install -a
+# 等待操作完成。
+enhscme@PC-RENAHSACME:~/SYSU-Network-Solution$ make menuconfig
+# 等待操作完成。
+```
 
-##### 1.2.2 启动介质制作
+请在接下来的页面中，依次进入 `Target System`，`Subtarget`，`Target Profile` 选择你即将刷入设备的架构信息。完成后保存退出。
 
-使用 Ventoy 制作U盘，将 FirPE ISO 文件、Ubuntu ISO 文件放在U盘根目录下。将 OpenWrt 固件文件和解压的 Physdiskwrite.exe 放在U盘同一目录。
+请继续执行 `make V=s -j1` 开始编译。
 
-##### 1.2.3 Clash 配置文件准备
+> 编译将耗费一定的时间，取决于电脑性能，建议在电脑闲置时进行。你可以尝试采取以下小技巧*（歪门邪道）*加快编译进度：
+>
+> 最开始使用 `make V=s -j4` 进行编译，你可以根据你的电脑可用 RAM 调高 `-j` 选项后的数字，但不能超过可用核心数量。如果不确定当前可用的最大核心数量，请执行 `echo $(nproc)`。
+>
+> 稍后可能会出现关于锁竞争抛出的错误导致编译终止，此时可重新执行 `make V=s -j1`，继续以单线程编译。
+>
+> 这可能会引发一些异常，如果你遇到了问题，请勿使用该方法。
+
+- 请转到 [Releases](https://github.com/RenAhsAcme/SYSU-Network-Solution/releases) 下载 `FirPE-V2.0.1.iso`，`physdiskwrite-0.5.3.zip` 和 Ubuntu（可选）。
+
+
+#### 1.3 需要手动配置的资源
+
+##### 1.3.1 启动介质制作
+
+使用 Ventoy 制作U盘，将 FirPE ISO 文件、Ubuntu Live ISO 文件放在U盘根目录下。将 OpenWrt 固件文件和解压的 Physdiskwrite.exe 放在U盘同一目录。
+
+##### 1.3.2 Clash 配置文件准备
 
 请转到当前电脑正在使用的 Clash Verge 的配置目录，取出 `clash_verge.yaml` 文件，它形如：
 
-![clash_verge.yaml 文件示例](minieap/illustration/Screenshot_16.png)
+![clash_verge.yaml 文件示例](illustration/Screenshot_16.png)
 
-### 3. 软路由配置
+### 2. 软路由配置
 
-#### 3.1 软路由刷机
+#### 2.1 软路由刷机
 
 对于 x86_64 机型，请直接刷进本地硬盘里。
 
@@ -116,7 +137,7 @@
 
   > 如遇到文件系统错误导致该步骤失败，请按以下方法处理。
   >
-  > 重启至 Ubuntu LiveCD，执行终端；
+  > 重启至 Ubuntu LiveCD，执行终端：
   >
   > ```bash
   > lsblk -f
@@ -163,9 +184,11 @@
   >
   > 如果最后没有报错，或得到 harmless 的结果，则执行 `reboot` 以启动 OpenWrt。
 
-#### 3.2 网口配置
+#### 2.2 网口配置
 
 以具有三网口（eth0 作为 WAN，eth1 和 eth2 作为 LAN）软路由为例：
+
+> 新提供的编译配置已默认提供简体中文语言包，你看到的界面可能与下图所示不同。
 
 - 选择合适的 LAN 口与电脑连接，确保电脑可获取到类似 `192.168.1.*` 的 IPv4 地址；
 
@@ -175,37 +198,37 @@
 
 - 点击 **Add new interface...**，按照下图为 eth2 进行配置，若有图片未涉及的设置，请保持默认：
 
-  ![针对 Interfaces >> lan2 >> General Settings 的配置](minieap/illustration/Screenshot_01.png)
+  ![针对 Interfaces >> lan2 >> General Settings 的配置](illustration/Screenshot_01.png)
 
-  ![针对 Interfaces >> lan2 >> Advanced Settings 的配置](minieap/illustration/Screenshot_02.png)
+  ![针对 Interfaces >> lan2 >> Advanced Settings 的配置](illustration/Screenshot_02.png)
 
-  ![针对 Interfaces >> lan2 >> Firewall Settings 的配置](minieap/illustration/Screenshot_03.png)
+  ![针对 Interfaces >> lan2 >> Firewall Settings 的配置](illustration/Screenshot_03.png)
 
-  ![针对 Interfaces >> lan2 >> DHCP Server >> General Setup 的配置](minieap/illustration/Screenshot_04.png)
+  ![针对 Interfaces >> lan2 >> DHCP Server >> General Setup 的配置](illustration/Screenshot_04.png)
 
-  ![针对 Interfaces >> lan2 >> DHCP Server >> IPv6 Settings 的配置](minieap/illustration/Screenshot_05.png)
+  ![针对 Interfaces >> lan2 >> DHCP Server >> IPv6 Settings 的配置](illustration/Screenshot_05.png)
 
 - 点击 **Save & Apply**，随后将网线连接到 eth2 上，重新登录回相同的界面，为 eth1 新建 LAN，设置原理同上，下图展示设置 WAN 的相关配置，你需要新建两个 WAN 在 eth0 上，它们的配置分别如下：
 
-  ![针对 Interfaces >> wan >> General Settings 的配置](minieap/illustration/Screenshot_06.png)
+  ![针对 Interfaces >> wan >> General Settings 的配置](illustration/Screenshot_06.png)
 
-  ![针对 Interfaces >> wan >> Advanced Settings 的配置](minieap/illustration/Screenshot_07.png)
+  ![针对 Interfaces >> wan >> Advanced Settings 的配置](illustration/Screenshot_07.png)
 
-  ![针对 Interfaces >> wan >> Firewall Settings 的配置](minieap/illustration/Screenshot_08.png)
+  ![针对 Interfaces >> wan >> Firewall Settings 的配置](illustration/Screenshot_08.png)
 
-  ![针对 Interfaces >> wan >> DHCP Server >> General Setup 的配置](minieap/illustration/Screenshot_09.png)
+  ![针对 Interfaces >> wan >> DHCP Server >> General Setup 的配置](illustration/Screenshot_09.png)
 
-  ![针对 Interfaces >> wan >> DHCP Server >> IPv6 Settings 的配置](minieap/illustration/Screenshot_10.png)
+  ![针对 Interfaces >> wan >> DHCP Server >> IPv6 Settings 的配置](illustration/Screenshot_10.png)
 
-  ![针对 Interfaces >> wan6 >> General Settings 的配置](minieap/illustration/Screenshot_11.png)
+  ![针对 Interfaces >> wan6 >> General Settings 的配置](illustration/Screenshot_11.png)
 
-  ![针对 Interfaces >> wan6 >> Advanced Settings 的配置](minieap/illustration/Screenshot_12.png)
+  ![针对 Interfaces >> wan6 >> Advanced Settings 的配置](illustration/Screenshot_12.png)
 
-  ![针对 Interfaces >> wan6 >> Firewall Settings 的配置](minieap/illustration/Screenshot_13.png)
+  ![针对 Interfaces >> wan6 >> Firewall Settings 的配置](illustration/Screenshot_13.png)
 
-  ![针对 Interfaces >> wan6 >> DHCP Server >> General Setup 的配置](minieap/illustration/Screenshot_14.png)
+  ![针对 Interfaces >> wan6 >> DHCP Server >> General Setup 的配置](illustration/Screenshot_14.png)
 
-  ![针对 Interfaces >> wan6 >> DHCP Server >> IPv6 Settings 的配置](minieap/illustration/Screenshot_15.png)
+  ![针对 Interfaces >> wan6 >> DHCP Server >> IPv6 Settings 的配置](illustration/Screenshot_15.png)
 
 - （可选）将电脑单独与无线路由器（不接 WAN 的状态）相连，将路由器地址改成 `192.168.3.1`；
 
@@ -213,88 +236,28 @@
 
 #### 3.3 配置 MiniEAP 认证
 
-- 返回 OpenWrt 管理后台页面 --> **System** - **Software** --> **Upload Package** --> 选中提取的 MiniEAP 的 ipk 文件，上传并安装；
-
 - 在电脑上用终端通过 SSH 连接路由，执行下述命令：
 
   ```bash
   minieap -u （NetID） -p （NetID密码） -n （WAN口的实际硬件名称，这里是eth0） -w
   ```
 
-  确认能够请求到认证成功的信息，然后按 Ctrl + C退出，接着执行：
+  确认能够请求到认证成功的信息。
 
-  ```bash
-  vi /etc/minieap.conf
-  ```
 
-  进入 vi 的插入编辑模式，去掉 `no_auto_reauth=1` 这一行，然后退出保存，接着执行：
+#### 3.4 OpenClash 配置
 
-  ```bash
-  cat > /etc/init.d/minieap << 'EOF'
-  #!/bin/sh /etc/rc.common
-  START=99
-  USE_PROCD=1
-  start_service() {
-    procd_open_instance
-    procd_set_param command /usr/sbin/minieap
-    procd_set_param respawn
-    procd_set_param stdout 1
-    procd_set_param stderr 1
-    procd_close_instance
-  }
-  stop_service() {
-    /usr/sbin/minieap -k
-  }
-  EOF
-  chmod +x /etc/init.d/minieap
-  killall minieap
-  /etc/init.d/minieap enable
-  /etc/init.d/minieap start
-  ```
-
-  此时查看下游设备应该可以正常上网。
-
-#### 3.4 解除内网服务访问问题
-
-SYSU 部分服务（如Microsoft 激活服务）只返回内网 IP，当 DNS 查询结果得到内网 IP 时，OpenWrt 处于安全考虑默认情况下舍弃这个解析结果，但这显然不是我们想要的。请转至 **Network** - **DHCP and DNS** - **Filter**，取消勾选 **Rebind protection**。
-
-#### 3.5 OpenClash 配置
-
-- 登入软路由 Web 后台，**System** - **Software** --> **Upload Package** --> 选中下载的 OpenClash 的 ipk 文件，上传并安装；
-
-- 重新登入 Web 管理后台，转至 **Services** --> **OpenClash**，首次进入会要求安装 Core，请按照提示选中一个地址完成安装；
+- 登入 Web 管理后台，转至 **Services** --> **OpenClash**，首次进入会要求安装 Core，请按照提示选中一个地址完成安装；
 
 - 请先按照以下设置进行配置，未提及的设置保持默认无需修改：
-
-  ![针对 OpenClash >> Plugin Settings >> Operation Mode 的配置](minieap/illustration/Screenshot_17.png)
-
-  ![针对 OpenClash >> Plugin Settings >> Traffic Control 的配置_0](minieap/illustration/Screenshot_18.png)
-
-  ![针对 OpenClash >> Plugin Settings >> Traffic Control 的配置_1](minieap/illustration/Screenshot_19.png)
-
-  ![针对 OpenClash >> Plugin Settings >> IPv6 Settings 的配置_0](minieap/illustration/Screenshot_20.png)
-
-  ![针对 OpenClash >> Plugin Settings >> IPv6 Settings 的配置_1](minieap/illustration/Screenshot_21.png)
-
-  ![针对 OpenClash >> Plugin Settings >> GEO Update 的配置_0](minieap/illustration/Screenshot_22.png)
-
-  ![针对 OpenClash >> Plugin Settings >> GEO Update 的配置_1](minieap/illustration/Screenshot_23.png)
-
-  ![针对 OpenClash >> Plugin Settings >> Chnroute Update 的配置](minieap/illustration/Screenshot_24.png)
-
-  ![针对 OpenClash >> Overwrite Settings >> General Settings 的配置](minieap/illustration/Screenshot_25.png)
-
-  ![针对 OpenClash >> Overwrite Settings >> DNS Settings 的配置_0](minieap/illustration/Screenshot_26.png)
-
-  ![针对 OpenClash >> Overwrite Settings >> DNS Settings 的配置_1](minieap/illustration/Screenshot_27.png)
-
-  ![针对 OpenClash >> Overwrite Settings >> Meta Settings 的配置](minieap/illustration/Screenshot_28.png)
 
 - 转到 **Config Manage** 页面，上传提取的 `clash_verge.yaml` 文件，应用后返回到 **Overviews** 页面，启用服务并进入 **Zashboard** 调整订阅规则。
 
 ## 结语
 
 进入 SYSU 后，发现前人给到的资源太过松散，于是折腾了一些时间，做一个通用的一站式方案出来，希望能帮到你。
+
+已进行二次调整，相关步骤更加简洁。
 
 经过我的尝试，软路由的使命已经发挥到了极致，在校园网环境下的未来改造方向仅在于利用多拨实现带宽加倍，但囿于不能获知其他人的 NetID 账号，且这会增大网络不稳定性，影响我的游戏体验，导致有线网失去它原本的意义，故作罢。
 
@@ -306,16 +269,8 @@ SYSU 部分服务（如Microsoft 激活服务）只返回内网 IP，当 DNS 查
 
 感谢 [KumaTea](https://github.com/KumaTea) 提供的 OpenWrt-MiniEAP。
 
-**This repository is forked from [KumaTea/openwrt-minieap](https://github.com/KumaTea/openwrt-minieap). It has been validated on SYSU(Guangzhou Southern).**
-
-Thanks for OpenWrt-MiniEAP provided by [KumaTea](https://github.com/KumaTea)
-
 ### 2. 其他说明 Others
 
+你应当遵循该仓库包含的其它文件的所有开源协议。特别感谢他们对开源社区的贡献。
+
 如果上述内容侵犯了您的相关权益，您可以通过邮件联系我删除。请使用中文与我联系。[RenAhsAcme@outlook.com](mailto:RenAhsAcme@outlook.com?subject=请移除Github上的Repository-SYSU-Network-Solution)
-
-If the above content infringes upon your relevant rights, you can contact me via email to request its removal. You need to use Chinese to contact with me. Email address is attached above this line.
-
-受限于作者水平与精力，部分文字不提供英文翻译。
-
-Due to my level and effort, English Ver. is not provided.

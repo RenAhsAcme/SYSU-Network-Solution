@@ -1,0 +1,1 @@
+-D_GNU_SOURCE -I/usr/include/ncursesw

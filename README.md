@@ -28,12 +28,11 @@
 
   3. 从 CERNET 出口目标为其它地方的流量：限速相比于 1 减半（问题应该在 CERNET 上，学校应该没有主动限速）；该出口 IPv6 特征与 2. 相同；
 
-  4. 未出口，仅在校内流转的流量（未测试跨校区的流量）：全局限速 100Mbps，IPv4 优先，且仅部分服务可使用 IPv6 连通，但表现不佳（可连的有父域名 `www.sysu.edu.cn`，教务部 `jwb.sysu.edu.cn`，未提及的即无法使用 IPv6 或未测试）。
+  4. 未出口，仅在校内流转的流量（未测试跨校区的流量）：全局限速 100Mbps，IPv4 优先，且仅部分服务可使用 IPv6 连通，表现不佳。
 
-     > 关于中山大学 IPv6 表现怪异的原因（基于相关测试推测，不一定准确）：
+     > 关于中山大学 IPv6 表现怪异的原因可能是网络架构具有多出口的特征，所有设备获取到的 IPv6 是分配在 CERNET 上的（即 2001 前缀），运营商网络没有给到 IPv6（对应前缀 240x）。
      >
-     > 中山大学网络架构具有多出口的特征，所有设备获取到的 IPv6 是分配在 CERNET 上的（即 2001 前缀），运营商网络没有给到 IPv6（对应前缀 240x）。CERNET 和运营商网络之间是可以的，但很多情况下取决于运营商和 CERNET 的实际行为。一些商业性质的网站的流量一般走不到 CERNET 上，但大部分情况下是允许跨网直连的。运营商上的设备与 CERNET 上的设备直连会存在正常的降速、延迟不稳的情况。
-
+  
 - 校园网内自定义 DNS 服务器无法生效，DNS 已被全局透明劫持，使用 DoH/DoT 将导致无法上网。
 
 ## 预期效果
@@ -56,7 +55,7 @@
 
 #### 1.1 固件编译
 
-出于安全考虑，你应该使用 OpenWrt 在 GitHub 上最新的源码编译适合你的硬件的固件，因为我无法提供完全适用于你所拥有设备的固件，且 OpenWrt 每隔一段时间会发布更新，其中包含了安全修复，作为下游的仓库，这里可能无法及时同步更新，这将造成一定风险。对于重要的网络设备，你应该时刻保持它使用最新的固件以获得安全保障。请访问：[openwrt/openwrt](https://github.com/openwrt/openwrt)。
+你应该使用 OpenWrt 在 GitHub 上最新的源码编译适合你的硬件的固件，因为我无法提供完全适用于你所拥有设备的固件，且 OpenWrt 每隔一段时间会发布更新，其中包含了安全修复，作为下游的仓库，这里可能无法及时同步更新，这将造成一定风险。对于重要的网络设备，你应该时刻保持它使用最新的固件以获得安全保障。请访问：[openwrt/openwrt](https://github.com/openwrt/openwrt)。
 
 一些内核特性（例如 `kmod-tun`）必须在编译时期就启用，否则它们将在后期无法安装。你应当自行编译固件，官方提供的固件文件通常不包含这些内核特性。（你可以使用一些基于 OpenWrt 魔改的开源固件，但是它们可能包含你不需要的冗余功能，且对下述操作不做成功保证，建议你使用官方固件，仅启用个人需要的特性和插件，为你的设备量身打造。）该仓库提供了一份 `.config` 文件，适用于需要使用 OpenClash、qosify 等插件的情况，该配置文件启用了必要的依赖选项，并默认设置了适用于 x86_64_ext4_only_EFI 的编译产物。你可以使用该仓库提供的 `.config` 文件替换从官方下载的源码目录下的 `.config` 文件，用于快速启用那些依赖配置。
 
@@ -66,7 +65,7 @@
 
 完成固件编译后，请按照指引将你的固件以适当的方式刷入你手中的设备。
 
-> 编译将耗费一定的时间，取决于电脑性能，建议在电脑闲置时进行。你可以尝试采取以下小技巧*（歪门邪道）*加快编译进度：
+> 编译将耗费一定的时间，取决于电脑性能，建议在电脑闲置时进行。你可以尝试采取以下歪门邪道加快编译速度：
 >
 > 最开始使用 `make V=s -j4` 进行编译，你可以根据你的电脑可用 RAM 调高 `-j` 选项后的数字，但不能超过编译环境可用的线程数量。如果不确定当前可用的最大线程数量，请执行 `echo $(nproc)`。
 >
@@ -186,19 +185,35 @@
 
 #### 2.3 配置 MiniEAP 认证
 
-- 在电脑上用终端通过 SSH 连接路由，使用 SCP 将 MiniEAP 的 apk 包传入路由器 `/tmp/` 目录（已在 [Release](https://github.com/RenAhsAcme/SYSU-Network-Solution/Release) 上传适用于 x86 的包，若需要构建其它平台，请转到 [RenAhsAcme/openwrt-minieap-reapk](https://github.com/RenAhsAcme/openwrt-minieap-reapk)），然后执行下述命令：
+- 在电脑上用终端通过 SSH 连接路由，使用 SCP 将 MiniEAP 的 apk 包传入路由器 `/tmp/` 目录（已在 [Release](https://github.com/RenAhsAcme/SYSU-Network-Solution/Release) 上传适用于 x86 的包，若需要构建其它平台，请参考以下方法构建。
+
+  > 首先为你的设备下载对应的 SDK 文件（[清华大学开源软件镜像站 - OpenWrt Downloads](https://mirrors.tuna.tsinghua.edu.cn/openwrt/)）并解压 
+  >
+  > ```bash
+  > cd /path/to/your/sdk
+  > git clone https://github.com/RenAhsAcme/SYSU-Network-Solution.git package/minieap
+  > make menuconfig # choose `minieap` in section `Network`
+  > make package/minieap/compile V=s
+  > ```
+  >
+  > 然后取出 MiniEAP apk 产物。
+  >
+  > 你可以参阅 [[OpenWrt Wiki\] Using the SDK](https://openwrt.org/docs/guide-developer/toolchain/using_the_sdk) 了解更多信息。
+  
+- 然后执行下述命令：
 
   ```bash
   apk add --allow-untrusted /tmp/upload.apk
   minieap -u （NetID） -p （NetID密码） -n （WAN口的实际硬件名称，这里是eth0） -w
   ```
+  
 - 确认能够请求到认证成功的信息，然后按 Ctrl + C退出，接着执行：
 
   ```bash
   vi /etc/minieap.conf
   ```
 
-- 进入 vi 的插入编辑模式，去掉 `no_auto_reauth=1` 这一行，然后退出保存，接着执行：
+- 进入 vi 的插入编辑模式，去掉 `no_auto_reauth=1` 这一行，添加 `module=rjv3`（使得显式使用锐捷认证方式，持续向认证服务器发送保活包，避免认证掉线）， 然后退出保存，接着执行：
 
   ```bash
   cat > /etc/init.d/minieap << 'EOF'
@@ -359,7 +374,7 @@
 
 进入 SYSU 后，发现前人给到的资源太过松散，于是折腾了一些时间，做一个通用的一站式方案出来，希望能帮到你。
 
-如果你还有灵感，请在 Issue 中告诉我，谢谢！
+如果你还有灵感，请在 Issue 中告诉我，如果你有能力解决本仓库内存在的任何问题，可以直接 Pull Request，谢谢！
 
 ## 相关说明 Illustration
 
@@ -373,4 +388,4 @@
 
 你应当遵循该仓库包含的其它文件的所有开源协议。特别感谢他们对开源社区的贡献。
 
-如果上述内容侵犯了您的相关权益，您可以通过邮件联系我删除。请使用中文与我联系。[RenAhsAcme@outlook.com](mailto:RenAhsAcme@outlook.com?subject=请移除Github上的Repository-SYSU-Network-Solution)
+如果上述内容侵犯了您的相关权益，您可以通过邮件联系我删除。

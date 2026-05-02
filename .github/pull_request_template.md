@@ -36,6 +36,9 @@
 
 不具有。
 
+<details>
+    <summary>English Ver.</summary>
+    
 ## What
 
 <!--Please briefly list the changes made here.-->
@@ -69,3 +72,5 @@ No. This change does not involve any breaking changes; you can safely switch to 
 <!--If there is no associated Issue, please retain this paragraph. Otherwise, please use a Markdown hyperlink to link to the Issue page. The format should be: [#37 I am the Title of the Issue](https://github.com/RenAhsAcme/example/issues/37)-->
 
 None.
+    
+</details>

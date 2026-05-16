@@ -65,15 +65,96 @@
 
 完成固件编译后，请按照指引将你的固件以适当的方式刷入你手中的设备。
 
-> 编译将耗费一定的时间，取决于电脑性能，建议在电脑闲置时进行。你可以尝试采取以下歪门邪道加快编译速度：
+Update：经过多次编译工作，我准备了一份完整的编译指南。如果你能按照以下步骤复现，应该能够以较快的速度顺利完成编译。同时我将在 Release 中提供当前最新版的适用于 x86_64 的且包含下述步骤中所述特性的固件。由于个人精力有限，仅当最新版本存在安全更新时才会更新 Release 中提供的固件。如果你的设备不是 x86_64，则你可能必须按照下述步骤完成固件编译。我已尽个人最大努力尽可能以教科书式的、高信息密度的语言描述过程，若你仍有疑惑，建议你先查阅文档，然后咨询一些大语言模型。
+
+> 我的环境如下：
 >
-> 最开始使用 `make V=s -j4` 进行编译，你可以根据你的电脑可用 RAM 调高 `-j` 选项后的数字，但不能超过编译环境可用的线程数量。如果不确定当前可用的最大线程数量，请执行 `echo $(nproc)`。
+> Windows Subsystem for Linux（WSL）- Ubuntu Default Distribution，24 个逻辑处理器，理论可用 16094 MB 内存，可用硬盘空间为 55 GB。下述配置步骤将以该环境作为示例。
 >
-> 稍后可能会出现关于锁竞争抛出的错误导致编译终止，此时可重新执行 `make V=s`，继续以单线程编译。
+> 因此，对于您的个人设备，您必须至少提供以下配置条件才能以较快的速度完成编译工作：
 >
-> 这可能会引发一些异常，如果你遇到了问题，请勿使用该方法。
->
-> 如果你正在使用 WSL 2 环境进行编译，请先提前检查 PATH 变量。Windows 会将自身的 PATH 变量同步到 WSL 2 中去，其中可能包含空格，这会导致后期编译报错。如果有，请暂时移除它们。如果你不需要，可按照官方指引关闭这一特性。
+> 1. 多个核心的 CPU；
+> 2. 尽可能大的 RAM，使得 Linux 环境至少能够使用 8 GB及以上的内存；
+> 3. 充分大的磁盘空间，使得 Linux 环境的根目录至少能够使用 55 GB 及以上的存储空间；
+> 4. 适当的网络环境，使得在 Linux 环境能够以稳定的状态访问 `git.openwrt.org` 和 `github.com`。
+
+1. 按照 Microsoft 官方文档，完成对 WSL 的初始化配置。
+
+2. 进入 WSL 环境，执行 `sudo nano /etc/apt/sources.list.d/ubuntu.sources`，随后将文件替换为以下内容并保存：
+
+   ```bash
+   Types: deb
+   URIs: https://mirror.sysu.edu.cn/ubuntu/
+   Suites: resolute resolute-updates resolute-backports
+   Components: main universe restricted multiverse
+   Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
+   
+   # 安全提示：不建议将下方的链接也更改为镜像站，镜像站同步安全更新存在延迟。
+   Types: deb
+   URIs: https://security.ubuntu.com/ubuntu/
+   Suites: resolute-security
+   Components: main universe restricted multiverse
+   Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
+   ```
+
+   然后执行 `sudo apt update`，等待操作完成。
+
+3. 执行下述命令以在全新环境中完成对编译依赖的配置：
+
+   ```bash
+   sudo apt install -y bzip2 flex libz-dev make subversion unzip which build-essential clang bison gcc-multilib g++-multilib gettext libssl-dev swig 
+   ```
+
+4. 在每次会话启动后，执行 `echo $PATH`，检查返回的结果是否包含空格，请通过 `export PATH=<Your variable>` 移除那些包含空格的项目；
+
+5. 执行 `cd`，切换到 Linux 内部文件系统的家目录，然后执行：
+
+   ```bash
+   wget https://github.com/openwrt/openwrt/archive/refs/tags/v25.12.4.tar.gz
+   ```
+
+   链接因当前版本而不同，请前往 OpenWrt 仓库的 Release 页面获取最新链接。然后执行 `tar xvf v25.12.4.tar.gz` 以解压该压缩包。随后执行 `cd openwrt-25.12.4`。
+
+6. 执行 `./scripts/feeds update -a`，等待操作完成；然后执行 `./scripts/feeds install -a`，等待操作完成。
+
+7. 执行 `make menuconfig`，在接下来的页面完成下述设置：
+
+   勾选：通常是指通过选中项目以后，按下空格键使得对应项目前的勾选状态变为星号 <*>。
+
+   1. 在 `Target System` 和 `Subtarget` 中选择适合你设备的架构；
+   2. 前往 `LuCI`：
+      1. 前往 `1.Collections`，勾选 `luci`；
+      2. 前往 `2.Modules`：
+         1. 勾选 `luci-compat`；
+         2. 前往 `Translations`，勾选 `Simplified Chinese (zh_Hans)`；
+   3. 前往 `Base system`：
+      1. 取消勾选 `dnsmasq`，勾选 `dnsmasq-full`；  
+   4. 前往 `Utilities`：
+      1. 前往 `Shells`，勾选 `bash`；
+      2. 前往 `Compression`，勾选 `unzip`；
+   5. 前往 `Network`：
+      1. 勾选 `ipset`；
+      2. 前往 `File Transfer`，勾选 `curl`；
+      3. 前往 `Routing and Redirection`，勾选 `ip-full`；
+   6. 前往 `Languages`，前往 `Ruby`，勾选 `ruby `，`ruby-yaml`；
+   7. 前往 `Kernel modules`：
+      1. 前往 `Network Support`，勾选 `kmod-tun`， `kmod-inet-diag`；
+      2. 前往 `Netfilter Extensions`，勾选 `kmod-nft-tproxy`；
+
+   然后，Exit and Save。
+
+8. 执行 `make download`，等待操作完成。
+
+9. 执行 `vi package/feeds/packages/rust/Makefile `，将第 79 行 `set=llvm.download-ci-llvm` 设置为 `false`。
+
+10. 执行 `make -j N`，其中 N 的值请遵循下述约束使用尽可能大的值，值越大编译速度越快：
+
+    1. N 的值不能超过当前 Linux 当前可用核心数 + 1；
+    2. N 的值越大，编译过程中占用的 RAM 越大，如果设置的 N 太大导致超过最大 RAM 限制使得编译进程被杀死，你必须重启 WSL 环境，然后重新定位到工作目录，执行 `make -j N`，尝试调小 N 的值；
+    3. 有时你可能遇到一些错误。如果你按照上述指引操作，编译错误的概率应该会大大降低，如果你需要定位具体错误以寻求相关帮助，请给 `make` 命令添加 `V=s` 选项；
+    4. 参考：对于我的示例环境，N = 20 是恰到好处的充分利用资源的设置，你应该关闭 Windows 上运行的绝大多数程序以给 WSL 预留足够的资源。25 分钟无报错顺利完成编译。
+
+11. 编译好的产物存放在 `./bin/targets/`。
 
 
 #### 1.2 需要手动配置的资源

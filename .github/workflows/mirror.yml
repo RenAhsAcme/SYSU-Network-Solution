@@ -1,0 +1,34 @@
+name: Mirror to SYSU GitLab
+
+on:
+  push:
+    branches: ["**"]
+    tags: ["**"]
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout full repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # ✅ 关键：使用 credential（避免特殊字符问题）
+      - name: Setup Git credentials
+        run: |
+          git config --global credential.helper store
+          echo "https://oauth2:${{ secrets.GITLAB_TOKEN }}@git.sysu.edu.cn" > ~/.git-credentials
+
+      - name: Add GitLab remote
+        run: |
+          git remote add gitlab https://git.sysu.edu.cn/RenAhsAcme/SYSU-Network-Solution.git
+
+      - name: Push mirror (with retry)
+        run: |
+          for i in 1 2 3; do
+            git push --mirror gitlab && break
+            echo "Retry $i..."
+            sleep 5
+          done

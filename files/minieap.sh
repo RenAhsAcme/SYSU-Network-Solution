@@ -80,7 +80,7 @@ proto_minieap_setup() {
 	append_setting "if-impl=sockraw"
 	append_setting ${max_fail:+max-fail=$max_fail}
 	append_setting ${max_retries:+max-retries=$max_retries}
-	append_setting ${no_auto_reauth:+no-auto-reauth=$no_auto_reauth}
+	[ "$no_auto_reauth" = "1" ] && append_setting "no-auto-reauth=1"
 	append_setting ${wait_after_fail:+wait-after-fail=$wait_after_fail}
 	append_setting ${stage_timeout:+stage-timeout=$stage_timeout}
 	append_setting ${auth_round:+auth-round=$auth_round}

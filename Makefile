@@ -2,16 +2,12 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=minieap
 PKG_VERSION:=0.93
-PKG_RELEASE:=1
-PKG_MAINTAINER:=KumaTea <KumaTea@outlook.com>
+PKG_RELEASE:=2
+PKG_MAINTAINER:=RenAhsAcme
 PKG_LICENSE:=GPLv3
 PKG_LICENSE_FILES:=LICENSE
 
-PKG_SOURCE_PROTO:=git
-PKG_SOURCE_URL:=https://github.com/KumaTea/minieap.git
-PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
-PKG_SOURCE_VERSION:=a787b1185a5c08d9d4136fbf7282a4fd4ef3129c
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
+PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -20,7 +16,13 @@ define Package/$(PKG_NAME)
 	CATEGORY:=Network
 	TITLE:=Extensible 802.1x client with Ruijie v3 (v4) plugin
 	MAINTAINER:=updateing
-	URL:=https://github.com/updateing/minieap
+	URL:=https://github.com/RenAhsAcme/SYSU-Network-Solution
+endef
+
+define Build/Prepare
+	$(RM) -r $(PKG_BUILD_DIR)
+	$(INSTALL_DIR) $(PKG_BUILD_DIR)
+	$(CP) ./src/. $(PKG_BUILD_DIR)/
 endef
 
 define Package/$(PKG_NAME)/install

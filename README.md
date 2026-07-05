@@ -18,11 +18,11 @@
 
 ## 可用网络环境说明
 
-- 该教程基于中山大学广州校区南校园测试而得，实际网络环境请以所在校区实际为准；
+- 该教程基于中山大学广州校区南校园网络环境+学生身份接入测试而得，实际请以所在校区实际为准；
 
-- 校园网在非凌晨时段对全校限速，每台直接接入校园网的设备在限速时段具有下述特征（实验室、机房等由网络中心单独配网的情况未测试）：
+- 校园网在非凌晨时段对全校限速，每台直接接入校园网的设备在限速时段具有下述特征（实验室、机房等单独配网的情况未测试）：
 
-  1. 从任一运营商出口的流量：全局限速 70Mbps，部分教学区限速提升至 100Mbps；该出口无 IPv6 特征；
+  1. 从任一运营商出口的流量：生活区全局限速 70Mbps；该出口无 IPv6 特征；
 
   2. 从 CERNET 出口目标为北京的流量：限速与 1 相同；该出口具有 IPv6 特征，且 IPv6 优先；
 
@@ -30,10 +30,12 @@
 
   4. 未出口，仅在校内流转的流量（未测试跨校区的流量）：全局限速 100Mbps，IPv4 优先，且仅部分服务可使用 IPv6 连通，表现不佳。
 
-     > 关于中山大学 IPv6 表现怪异的原因可能是网络架构具有多出口的特征，所有设备获取到的 IPv6 是分配在 CERNET 上的（即 2001 前缀），运营商网络没有给到 IPv6（对应前缀 240x）。
-     >
+     > - 中山大学 IPv6 分配在 CERNET 上，因此当您访问 CERNET 不可及的目标导致流量路由到运营商网络出口时，您无法使用 IPv6 特性。
+     > - 校园网 IPv4/IPv6 为独立双栈结构，因此您可以顺利地直接访问 IPv6 目标（前提是 CERNET 可及），但上游未通过 RA/DHCPv6 通告 IPv6 DNS 服务器，因此即使下游客户端获得了 IPv6 地址和默认路由，但无法仅依赖 IPv6 完成域名解析，必须保持 IPv4 启用才能完成 IPv6 解析。很多检测网站也因此错误声称 IPv6 无法完全正常使用。您可尝试访问 mirrors6.tuna.tsinghua.edu.cn（清华大学开源软件镜像站仅解析 IPv6 的地址）来验证校园网 IPv6 的工作状态。
+     > - 部分从教学楼接入的设备没有硬性限速，当单个 AP 接入人数少时，可以获得远超 70Mbps 的速度。这也从侧面证明了校园网限速在不同的场景下具有灵活的配置策略，但可以确定的是，几乎所有生活区都硬性限速 70Mbps。
   
-- 校园网内自定义 DNS 服务器无法生效，DNS 已被全局透明劫持，使用 DoH/DoT 将导致无法上网。
+- 校园网内在下游设备设置自定义 DNS 服务器无法生效，DNS 已被全局透明劫持，使用 DoH/DoT 将导致无法上网。
+> 您似乎没有充分的且合适的理由更换 DNS。校园网出口依赖检查 DNS 报文来决定流量前往 CERNET 还是运营商网络，部分校内专属服务（如微软激活服务等）只支持使用校内 DNS 解析，因此您似乎没有充分的理由使用自定义 DNS。
 
 ## 预期效果
 
@@ -152,7 +154,7 @@ Update：经过多次编译工作，我准备了一份完整的编译指南。�
     1. N 的值不能超过当前 Linux 当前可用核心数 + 1；
     2. N 的值越大，编译过程中占用的 RAM 越大，如果设置的 N 太大导致超过最大 RAM 限制使得编译进程被杀死，你必须重启 WSL 环境，然后重新定位到工作目录，执行 `make -j N`，尝试调小 N 的值；
     3. 有时你可能遇到一些错误。如果你按照上述指引操作，编译错误的概率应该会大大降低，如果你需要定位具体错误以寻求相关帮助，请给 `make` 命令添加 `V=s` 选项；
-    4. 参考：对于我的示例环境，N = 20 是恰到好处的充分利用资源的设置，你应该关闭 Windows 上运行的绝大多数程序以给 WSL 预留足够的资源。25 分钟无报错顺利完成编译。
+    4. 参考：对于我的示例环境，N = 18 是恰到好处的充分利用资源的设置，你应该关闭 Windows 上运行的绝大多数程序以给 WSL 预留足够的资源。25 分钟无报错顺利完成编译。
 
 11. 编译好的产物存放在 `./bin/targets/`。
 
@@ -222,43 +224,17 @@ Update：经过多次编译工作，我准备了一份完整的编译指南。�
 
 以具有三网口（eth0 作为 WAN，eth1 和 eth2 作为 LAN）软路由为例：
 
-> 新提供的编译配置已默认提供简体中文语言包，你看到的界面可能与下图所示不同。
-
 - 选择合适的 LAN 口与电脑连接，确保电脑可获取到类似 `192.168.1.*` 的 IPv4 地址；
-
 - 电脑 Web 访问 `192.168.1.1` --> **Log in**（无密码） --> 按照提示设置密码后重新登录；
+- 转至 http://192.168.1.1/cgi-bin/luci/admin/network/network 的接口选项卡，确认当前连接的端口，然后按以下截图配置：
 
-- 转至 **Network** - **Interfaces**，确认当前连接的端口（如 eth0），剩下的全部 Delete；
+![Screenshot_01](illustration/Screenshot_01.webp)
+![Screenshot_02](illustration/Screenshot_02.webp)
+![Screenshot_03](illustration/Screenshot_03.webp)
 
-- 点击 **Add new interface...**，按照下图为 eth2 进行配置，若有图片未涉及的设置，请保持默认：
+  切换到设备选项卡，然后配置 br-lan，如图所示：
 
-  ![针对 Interfaces >> lan2 >> General Settings 的配置](illustration/Screenshot_01.png)
-
-  ![针对 Interfaces >> lan2 >> Advanced Settings 的配置](illustration/Screenshot_02.png)
-
-  ![针对 Interfaces >> lan2 >> Firewall Settings 的配置](illustration/Screenshot_03.png)
-
-  ![针对 Interfaces >> lan2 >> DHCP Server >> General Setup 的配置](illustration/Screenshot_04.png)
-
-  ![针对 Interfaces >> lan2 >> DHCP Server >> IPv6 Settings 的配置](illustration/Screenshot_05.png)
-
-- 点击 **Save & Apply**，随后将网线连接到 eth2 上，重新登录回相同的界面，为 eth1 新建 LAN，设置原理同上，下图展示设置 WAN 的相关配置，你需要新建两个 WAN 在 eth0 上，它们的配置分别如下：
-
-  ![针对 Interfaces >> wan >> General Settings 的配置](illustration/Screenshot_06.png)
-
-  ![针对 Interfaces >> wan >> Advanced Settings 的配置](illustration/Screenshot_07.png)
-
-  ![针对 Interfaces >> wan >> Firewall Settings 的配置](illustration/Screenshot_08.png)
-
-  ![针对 Interfaces >> wan6 >> General Settings 的配置](illustration/Screenshot_11.png)
-
-  ![针对 Interfaces >> wan6 >> Advanced Settings 的配置](illustration/Screenshot_12.png)
-
-  ![针对 Interfaces >> wan6 >> Firewall Settings 的配置](illustration/Screenshot_13.png)
-
-  ![针对 Interfaces >> wan6 >> DHCP Server >> General Setup 的配置](illustration/Screenshot_14.png)
-
-  ![针对 Interfaces >> wan6 >> DHCP Server >> IPv6 Settings 的配置](illustration/Screenshot_15.png)
+![Screenshot_04](illustration/Screenshot_04.webp)
 
 - （可选）将电脑单独与无线路由器（不接 WAN 的状态）相连，将路由器地址改成 `192.168.3.1`；
 
@@ -272,7 +248,7 @@ Update：经过多次编译工作，我准备了一份完整的编译指南。�
   >
   > ```bash
   > cd /path/to/your/sdk
-  > git clone https://github.com/RenAhsAcme/SYSU-Network-Solution.git package/minieap
+  > git clone --depth 1 --branch main https://github.com/RenAhsAcme/SYSU-Network-Solution.git package/minieap
   > make menuconfig # choose `minieap` in section `Network`
   > make package/minieap/compile V=s
   > ```
@@ -285,7 +261,7 @@ Update：经过多次编译工作，我准备了一份完整的编译指南。�
 
   ```bash
   apk add --allow-untrusted /tmp/upload.apk
-  minieap -u （NetID） -p （NetID密码） -n （WAN口的实际硬件名称，这里是eth0） -w
+  minieap -u （NetID用户名） -p （NetID密码） -n （WAN口的实际硬件名称，这里是eth0） -w -b 3 --module rjv3
   ```
   
 - 确认能够请求到认证成功的信息，然后按 Ctrl + C退出，接着执行：
@@ -294,7 +270,7 @@ Update：经过多次编译工作，我准备了一份完整的编译指南。�
   vi /etc/minieap.conf
   ```
 
-- 进入 vi 的插入编辑模式，去掉 `no_auto_reauth=1` 这一行，添加 `module=rjv3`（使得显式使用锐捷认证方式，持续向认证服务器发送保活包，避免认证掉线）， 然后退出保存，接着执行：
+- 进入 vi 的插入编辑模式，去掉 `no_auto_reauth=1` 这一行（如无，请忽略），然后退出保存，接着执行：
 
   ```bash
   cat > /etc/init.d/minieap << 'EOF'
@@ -327,6 +303,8 @@ Update：经过多次编译工作，我准备了一份完整的编译指南。�
 - 转到 [vernesong/OpenClash](https://github.com/vernesong/OpenClash)，按照 Wiki 等相关指引完成适合你的科学上网配置。
 
 #### 2.5 流量整形
+
+> 以下思路为过往探索时所进行的一些工作，但由于个人当前设备及网络需求发生了极其复杂的变化，该规则灵活性不足，在极端情况下可能影响用网体验，因此不再建议使用。本部分内容仅供参考。
 
 利用流量整形实现在下游设备上大流量任务进行的同时保证小包传输延迟不发生剧烈抖动，适用于保证前台游戏延迟体验的同时在后台进行近乎满速的大流量下载任务，远程桌面同时下载大包保证不发生画面卡顿。如果需要，你还可以部署多设备竞争条件，使得速度分配更加公平。灵感来源于校园网对全校流量实施的深度优化，确保所有人公平用网的手段。
 
@@ -401,6 +379,8 @@ Update：经过多次编译工作，我准备了一份完整的编译指南。�
 
 #### 3.6 Tailscale 穿透
 
+> 本部分内容初衷是为了解决极端网络环境下 Tailscale 穿透成功率低的问题，但在常规用网（如在学校内不同地点的互联）环境中并不存在该问题，因此该部分所述内容可能具有伪需求之嫌。如果您没有这方面的极端需求，可以忽略这里的描述。本部分内容仅供参考。
+
 由于本人做网络拓扑时引入了两层 NAT，导致从运营商网络发起穿透的成功率不高。因此考虑在 OpenWrt 再部署一个 Tailscale 以提高内网穿透成功率。如果你已经能正常穿透，请跳过这部分内容。
 
 - Tailscale 下载页面选 Other，跳转到 Stable release track
@@ -455,17 +435,9 @@ Update：经过多次编译工作，我准备了一份完整的编译指南。�
 
 进入 SYSU 后，发现前人给到的资源太过松散，于是折腾了一些时间，做一个通用的一站式方案出来，希望能帮到你。
 
-如果你还有灵感，请在 Issue 中告诉我，如果你有能力解决本仓库内存在的任何问题，可以直接 Pull Request，谢谢！
+如果你还有灵感，请在 Issue 中告诉我。
 
 ## 相关说明 Illustration
-
-### 1. 对 OpenWrt-MiniEAP 的说明 Illustration for OpenWrt-MiniEAP
-
-**该 Repository 所提供的 OpenWrt-MiniEAP 的 Source Code 是从 [KumaTea/openwrt-minieap](https://github.com/KumaTea/openwrt-minieap) Fork 而来。已在 SYSU (Guangzhou South Campus) 验证了可靠性。**
-
-感谢 [KumaTea](https://github.com/KumaTea) 提供的 OpenWrt-MiniEAP。
-
-### 2. 其他说明 Others
 
 你应当遵循该仓库包含的其它文件的所有开源协议。特别感谢他们对开源社区的贡献。
 

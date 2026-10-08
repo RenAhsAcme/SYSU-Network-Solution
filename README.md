@@ -444,3 +444,7 @@ Update：经过多次编译工作，我准备了一份完整的编译指南。�
 如果上述内容侵犯了您的相关权益，您可以通过邮件联系我删除。
 
 由于 Pull Request 之前发生过潜在的隐私泄露风险，Pull Request 的不可删除特性，为了保护我的隐私，已阻止对 Pull Request 的访问。如果您希望贡献仓库，请将修改完成的文件上传到 Issue，谢谢！
+
+> 推荐
+>
+> [RenAhsAcme/edunet-openwrt](https://github.com/RenAhsAcme/edunet-openwrt)

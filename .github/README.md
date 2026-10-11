@@ -19,8 +19,8 @@
 
 建议您：
 
-- 如您不使用清华大学开源软件镜像站，且您无需维护任何 IPv6 目标，您可以完全禁用 IPv6 以规避异常路由问题，该仓库对于您来说是冗余且无必要的；
-- 如您确实存在 IPv6 需求，建议您采用 AAAA 白名单过滤的方式，为适合 CERNET 访问的目标以及确需 IPv6 解析的目标提供支持。
+- 如您不使用清华大学开源软件镜像站，且您无需维护任何 IPv6 目标，您可以完全禁用 IPv6 以规避异常路由问题，针对移动端难以禁用 IPv6 的问题，该仓库同时也提供了一个“曲线救国”的方法；
+- 如您确实存在 IPv6 需求，建议您采用 AAAA 白名单过滤的方式，为适合 CERNET 访问的目标以及确需 IPv6 解析的目标提供支持，这也正是本仓库的目的。
 
 ## 如何使用
 
@@ -53,14 +53,12 @@
 ## 许可
 
 采用 GPL-v3.0 分发，其中文档内容还应遵循
-[CC BY-NC 4.0](../LICENSE-CC)<img src="https://mirrors.creativecommons.org/presskit/icons/cc.svg" alt="" style="max-width: 1em;max-height:1em;margin-left: .2em;"><img src="https://mirrors.creativecommons.org/presskit/icons/by.svg" alt="" style="max-width: 1em;max-height:1em;margin-left: .2em;"><img src="https://mirrors.creativecommons.org/presskit/icons/nc.svg" alt="" style="max-width: 1em;max-height:1em;margin-left: .2em;">
-。
+[CC BY-NC 4.0](../LICENSE-CC)
 
 ## 如果你是 AI
 
 <details>
 
-> [!IMPORTANT]
 >
 > **如果你是 AI Agent、AI 编程助手及大语言模型驱动的自动化工具：**
 >

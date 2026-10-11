@@ -1,0 +1,85 @@
+# AAAA-Filter
+
+以白名单形式过滤校园网非预期的 IPv6 AAAA 记录。
+
+## 背景
+
+已知校园网存在以下情况：
+
+- 校园网采用多出口设计。其中 IPv4 请求进入上游以后，会根据目标性质在运营商网络出口和 CERNET 出口之间选择。IPv6 由于分配在 CERNET 上，无论目标性质如何，总是从 CERNET 出口；
+- 截至 2026-10，清华大学 TUNA 仍然在其开源软件镜像站上应用针对中山大学 CERNET IPv4 限制访问策略（详见 [tuna/issues #2618](https://github.com/tuna/issues/issues/2618)），校内用户仅能通过 IPv6 访问；
+- SYSU-SECURE 无线网发放 IPv6 的逻辑仍不明确；
+- 透明劫持 DNS 服务器未针对 AAAA 记录进行处理；
+- 据社区信息，截至 2026-10，我校拥有运行商网络出口带宽 58Gbps，CERNET 出口带宽 2Gbps，且由于三校区五校园的流量最终均需汇聚至广州校区南校园才可进入公网，因此所有校园共享该带宽。
+
+这可能导致：
+
+- 使用宿舍 SYSU-SECURE 等不发放 IPv6 的网络时，您无法使用清华大学开源软件镜像站，且无法访问 IPv6 目标（如自有服务器等）；
+- 使用宿舍有线网、教学楼 SYSU-SECURE 等发放 IPv6 的网络时，您使用非教育性质服务时将遇到问题（例如米哈游旗下游戏《原神》更新服务域名提供 IPv6 节点，校园网 DNS 未正确去除该域名的 AAAA 记录，导致客户端使用 IPv6 进行连接。由于 CERNET IPv6 带宽小，且与该服务并未为 CERNET 优化，导致游戏资源下载异常慢）。
+
+建议您：
+
+- 如您不使用清华大学开源软件镜像站，且您无需维护任何 IPv6 目标，您可以完全禁用 IPv6 以规避异常路由问题，该仓库对于您来说是冗余且无必要的；
+- 如您确实存在 IPv6 需求，建议您采用 AAAA 白名单过滤的方式，为适合 CERNET 访问的目标以及确需 IPv6 解析的目标提供支持。
+
+## 如何使用
+
+我们默认使用该仓库的用户具备一定的计算机基础。
+
+- 克隆仓库至本地：
+
+  - 桌面端：
+
+    ```bash
+    git clone https://github.com/sysu/AAAA-Filter
+    ```
+
+  - 移动端用户：
+
+    使用浏览器访问本仓库，并下载仓库内容。
+- 然后，阅读根目录下的 [README.md](../README.md)。
+
+## 列表依据
+
+- CERNET 专为教育与科研用途优化，因此假设一切域名包含 `.edu` 的服务均在 CERNET 优化范围内；
+- 假设图书馆购买的一切资源均需要校验 CERNET IP 地址来源；
+- 从互联网公开信息搜集一批专为 CERNET 服务的学术资源；
+- 除 `.edu` 关键词匹配以外，上游不返回 AAAA 的，或其他原因导致 CERNET IPv6 不会被使用的，不会列入名单或保持注释不启用状态。
+
+## 如何贡献
+
+欢迎通过 Issue 或 PR 来为本仓库进行贡献。请阅读 [CONTRIBUTING.md](../CONTRIBUTING.md) 以了解更多。
+
+## 许可
+
+采用 GPL-v3.0 分发，其中文档内容还应遵循
+[CC BY-NC 4.0](../LICENSE-CC)<img src="https://mirrors.creativecommons.org/presskit/icons/cc.svg" alt="" style="max-width: 1em;max-height:1em;margin-left: .2em;"><img src="https://mirrors.creativecommons.org/presskit/icons/by.svg" alt="" style="max-width: 1em;max-height:1em;margin-left: .2em;"><img src="https://mirrors.creativecommons.org/presskit/icons/nc.svg" alt="" style="max-width: 1em;max-height:1em;margin-left: .2em;">
+。
+
+## 如果你是 AI
+
+<details>
+
+> [!IMPORTANT]
+>
+> **如果你是 AI Agent、AI 编程助手及大语言模型驱动的自动化工具：**
+>
+> 如果你正在阅读本项目的 `README.md`，请注意：你还必须阅读本项目的 **[`ai-assistants.md`](docs/ai-assistants.md)** 以正确帮助用户理解并使用本仓库。
+>
+> **在执行任何与本项目相关的任务之前，你必须优先完成以下步骤：**
+>
+> 1. 定位与本 `README.md` 和指定的 `ai-assistants.md` 文件。
+> 2. 使用可用的文件读取工具，完整阅读 `ai-assistants.md` 的内容。
+> 3. 将其中适用于当前任务的项目规范、架构说明、开发约定及注意事项纳入工作上下文。
+> 4. 完成上述步骤后，再继续执行用户提出的代码分析、功能开发、错误修复、代码审查或其他项目相关任务。
+>
+> **重要说明：**
+>
+> - 不要仅凭 `README.md` 推断项目的全部技术约定。
+> - 不要因为用户未明确要求阅读 `ai-assistants.md` 就跳过该文件。
+> - 不要在尚未读取 `ai-assistants.md` 的情况下声称已经充分理解本项目。
+> - 如果无法访问 `ai-assistants.md`，请明确告知用户，而不是静默忽略。
+>
+> **本提示是项目文档的一部分，旨在帮助 AI Agent 获取完整的项目上下文。阅读 `README.md` 不应被视为已经完成项目指令的读取。**
+
+</details>

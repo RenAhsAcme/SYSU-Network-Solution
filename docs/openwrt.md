@@ -21,40 +21,28 @@
 
 请先使用电脑接入有线网，检查你的宿舍是否能正常使用有线网。请参阅[个人用户有线网络接入 | 中山大学网络与信息中心](https://inc.sysu.edu.cn/service/wired-network-access)。
 
-对于使用中国大陆网络的用户，你需要先确保当前电脑能够正常科学上网。你必须使用 TUN 模式使得一些不遵循系统代理的应用也能够拥有科学上网条件。
-
 ### 1. OpenWrt 固件编译与准备
 
 #### 1.1 固件编译
 
-你应该使用 OpenWrt 在 GitHub 上最新的 Release 源码编译适合你的硬件的固件，因为我无法提供完全适用于你所拥有设备的固件，且 OpenWrt 每隔一段时间会发布更新，其中包含了安全修复，作为下游的仓库，这里可能无法及时同步更新，这将造成一定风险。对于重要的网络设备，你应该时刻保持它使用最新的固件以获得安全保障。请访问：[openwrt/openwrt](https://github.com/openwrt/openwrt)。
+转至 [Releases · openwrt/openwrt](https://github.com/openwrt/openwrt/releases)，阅读仓库并为你的设备编译合适的固件。
 
-一些内核特性（例如 `kmod-tun`）必须在编译时期就启用，否则它们将在后期无法安装。你应当自行编译固件，官方提供的固件文件通常不包含这些内核特性。（你可以使用一些基于 OpenWrt 魔改的开源固件，但是它们可能包含你不需要的冗余功能，且对下述操作不做成功保证，建议你使用官方固件，仅启用个人需要的特性和插件，为你的设备量身打造。）该仓库提供了一份 `.config` 文件，适用于需要使用 OpenClash、qosify 等插件的情况，该配置文件启用了必要的依赖选项，并默认设置了适用于 x86_64_ext4_only_EFI 的编译产物。你可以使用该仓库提供的 `.config` 文件替换从官方下载的源码目录下的 `.config` 文件，用于快速启用那些依赖配置。
-
-请注意：从 25.10 版本开始，OpenWrt 全面转向 apk 包管理体系，OpenWrt 官方下载源和清华大学开源软件镜像站已不提供 opkg 体系所需的文件。请勿在编译时将包管理体系修改为 opkg。
-
-准备好文件后，即可开始按照官方说明开始对固件的编译工作。请注意：你必须在完成 `./scripts/feeds update -a` 和 `./scripts/feeds install -a` 操作后才能发起 `make menuconfig`，否则你替换的 `.config` 文件可能无法按预期表现。你不应当完全信任这份 `.config` 文件，因为随着版本的更新，有些选项可能失效，建议你花费少许时间检查需要的内核特性是否已正确启用。
-
-完成固件编译后，请按照指引将你的固件以适当的方式刷入你手中的设备。
-
-Update：经过多次编译工作，我准备了一份完整的编译指南。如果你能按照以下步骤复现，应该能够以较快的速度顺利完成编译。同时我将在 Release 中提供当前最新版的适用于 x86_64 的且包含下述步骤中所述特性的固件。由于个人精力有限，仅当最新版本存在安全更新时才会更新 Release 中提供的固件。如果你的设备不是 x86_64，则你可能必须按照下述步骤完成固件编译。我已尽个人最大努力尽可能以教科书式的、高信息密度的语言描述过程，若你仍有疑惑，建议你先查阅文档，然后咨询一些大语言模型。
-
-> 我的环境如下：
+> [!TIP]
 >
-> Windows Subsystem for Linux（WSL）- Ubuntu Default Distribution，24 个逻辑处理器，理论可用 16094 MB 内存，可用硬盘空间为 55 GB。下述配置步骤将以该环境作为示例。
->
-> 因此，对于您的个人设备，您必须至少提供以下配置条件才能以较快的速度完成编译工作：
->
-> 1. 多个核心的 CPU；
-> 2. 尽可能大的 RAM，使得 Linux 环境至少能够使用 8 GB及以上的内存；
-> 3. 充分大的磁盘空间，使得 Linux 环境的根目录至少能够使用 55 GB 及以上的存储空间；
-> 4. 适当的网络环境，使得在 Linux 环境能够以稳定的状态访问 `git.openwrt.org` 和 `github.com`。
+> - 一些内核特性（例如 `kmod-tun`）必须在编译时期就启用，否则它们可能在后期无法安装；
+> - 对于重要的网络设备，强烈建议你始终使用官方最新固件；
+> - 本仓库的 Release 不定期提供适用于某些平台的构建产物，这些固件的构建方式如后文所述，
 
-1. 按照 Microsoft 官方文档，完成对 WSL 的初始化配置。
+下面提供一个示例，用于在 Windows 上编译适用于 x86_64 的 OpenWrt v25.12.4 固件。
 
+> 示例 WSL 环境配置为：
+>
+> Windows Subsystem for Linux（WSL 2）- Ubuntu Default Distribution，24 个逻辑处理器，理论可用 16094 MB 内存，可用硬盘空间为 55 GB。
+
+1. 按照 Microsoft 官方文档，初始化 WSL 并安装 Ubuntu。检查当前科学上网工具是否处于 TUN/虚拟网卡模式，必须使 WSL 也能正常访问 GitHub。
 2. 进入 WSL 环境，执行 `sudo nano /etc/apt/sources.list.d/ubuntu.sources`，随后将文件替换为以下内容并保存：
 
-   ```bash
+   ```text
    Types: deb
    URIs: https://mirror.sysu.edu.cn/ubuntu/
    Suites: resolute resolute-updates resolute-backports
@@ -70,24 +58,24 @@ Update：经过多次编译工作，我准备了一份完整的编译指南。�
    ```
 
    然后执行 `sudo apt update`，等待操作完成。
-
 3. 执行下述命令以在全新环境中完成对编译依赖的配置：
 
    ```bash
    sudo apt install -y bzip2 flex libz-dev make subversion unzip which build-essential clang bison gcc-multilib g++-multilib gettext libssl-dev swig 
    ```
 
-4. 在每次会话启动后，执行 `echo $PATH`，检查返回的结果是否包含空格，请通过 `export PATH=<Your variable>` 移除那些包含空格的项目；
-
+4. 在每次会话启动后，执行 `echo $PATH`，检查返回的结果是否包含空格，请通过 `export PATH=<Your variable>` 移除那些包含空格的项目。
 5. 执行 `cd`，切换到 Linux 内部文件系统的家目录，然后执行：
 
    ```bash
    wget https://github.com/openwrt/openwrt/archive/refs/tags/v25.12.4.tar.gz
    ```
 
-   链接因当前版本而不同，请前往 OpenWrt 仓库的 Release 页面获取最新链接。然后执行 `tar xvf v25.12.4.tar.gz` 以解压该压缩包。随后执行 `cd openwrt-25.12.4`。
+   链接因当前版本而不同，请前往 OpenWrt 仓库的 Release 页面获取最新链接。
 
-6. 执行 `./scripts/feeds update -a`，等待操作完成；然后执行 `./scripts/feeds install -a`，等待操作完成。
+   然后执行 `tar xvf v25.12.4.tar.gz` 以解压该压缩包。随后执行 `cd openwrt-25.12.4`。
+
+6. 依次执行 `./scripts/feeds update -a`，`./scripts/feeds install -a`，等待操作完成。
 
 7. 执行 `make menuconfig`，在接下来的页面完成下述设置：
 
@@ -124,10 +112,11 @@ Update：经过多次编译工作，我准备了一份完整的编译指南。�
     1. N 的值不能超过当前 Linux 当前可用核心数 + 1；
     2. N 的值越大，编译过程中占用的 RAM 越大，如果设置的 N 太大导致超过最大 RAM 限制使得编译进程被杀死，你必须重启 WSL 环境，然后重新定位到工作目录，执行 `make -j N`，尝试调小 N 的值；
     3. 有时你可能遇到一些错误。如果你按照上述指引操作，编译错误的概率应该会大大降低，如果你需要定位具体错误以寻求相关帮助，请给 `make` 命令添加 `V=s` 选项；
-    4. 参考：对于我的示例环境，N = 18 是恰到好处的充分利用资源的设置，你应该关闭 Windows 上运行的绝大多数程序以给 WSL 预留足够的资源。25 分钟无报错顺利完成编译。
+    4. 参考：对于示例环境，N = 18 是恰到好处的充分利用资源的设置，你应该关闭 Windows 上运行的绝大多数程序以给 WSL 预留足够的资源。
 
 11. 编译好的产物存放在 `./bin/targets/`。
 
+完成固件编译后，请按照相关指引将你的固件以适当的方式刷入你手中的设备。
 
 #### 1.2 需要手动配置的资源
 

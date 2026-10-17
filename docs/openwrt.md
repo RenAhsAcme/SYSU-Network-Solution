@@ -21,11 +21,11 @@
 
 请先使用电脑接入有线网，检查你的宿舍是否能正常使用有线网。请参阅[个人用户有线网络接入 | 中山大学网络与信息中心](https://inc.sysu.edu.cn/service/wired-network-access)。
 
-### 1. OpenWrt 固件编译与准备
+### 1. 资源准备
 
 #### 1.1 固件编译
 
-转至 [Releases · openwrt/openwrt](https://github.com/openwrt/openwrt/releases)，阅读仓库并为你的设备编译合适的固件。
+本方案采用 OpenWrt 官方固件，转至 [Releases · openwrt/openwrt](https://github.com/openwrt/openwrt/releases)，阅读仓库并为你的设备编译合适的固件。
 
 > [!TIP]
 >
@@ -75,9 +75,15 @@
 
    然后执行 `tar xvf v25.12.4.tar.gz` 以解压该压缩包。随后执行 `cd openwrt-25.12.4`。
 
-6. 依次执行 `./scripts/feeds update -a`，`./scripts/feeds install -a`，等待操作完成。
+6. 执行 `nano feeds.conf.default`，在文件末尾添加以下内容并保存：
 
-7. 执行 `make menuconfig`，在接下来的页面完成下述设置：
+   ```text
+   src-git sysu https://github.com/sysu/Stu-Network.git;main
+   ```
+
+7. 依次执行 `./scripts/feeds update -a`，`./scripts/feeds install -a`，等待操作完成。
+
+8. 执行 `make menuconfig`，在接下来的页面完成下述设置：
 
    勾选：通常是指通过选中项目以后，按下空格键使得对应项目前的勾选状态变为星号 <*>。
 
@@ -96,6 +102,7 @@
       1. 勾选 `ipset`；
       2. 前往 `File Transfer`，勾选 `curl`；
       3. 前往 `Routing and Redirection`，勾选 `ip-full`；
+      4. 勾选 minieap。
    6. 前往 `Languages`，前往 `Ruby`，勾选 `ruby `，`ruby-yaml`；
    7. 前往 `Kernel modules`：
       1. 前往 `Network Support`，勾选 `kmod-tun`， `kmod-inet-diag`；
@@ -103,26 +110,22 @@
 
    然后，Exit and Save。
 
-8. 执行 `make download`，等待操作完成。
+9. 执行 `make download`，等待操作完成。
 
-9. 执行 `vi package/feeds/packages/rust/Makefile `，将第 79 行 `set=llvm.download-ci-llvm` 设置为 `false`。
+10. 执行 `vi package/feeds/packages/rust/Makefile`，将第 79 行 `set=llvm.download-ci-llvm` 设置为 `false`。
 
-10. 执行 `make -j N`，其中 N 的值请遵循下述约束使用尽可能大的值，值越大编译速度越快：
+11. 执行 `make -j N`，其中 N 的值请遵循下述约束使用尽可能大的值，值越大编译速度越快：
 
     1. N 的值不能超过当前 Linux 当前可用核心数 + 1；
     2. N 的值越大，编译过程中占用的 RAM 越大，如果设置的 N 太大导致超过最大 RAM 限制使得编译进程被杀死，你必须重启 WSL 环境，然后重新定位到工作目录，执行 `make -j N`，尝试调小 N 的值；
     3. 有时你可能遇到一些错误。如果你按照上述指引操作，编译错误的概率应该会大大降低，如果你需要定位具体错误以寻求相关帮助，请给 `make` 命令添加 `V=s` 选项；
     4. 参考：对于示例环境，N = 18 是恰到好处的充分利用资源的设置，你应该关闭 Windows 上运行的绝大多数程序以给 WSL 预留足够的资源。
 
-11. 编译好的产物存放在 `./bin/targets/`。
+12. 编译好的产物存放在 `./bin/targets/`。
 
-完成固件编译后，请按照相关指引将你的固件以适当的方式刷入你手中的设备。
+#### 1.2 科学上网配置文件
 
-#### 1.2 需要手动配置的资源
-
-请转到当前电脑正在使用的 Clash Verge 的配置目录，取出 `clash_verge.yaml` 文件，它形如：
-
-![clash_verge.yaml 文件示例](illustration/Screenshot_16.png)
+取出 Clash 订阅文件。根据服务商提供的指引准备。
 
 ### 2. 软路由配置
 
@@ -130,7 +133,7 @@
 
 请按照 OpenWrt 官方指引，将固件以恰当的方式刷入你的设备。
 
-> 对于 x86设备，如遇到文件系统错误导致调整 rootfs 分区大小操作失败，请按以下方法处理。
+> 对于 x86_64 设备，如遇到文件系统错误导致调整 rootfs 分区大小操作失败，请按以下方法处理。
 >
 > 重启至 Ubuntu LiveCD，执行终端：
 >
@@ -173,15 +176,15 @@
 > ```bash
 > (parted) resizepart 2 100%
 > (parted) quit
-> sudo resize2fs /dev/sda2
-> sudo e2fsck -f /dev/sda2
+> sudo resize2fs -f /dev/sda2
+> sudo e2fsck -f -y /dev/sda2
 > ```
 >
-> 如果最后没有报错，或得到 harmless 的结果，则执行 `reboot` 以启动 OpenWrt。
+> 如果最后没有报错，或得到 harmless 的结果，则执行 `sudo reboot` 以启动 OpenWrt。
 
 #### 2.2 网口配置
 
-以具有三网口（eth0 作为 WAN，eth1 和 eth2 作为 LAN）软路由为例：
+启动 OpenWrt 以完成网口配置。以具有三网口（eth0 作为 WAN，eth1 和 eth2 作为 LAN）软路由为例：
 
 - 选择合适的 LAN 口与电脑连接，确保电脑可获取到类似 `192.168.1.*` 的 IPv4 地址；
 - 电脑 Web 访问 `192.168.1.1` --> **Log in**（无密码） --> 按照提示设置密码后重新登录；
@@ -195,9 +198,7 @@
 
 ![Screenshot_04](illustration/Screenshot_04.webp)
 
-- （可选）将电脑单独与无线路由器（不接 WAN 的状态）相连，将路由器地址改成 `192.168.3.1`；
-
-- 将软路由的 eth0 与宿舍墙面端口相连，eth1 与无线路由器 WAN 口相连，电脑与无线路由器 LAN 口相连。
+- （可选）将电脑与无线路由器 LAN 相连，无线路由器 WAN 与软路由 LAN 相连，将无线路由器改为有线中继模式。
 
 #### 2.3 配置 MiniEAP 认证
 

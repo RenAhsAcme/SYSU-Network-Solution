@@ -278,7 +278,7 @@ unsigned char *computeV4(const unsigned char *src, int len)
     static unsigned char s[20];
     memcpy(s, src, 16);
 
-    unsigned char wtmp[160];
+    unsigned char wtmp[193];
     int wpos = 0;
     int i;
 
@@ -439,7 +439,7 @@ char *computePwd(const unsigned char *md5, const char* username, const char* pas
 {
     static char buf[20];
 
-    unsigned char tmp[40];
+    unsigned char tmp[81];
     int tmp_len=0;
     tmp_len = strlen(username);
     strcpy((char*)tmp, username);
@@ -454,5 +454,6 @@ char *computePwd(const unsigned char *md5, const char* username, const char* pas
     int i;
     for (i=0; i<16; ++i)
         buf[i] ^= tmp[i];
+    explicit_bzero(tmp, sizeof(tmp));
     return buf;
 }

@@ -1,117 +1,56 @@
-#include "if_impl.h"
-#include "packet_builder.h"
-#include "logging.h"
-#include "net_util.h"
 #include "packet_plugin_rjv3_priv.h"
+#include "packet_plugin_rjv3_keepalive.h"
+#include "if_impl.h"
+#include "net_util.h"
 #include "sched_alarm.h"
 #include "misc.h"
-#include "packet_util.h"
-
+#include "sysu.h"
+#include "logging.h"
+#include <string.h>
 #include <stdlib.h>
 
-static int g_keepalive_alarm_id;
-static uint32_t g_echokey;
-static uint32_t g_echono;
-static uint8_t g_dest_mac[6];
-
-#define PRIV ((rjv3_priv*)(this->priv))
-void rjv3_set_keepalive_echokey(uint32_t key) {
-    g_echokey = key;
+static int timer;
+static uint32_t echokey, echono;
+static uint8_t destination[6];
+void rjv3_set_keepalive_echokey(uint32_t key) { echokey = key; }
+void rjv3_set_keepalive_echono(uint32_t no) { echono = no; }
+void rjv3_set_keepalive_dest_mac(uint8_t *mac) { memcpy(destination, mac, 6); }
+void rjv3_keepalive_reset(void) {
+    unschedule_alarm(timer);
+    timer = 0;
+    echokey = echono = 0;
 }
-
-void rjv3_set_keepalive_echono(uint32_t no) {
-    g_echono = no;
-}
-
-void rjv3_set_keepalive_dest_mac(uint8_t* mac) {
-    memmove(g_dest_mac, mac, 6);
-}
-
-void rjv3_keepalive_reset() {
-    unschedule_alarm(g_keepalive_alarm_id);
-    g_echokey = 0;
-    g_echono = 0;
-}
-
-static RESULT send_echo_frame(struct _packet_plugin* this, uint8_t* content, int len) {
-    PACKET_BUILDER* _builder = packet_builder_get();
-    if (_builder == NULL) {
-        PR_ERR("包生成器未初始化");
-        goto fail;
-    }
-
-    IF_IMPL* _if = get_if_impl();
-    uint8_t _src[6] = {0};
-    char _ifname[IFNAMSIZ] = {0};
-    if (_if == NULL) {
-        PR_ERR("网络界面未初始化");
-        goto fail;
-    }
-
-    if (IS_FAIL(_if->get_ifname(_if, _ifname, IFNAMSIZ)) || IS_FAIL(obtain_iface_mac(_ifname, _src))) {
-        PR_ERR("无法获取源 MAC");
-        goto fail;
-    }
-
-    uint8_t _proto[] = {0x88, 0x8e};
-
-    _builder->set_eth_field(_builder, FIELD_DST_MAC, g_dest_mac);
-    _builder->set_eth_field(_builder, FIELD_SRC_MAC, _src);
-    _builder->set_eth_field(_builder, FIELD_ETH_PROTO, _proto);
-    _builder->set_eap_fields(_builder, EAPOL_RJ_PROPRIETARY_KEEPALIVE, 0, 0, 0, NULL);
-
-    ETH_EAP_FRAME frame;
-    if ((frame.content = (uint8_t*)malloc(100)) == NULL) {
-        PR_ERR("无法为 Keep-Alive 报文分配内存空间");
-        goto fail;
-    }
-    memset(frame.content, 0, 100);
-    frame.buffer_len = 100;
-    frame.actual_len = _builder->build_packet(_builder, frame.content);
-
-    frame.header->eapol_hdr.len[0] = 0;
-    frame.header->eapol_hdr.len[1] = 30; // Why? It's 27...
-    memmove(frame.content + sizeof(ETHERNET_HEADER) + sizeof(EAPOL_HEADER), content, len);
-    frame.actual_len += len;
-
-    if (IS_FAIL(_if->send_frame(_if, &frame))) {
-        goto fail;
-    }
-
-    free(frame.content);
-    return SUCCESS;
-fail:
-    PR_ERR("无法发送 Keep-Alive 报文");
-    free(frame.content);
-    return FAILURE;
-}
-
-RESULT rjv3_send_new_keepalive_frame(struct _packet_plugin* this) {
-    uint32_t _num1 = g_echokey + g_echono;
-    uint32_t _num2 = g_echono++;
-
-    uint8_t _template[] = {
-		/*0x00,0x1E,*/ /* EAP-Size */
-		0xFF,0xFF,0x37,0x77,0x7F,0x9F,0xFF,0xFF,0xD9,0x13,0xFF,0xFF,0x37,0x77,
-		0x7F,0x9F,0xFF,0xFF,0xF7,0x2B,0xFF,0xFF,0x37,0x77,0x7F,0x3F,0xFF
+RESULT rjv3_send_new_keepalive_frame(PACKET_PLUGIN *this) {
+    uint32_t a = echokey + echono, b = echono++;
+    uint8_t packet[45] = {0};
+    uint8_t payload[] = {
+        0xff,0xff,0x37,0x77,0x7f,0x9f,0xff,0xff,0xd9,0x13,0xff,0xff,0x37,0x77,
+        0x7f,0x9f,0xff,0xff,0xf7,0x2b,0xff,0xff,0x37,0x77,0x7f,0x3f,0xff
     };
-    _template[6] = ~bit_reverse((_num1 >> 24) & 0xff);
-    _template[7] = ~bit_reverse((_num1 >> 16) & 0xff);
-    _template[8] = ~bit_reverse((_num1 >> 8 ) & 0xff);
-    _template[9] = ~bit_reverse( _num1        & 0xff);
-
-    _template[16] = ~bit_reverse((_num2 >> 24) & 0xff);
-    _template[17] = ~bit_reverse((_num2 >> 16) & 0xff);
-    _template[18] = ~bit_reverse((_num2 >> 8 ) & 0xff);
-    _template[19] = ~bit_reverse( _num2        & 0xff);
-
-    return send_echo_frame(this, _template, sizeof(_template));
-}
-
-void rjv3_send_keepalive_timed(void* vthis) {
-    PACKET_PLUGIN* this = (PACKET_PLUGIN*)vthis;
-    if (IS_FAIL(rjv3_send_new_keepalive_frame(this))) {
-        PR_ERR("心跳包发送失败");
+    for (int i = 0; i < 4; i++) {
+        payload[6 + i] = (uint8_t)~bit_reverse((uint8_t)(a >> (24 - 8 * i)));
+        payload[16 + i] = (uint8_t)~bit_reverse((uint8_t)(b >> (24 - 8 * i)));
     }
-    g_keepalive_alarm_id = schedule_alarm(PRIV->heartbeat_interval, rjv3_send_keepalive_timed, vthis);
+    IF_IMPL *iface = get_if_impl();
+    char name[16];
+    memcpy(packet, destination, 6);
+    if (IS_FAIL(iface->get_ifname(iface, name, sizeof(name))) || IS_FAIL(obtain_iface_mac(name, packet + 6))) return FAILURE;
+    packet[12] = 0x88; packet[13] = 0x8e;
+    packet[14] = 1; packet[15] = 0xbf; packet[17] = 30;
+    memcpy(packet + 18, payload, sizeof(payload));
+    ETH_EAP_FRAME frame = {.content = packet, .buffer_len = sizeof(packet), .actual_len = sizeof(packet)};
+    return iface->send_frame(iface, &frame);
+}
+void rjv3_send_keepalive_timed(void *data) {
+    PACKET_PLUGIN *this = data;
+    rjv3_priv *params = this->priv;
+    if (IS_FAIL(rjv3_send_new_keepalive_frame(this))) {
+        status_update("error", "heartbeat_send_failed", 0);
+        PR_ERR("心跳发送失败，退出并由服务管理器恢复");
+        exit(EXIT_FAILURE);
+    }
+    timer = schedule_alarm(params->heartbeat_interval, rjv3_send_keepalive_timed, this);
+}
+void rjv3_start_keepalive(PACKET_PLUGIN *this) {
+    timer = schedule_alarm(1, rjv3_send_keepalive_timed, this);
 }

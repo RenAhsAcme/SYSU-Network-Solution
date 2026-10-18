@@ -10,7 +10,6 @@
 #include "net_util.h"
 #include "packet_util.h"
 #include "misc.h"
-#include "eap_state_machine.h"
 #include "sched_alarm.h"
 #include "rjcrc16.h"
 #include "rjencode.h"
@@ -26,7 +25,7 @@
 #include <arpa/inet.h>
 
 #ifdef __linux__
-#include <linux/hdreg.h>
+#include <sys/random.h>
 #endif
 
 #define IS_MD5_FRAME(frame) \
@@ -69,6 +68,7 @@ static void rjv3_set_ipv6_addr(uint8_t* ll_slaac, uint8_t* ll_temp, uint8_t* glo
 
     obtain_iface_ip_mask(ifname, &_ip_list);
     _ip_curr = _ip_list;
+    if (!_ip_curr) return;
 
 #define IP_ELEM ((IP_ADDR*)(_ip_curr->content))
     do {
@@ -121,145 +121,13 @@ static void rjv3_set_secondary_dns(char* dns_ascii_buf, char* fake_dns) {
     if (dns_list && dns_list->next) {
         strncpy(dns_ascii_buf, dns_list->next->content, INET6_ADDRSTRLEN);
     } else {
-        PR_WARN("第二 DNS 地址获取错误。若认证失败，请用 --fake-dns2 指定第二 DNS 地址")
+        /* 第二 DNS 未配置时，保持与旧客户端一致的空字段。 */
     }
     free_dns_list(&dns_list);
     return;
 }
 
-static void rjv3_set_hdd_serial(uint8_t* serial_buf, char* fake_serial) {
-    if (fake_serial != NULL) {
-        memmove(serial_buf, fake_serial, strnlen(fake_serial, MAX_PROP_LEN));
-        return;
-    }
-    PR_WARN("请使用 --fake-serial 选项手动指定硬盘序列号");
-#if 0
-    FILE* _fp = fopen("/etc/mtab", "r");
-    char _line_buf[MAX_LINE_LEN] = {0};
-    char* _line_buf_dev, *_line_buf_mountpoint;
-    char* _root_dev = NULL;
-    char* _ret;
-
-    if (_fp == NULL) {
-        goto info_err;
-    }
-
-    /* Find the root device */
-    while ((_ret = fgets(_line_buf, MAX_LINE_LEN, _fp))) {
-        _line_buf_dev = strtok(_line_buf, " ");
-        if (_line_buf_dev == NULL) continue;
-        _line_buf_mountpoint = strtok(NULL, " ");
-        if (_line_buf_mountpoint != NULL &&
-                _line_buf_mountpoint[0] == '/' && _line_buf_mountpoint[1] == 0) {
-            if (_root_dev) free(_root_dev); /* Multiple mounts */
-            _root_dev = strdup(_line_buf_dev);
-        }
-    }
-
-    /* Query the serial no */
-    if (_root_dev != NULL) {
-        int devfd;
-        struct hd_driveid hd;
-        if ((devfd = open(_root_dev, O_RDONLY|O_NONBLOCK)) < 0) {
-            goto info_err;
-        }
-
-        if (!ioctl(devfd, HDIO_GET_IDENTITY, &hd)) {
-            unsigned char* _pos = &hd.serial_no[sizeof(hd.serial_no) - 1];
-            for (; *_pos == ' '; _pos--);
-            *(++_pos) = 0; /* Trim spaces */
-            memmove(serial_buf, hd.serial_no, strlen((char*)hd.serial_no));
-            goto close_return;
-        } else {
-            goto info_err;
-        }
-    }
-
-info_err:
-    PR_ERRNO("无法从 /etc/mtab 获取根分区挂载设备信息，请使用 --fake-serial 选项手动指定硬盘序列号");
-close_return:
-    if (_fp != NULL) fclose(_fp);
-    if (_root_dev) free(_root_dev);
-#endif // TODO macOS ioreg?
-    return;
-}
-
 #define PRIV ((rjv3_priv*)(this->priv))
-
-static RESULT rjv3_get_dhcp_lease(struct _packet_plugin* this, DHCP_LEASE* lease) {
-    IF_IMPL* _if = get_if_impl();
-    if (_if == NULL) return FAILURE;
-    char _ifname[IFNAMSIZ] = {0};
-    if (IS_FAIL(_if->get_ifname(_if, _ifname, IFNAMSIZ))) {
-        PR_ERR("网络界面尚未配置");
-        return FAILURE;
-    }
-
-    LIST_ELEMENT* _dns_list = NULL;
-    LIST_ELEMENT* _ip_list = NULL;
-    IP_ADDR* _ipv4 = NULL;
-    if (IS_FAIL(obtain_iface_ip_mask(_ifname, &_ip_list))
-            || (_ipv4 = find_ip_with_family(_ip_list, AF_INET)) == NULL) {
-
-        PR_ERR("IPv4 地址获取错误");
-        goto fail;
-    }
-
-    IP_ADDR _gw;
-    _gw.family = AF_INET;
-    if (IS_FAIL(obtain_iface_ipv4_gateway(_ifname, _gw.ip))) {
-        PR_ERR("IPv4 网关获取错误");
-        goto fail;
-    }
-
-    char* _dns1_str;
-    IP_ADDR _dns1;
-    _dns1.family = AF_INET;
-    if (!PRIV->fake_dns1) {
-        if (IS_FAIL(obtain_dns_list(&_dns_list))) {
-            PR_ERR("主 DNS 地址获取错误，请使用 --fake-dns1 选项手动指定主 DNS 地址");
-            goto fail;
-        }
-        _dns1_str = _dns_list->content;
-    } else {
-        _dns1_str = PRIV->fake_dns1;
-    }
-    if (inet_pton(AF_INET, _dns1_str, &_dns1.ip) == 0) {
-            PR_ERR("主 DNS 地址格式错误，要求 IPv4 地址。请使用 --fake-dns1 选项手动指定主 DNS 地址");
-            goto fail;
-    }
-
-    *(uint32_t*)&lease->ip = *(uint32_t*)&_ipv4->ip;
-    *(uint32_t*)&lease->netmask = *(uint32_t*)&_ipv4->mask;
-    *(uint32_t*)&lease->gateway = *(uint32_t*)&_gw.ip;
-    *(uint32_t*)&lease->dns = *(uint32_t*)&_dns1.ip;
-
-    free_ip_list(&_ip_list);
-    free_dns_list(&_dns_list);
-
-    return SUCCESS;
-fail:
-    free_ip_list(&_ip_list);
-    free_dns_list(&_dns_list);
-
-    return FAILURE;
-}
-
-static void rjv3_apply_bcast_addr(PACKET_PLUGIN* this, ETH_EAP_FRAME* frame) {
-    static const uint8_t _rj_bcast[6] = {0x01,0xd0,0xf8,0x00,0x00,0x03};
-    switch (PRIV->bcast_addr) {
-        case BROADCAST_RJ:
-            if (frame->header->eapol_hdr.type[0] == EAPOL_START) {
-                /* Main program will take care of the MAC address when it's not START */
-                memmove(frame->header->eth_hdr.dest_mac, _rj_bcast, sizeof(_rj_bcast));
-            }
-            break;
-        case BROADCAST_CER:
-        case BROADCAST_STANDARD:
-        default:
-            break;
-    }
-}
 
 /*
  * Calculate values for commonly seen fields, and add them to a list
@@ -269,7 +137,7 @@ static void rjv3_apply_bcast_addr(PACKET_PLUGIN* this, ETH_EAP_FRAME* frame) {
 static int rjv3_append_common_fields(PACKET_PLUGIN* this, LIST_ELEMENT** list, int append_pwd_hash) {
     int _len = 0, _this_len = -1;
     uint8_t _dhcp_en[RJV3_SIZE_DHCP] = {0x00, 0x00, 0x00, 0x01};
-    uint8_t _local_mac[RJV3_SIZE_MAC];
+    uint8_t _local_mac[RJV3_SIZE_MAC] = {0};
     uint8_t _pwd_hash[RJV3_SIZE_PWD_HASH] = {0};
     char _sec_dns[INET6_ADDRSTRLEN] = {0};
     uint8_t _misc_2[RJV3_SIZE_MISC_2] = {0x01};
@@ -282,23 +150,23 @@ static int rjv3_append_common_fields(PACKET_PLUGIN* this, LIST_ELEMENT** list, i
     /* misc 6 */
     uint8_t _misc_7[RJV3_SIZE_MISC_7] = {0};
     uint8_t _os_bits[RJV3_SIZE_OS_BITS] = {0x40};
-    char* _ver_str = PRIV->ver_str;
+    const char* _ver_str = "RG-SU For Linux V1.0";
 
-    rjv3_set_dhcp_en(_dhcp_en, PRIV->dhcp_type);
+    rjv3_set_dhcp_en(_dhcp_en, DHCP_AFTER_AUTH);
 
     rjv3_set_local_mac(_local_mac);
 
     rjv3_set_pwd_hash(_pwd_hash, PRIV->last_recv_packet);
 
-    rjv3_set_secondary_dns(_sec_dns, PRIV->fake_dns2);
+    rjv3_set_secondary_dns(_sec_dns, NULL);
 
     rjv3_set_ipv6_addr(_ll_ipv6, _ll_ipv6_tmp, _glb_ipv6);
 
     rjv3_set_v3_hash(_v3_hash, PRIV->last_recv_packet);
 
-    rjv3_set_service_name(_service, PRIV->service_name);
+    rjv3_set_service_name(_service, "internet");
 
-    rjv3_set_hdd_serial(_hdd_ser, PRIV->fake_serial);
+
 
 #define CHK_ADD(x) \
     _this_len = x; \
@@ -333,13 +201,8 @@ static int rjv3_append_common_fields(PACKET_PLUGIN* this, LIST_ELEMENT** list, i
     return _len;
 }
 
-static int rjv3_should_fill_dhcp_prop(struct _packet_plugin* this) {
-    return (PRIV->dhcp_type == DHCP_BEFORE_AUTH) ||
-            (PRIV->dhcp_type == DHCP_DOUBLE_AUTH && PRIV->succ_count >= 2);
-}
-
 /* The bytes containing twisted IPv4 addresses */
-static void rjv3_append_priv_header(struct _packet_plugin* this, ETH_EAP_FRAME* frame) {
+static RESULT rjv3_append_priv_header(struct _packet_plugin* this, ETH_EAP_FRAME* frame) {
     DHCP_INFO_PROP _dhcp_prop = {0};
 
     _dhcp_prop.magic[0] = 0x00;
@@ -347,25 +210,22 @@ static void rjv3_append_priv_header(struct _packet_plugin* this, ETH_EAP_FRAME* 
     _dhcp_prop.magic[2] = 0x13;
     _dhcp_prop.magic[3] = 0x11;
 
-    _dhcp_prop.dhcp_enabled = (PRIV->dhcp_type != DHCP_NONE);
+    _dhcp_prop.dhcp_enabled = 1;
 
-    if (rjv3_should_fill_dhcp_prop(this)) {
-        rjv3_get_dhcp_lease(this, &_dhcp_prop.lease);
-    }
-
-    *(uint16_t*)&_dhcp_prop.crc16_hash = htons(crc16((uint8_t*)&_dhcp_prop, 21));
+    uint16_t checksum = htons(crc16((uint8_t*)&_dhcp_prop, 21));
+    memcpy(_dhcp_prop.crc16_hash, &checksum, sizeof(checksum));
 
     rj_encode((uint8_t*)&_dhcp_prop, sizeof(_dhcp_prop));
-    append_to_frame(frame, (uint8_t*)&_dhcp_prop, sizeof(_dhcp_prop));
+    if (IS_FAIL(append_to_frame(frame, (uint8_t*)&_dhcp_prop, sizeof(_dhcp_prop)))) return FAILURE;
 
     uint8_t _magic[4] = {0x00, 0x00, 0x13, 0x11};
-    append_to_frame(frame, _magic, sizeof(_magic));
+    if (IS_FAIL(append_to_frame(frame, _magic, sizeof(_magic)))) return FAILURE;
 
     uint8_t _prog_name[RJV3_SIZE_PROG_NAME] = RJV3_PROG_NAME;
-    append_to_frame(frame, _prog_name, sizeof(_prog_name));
+    if (IS_FAIL(append_to_frame(frame, _prog_name, sizeof(_prog_name)))) return FAILURE;
 
     uint8_t _version[4] = {0x01, 0x1f, 0x01, 0x02}; /* May be different */
-    append_to_frame(frame, _version, sizeof(_version));
+    return append_to_frame(frame, _version, sizeof(_version));
 }
 
 /* Append everything proprietary */
@@ -385,36 +245,18 @@ RESULT rjv3_append_priv(struct _packet_plugin* this, ETH_EAP_FRAME* frame) {
     uint8_t _std_prop_buf[FRAME_BUF_SIZE] = {0}; // Buffer for 0x1a props
     LIST_ELEMENT* _prop_list = NULL;
 
-    rjv3_apply_bcast_addr(this, frame);
-    rjv3_append_priv_header(this, frame);
+    if (IS_FAIL(rjv3_append_priv_header(this, frame))) return FAILURE;
 
     /* Let's make the big news! */
     _single_len = rjv3_append_common_fields(this, &_prop_list, IS_MD5_FRAME(frame));
     if (_single_len < 0) {
+        destroy_rjv3_prop_list(&_prop_list);
         return FAILURE;
     }
 
-    /* The Mods! */
-    _props_len += modify_rjv3_prop_list(_prop_list, PRIV->cmd_prop_mod_list);
-
-    /* Actually read from sparse nodes into a unite buffer */
     _single_len = append_rjv3_prop_list_to_buffer(_prop_list, _std_prop_buf, FRAME_BUF_SIZE);
-
-    if (_single_len > 0) {
-        _props_len += _single_len;
-    } else {
-        return FAILURE;
-    }
-
-    /* And those from cmdline */
-    _single_len = append_rjv3_prop_list_to_buffer(PRIV->cmd_prop_list,
-                                                  _std_prop_buf + _props_len,
-                                                  FRAME_BUF_SIZE - _props_len);
-    if (_single_len >= 0) { // This time with '='
-        _props_len += _single_len;
-    } else {
-        return FAILURE;
-    }
+    if (_single_len < 0) { destroy_rjv3_prop_list(&_prop_list); return FAILURE; }
+    _props_len = _single_len;
 
     /* The outside */
     /* logoffReason(1) magic(4) length(2) */
@@ -422,102 +264,29 @@ RESULT rjv3_append_priv(struct _packet_plugin* this, ETH_EAP_FRAME* frame) {
     _header[5] = (_props_len >> 8 & 0xff);
     _header[6] = (_props_len & 0xff);
 
-    append_to_frame(frame, _header, sizeof(_header));
-
-    append_to_frame(frame, _std_prop_buf, _props_len);
-
+    RESULT result = append_to_frame(frame, _header, sizeof(_header));
+    if (!IS_FAIL(result)) result = append_to_frame(frame, _std_prop_buf, _props_len);
     destroy_rjv3_prop_list(&_prop_list);
-    return SUCCESS;
-}
-
-static int rjv3_is_echokey_prop(void* unused, void* prop) {
-    RJ_PROP* _prop = (RJ_PROP*)prop;
-
-    if (_prop->header2.type == 0x1 && PROP_TO_CONTENT_SIZE(_prop) != 0) {
-        return 0;
-    }
-    return 1;
+    return result;
 }
 
 RESULT rjv3_process_result_prop(ETH_EAP_FRAME* frame) {
-    LIST_ELEMENT* _srv_msg = NULL;
-    RJ_PROP* _msg = NULL;
-
-    /* Success frames does not have EAP_HEADER.type,
-     * and do not use EAP_HEADER.len since it once betrayed us
-     */
-    parse_rjv3_buf_to_prop_list(&_srv_msg,
-                                frame->content + sizeof(FRAME_HEADER)
-                                    - sizeof(frame->header->eap_hdr.type),
-                                frame->actual_len - sizeof(FRAME_HEADER)
-                                    + sizeof(frame->header->eap_hdr.type),
-                                TRUE);
-
-    /* Assume this server message is the first property */
-    if (_srv_msg != NULL) {
-        _msg = (RJ_PROP*)_srv_msg->content;
-        int _content_len = _msg->header2.len - HEADER2_SIZE_NO_MAGIC(_msg);
-
-        if (_content_len != 0) {
-            PR_INFO("服务器通知：\n");
-            pr_info_gbk((char*)_msg->content, _content_len);
-        }
-    }
-    if (frame->header->eapol_hdr.type[0] == EAP_PACKET &&
-            frame->header->eap_hdr.code[0] == EAP_SUCCESS) {
-        _msg = find_rjv3_prop(_srv_msg, RJV3_TYPE_ACCOUNTING_MSG);
-        if (_msg != NULL) {
-            int _content_len = _msg->header2.len - HEADER2_SIZE_NO_MAGIC(_msg);
-
-            if (_content_len != 0) {
-                PR_INFO("计费通知：\n");
-                pr_info_gbk((char*)_msg->content, _content_len);
-            }
-        }
-
-        _msg = NULL;
-        _msg = (RJ_PROP*)lookup_data(_srv_msg, NULL, rjv3_is_echokey_prop);
-        if (_msg == NULL) {
-            PR_ERR("无法找到 echo key 的位置，将不能进行心跳");
-            return FAILURE;
-        } else {
-            uint32_t _echokey = 0;
-            _echokey |= bit_reverse(~*(_msg->content + 6)) << 24;
-            _echokey |= bit_reverse(~*(_msg->content + 7)) << 16;
-            _echokey |= bit_reverse(~*(_msg->content + 8)) << 8;
-            _echokey |= bit_reverse(~*(_msg->content + 9));
-            rjv3_set_keepalive_echokey(_echokey);
-            rjv3_set_keepalive_echono(rand() & 0xffff);
+    LIST_ELEMENT *props = NULL;
+    int offset = sizeof(ETHERNET_HEADER) + sizeof(EAPOL_HEADER) + 4;
+    if (frame->actual_len < (size_t)offset || IS_FAIL(parse_rjv3_buf_to_prop_list(
+        &props, frame->content + offset, (int)frame->actual_len - offset, TRUE))) return FAILURE;
+    RJ_PROP *key = find_rjv3_prop(props, 1);
+    RESULT result = FAILURE;
+    if (key && PROP_TO_CONTENT_SIZE(key) >= 10) {
+        uint32_t value = 0, serial = 0;
+        for (int i = 6; i < 10; i++) value = (value << 8) | bit_reverse((uint8_t)~key->content[i]);
+        if (getrandom(&serial, sizeof(serial), 0) == sizeof(serial)) {
+            rjv3_set_keepalive_echokey(value);
+            rjv3_set_keepalive_echono(serial & 0xffff);
             rjv3_set_keepalive_dest_mac(frame->header->eth_hdr.src_mac);
+            result = SUCCESS;
         }
     }
-    destroy_rjv3_prop_list(&_srv_msg);
-    return SUCCESS;
-}
-
-void rjv3_start_secondary_auth(void* vthis) {
-    PACKET_PLUGIN* this = (PACKET_PLUGIN*)vthis;
-    DHCP_LEASE _tmp_dhcp_lease = {0};
-
-    /* Try to fill out lease info to determine whether DHCP finished.
-     * The addresses in lease info are not used here.
-     */
-    if (IS_FAIL(rjv3_get_dhcp_lease(this, &_tmp_dhcp_lease))) {
-        PRIV->dhcp_count++;
-        if (PRIV->dhcp_count > PRIV->max_dhcp_count) {
-            rjv3_process_result_prop(PRIV->duplicated_packet); // Loads of texts
-            free_frame(&PRIV->duplicated_packet); // Duplicated in process_success
-            schedule_alarm(1, rjv3_send_keepalive_timed, this);
-            PR_ERR("无法获取 IPv4 地址等信息，将不会进行第二次认证而直接开始心跳");
-        } else {
-            PR_WARN("DHCP 可能尚未完成，将继续等待……");
-            schedule_alarm(5, rjv3_start_secondary_auth, this);
-        }
-        return;
-    } else {
-        PR_INFO("DHCP 完成，正在开始第二次认证");
-        free_frame(&PRIV->duplicated_packet); // Duplicated in process_success
-        switch_to_state(EAP_STATE_START_SENT, NULL);
-        return;
-    }
+    destroy_rjv3_prop_list(&props);
+    return result;
 }

@@ -107,29 +107,11 @@ typedef struct _dhcp_info_prop {
     uint8_t crc16_hash[2]; /* Network byte order */
 } DHCP_INFO_PROP;
 
-typedef struct _packet_plugin_rjv3_priv {
-    struct { // Cmdline options
-        int heartbeat_interval;
-        int max_dhcp_count;
-        char* service_name; // All pointers can be freed since they are created by COPY_N_ARG_TO
-        char* ver_str;
-        char* dhcp_script;
-        char* fake_dns1;
-        char* fake_dns2;
-        char* fake_serial;
-        DOT1X_BCAST_ADDR bcast_addr;
-        DHCP_TYPE dhcp_type;
-        LIST_ELEMENT* cmd_prop_list; // Destroy!
-        LIST_ELEMENT* cmd_prop_mod_list; // Destroy!
-    };
-    // Internal state variables
-    int succ_count;
-    int dhcp_count; // Used in double auth
-    ETH_EAP_FRAME* last_recv_packet;
-    ETH_EAP_FRAME* duplicated_packet; // Used in double auth
+typedef struct {
+    int heartbeat_interval;
+    ETH_EAP_FRAME *last_recv_packet;
 } rjv3_priv;
 
 RESULT rjv3_append_priv(struct _packet_plugin* this, ETH_EAP_FRAME* frame);
 RESULT rjv3_process_result_prop(ETH_EAP_FRAME* frame);
-void rjv3_start_secondary_auth(void* vthis);
 #endif

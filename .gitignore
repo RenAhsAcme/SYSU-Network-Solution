@@ -1,0 +1,4 @@
+.build/
+minieap/src/build/
+minieap/src/sysu-auth
+__pycache__/

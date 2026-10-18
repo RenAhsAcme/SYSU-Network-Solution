@@ -1,194 +1,128 @@
-/*
- * Implement packet sending/receiving by native socket,
- * so libpcap could be left out in the build.
- */
 #include "if_impl.h"
-#include "minieap_common.h"
+#include "config.h"
 #include "logging.h"
-#include "misc.h"
-
-#include <netinet/in.h>
-#include <linux/if_ether.h> // ETH_ALEN
+#include "sched_alarm.h"
+#include "sysu.h"
+#include <arpa/inet.h>
 #include <linux/if_packet.h>
+#include <linux/rtnetlink.h>
 #include <net/if.h>
-#include <sys/ioctl.h>
-#include <unistd.h>
+#include <poll.h>
+#include <signal.h>
 #include <stdlib.h>
+#include <string.h>
+#include <sys/ioctl.h>
+#include <sys/signalfd.h>
+#include <unistd.h>
 
-typedef struct _if_impl_sockraw_priv {
+typedef struct {
     char ifname[IFNAMSIZ];
-    int sockfd; /* Internal use */
-    int if_index; /* Index of this interface */
-    int stop_flag; /* Set to break out of recv loop */
-    int promisc;
-    short proto; /* Stored as host byte order */
-    void (*handler)(ETH_EAP_FRAME* frame); /* Packet handler */
-} sockraw_priv;
+    int sockfd, linkfd, signalfd, index, stopped;
+    void (*handler)(ETH_EAP_FRAME *);
+} raw_socket;
+#define PRIV ((raw_socket *)this->priv)
 
-#define PRIV ((sockraw_priv*)(this->priv))
-
-static void sockraw_bind_to_if(struct _if_impl* this, short protocol) {
-    struct sockaddr_ll sll;
-    memset(&sll, 0, sizeof(sll));
-    sll.sll_family = AF_PACKET;
-    sll.sll_ifindex = PRIV->if_index;
-    sll.sll_protocol = htons(protocol);
-    bind(PRIV->sockfd, (struct sockaddr*)&sll, sizeof(sll));
+static RESULT set_name(IF_IMPL *this, const char *name) {
+    if (strlen(name) >= IFNAMSIZ) return FAILURE;
+    strcpy(PRIV->ifname, name);
+    PRIV->index = if_nametoindex(name);
+    return PRIV->index ? SUCCESS : FAILURE;
 }
-
-RESULT sockraw_set_ifname(struct _if_impl* this, const char* ifname) {
-    struct ifreq ifreq;
-    int _tmpsockfd = 0;
-
-    if ((_tmpsockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
-        PR_ERRNO("套接字打开失败");
-        return FAILURE;
-    }
-
-    memset(&ifreq, 0, sizeof(struct ifreq));
-    strncpy(ifreq.ifr_name, ifname, IFNAMSIZ);
-    if (ioctl(_tmpsockfd, SIOCGIFINDEX, &ifreq) < 0) {
-        PR_ERRNO("网络界面 ID 获取失败");
-        return FAILURE;
-    }
-    PRIV->if_index = ifreq.ifr_ifindex;
-
-    strncpy(PRIV->ifname, ifname, IFNAMSIZ);
-    close(_tmpsockfd);
+static RESULT get_name(IF_IMPL *this, char *buf, int len) {
+    size_t n = strlen(PRIV->ifname) + 1;
+    if (len < 0 || (size_t)len < n) return FAILURE;
+    memcpy(buf, PRIV->ifname, n);
     return SUCCESS;
 }
-
-RESULT sockraw_get_ifname(struct _if_impl* this, char* buf, int buflen) {
-    if (buflen < strnlen(PRIV->ifname, IFNAMSIZ)) {
-        return FAILURE;
-    }
-    strncpy(buf, PRIV->ifname, IFNAMSIZ);
-    return SUCCESS;
+static RESULT prepare(IF_IMPL *this) {
+    PRIV->sockfd = socket(AF_PACKET, SOCK_RAW | SOCK_CLOEXEC | SOCK_NONBLOCK, htons(0x888e));
+    struct sockaddr_ll addr = {.sll_family = AF_PACKET, .sll_protocol = htons(0x888e),
+        .sll_ifindex = PRIV->index};
+    if (PRIV->sockfd < 0 || bind(PRIV->sockfd, (struct sockaddr *)&addr, sizeof(addr))) return FAILURE;
+    /* 只订阅目标接口的认证帧，不修改网卡的混杂模式。 */
+    int ignore = 1;
+    if (setsockopt(PRIV->sockfd, SOL_PACKET, PACKET_IGNORE_OUTGOING, &ignore, sizeof(ignore))) return FAILURE;
+    PRIV->linkfd = socket(AF_NETLINK, SOCK_RAW | SOCK_CLOEXEC | SOCK_NONBLOCK, NETLINK_ROUTE);
+    struct sockaddr_nl nl = {.nl_family = AF_NETLINK, .nl_groups = RTMGRP_LINK};
+    if (PRIV->linkfd < 0 || bind(PRIV->linkfd, (struct sockaddr *)&nl, sizeof(nl))) return FAILURE;
+    sigset_t signals;
+    sigemptyset(&signals);
+    sigaddset(&signals, SIGTERM);
+    sigaddset(&signals, SIGINT);
+    sigaddset(&signals, SIGHUP);
+    if (sigprocmask(SIG_BLOCK, &signals, NULL)) return FAILURE;
+    PRIV->signalfd = signalfd(-1, &signals, SFD_CLOEXEC | SFD_NONBLOCK);
+    return PRIV->signalfd >= 0 ? SUCCESS : FAILURE;
 }
-
-RESULT sockraw_setup_capture_params(struct _if_impl* this, unsigned short eth_protocol, int promisc) {
-    PRIV->proto = eth_protocol;
-    PRIV->promisc = promisc;
-
-    return SUCCESS;
-}
-
-RESULT sockraw_prepare_interface(struct _if_impl* this) {
-    struct ifreq ifreq;
-
-    if ((PRIV->sockfd = socket(AF_PACKET, SOCK_RAW, htons(PRIV->proto))) < 0) {
-        PR_ERRNO("套接字打开失败");
-        return FAILURE;
-    }
-    sockraw_bind_to_if(this, PRIV->proto);
-
-    /* Handle promisc */
-    memset(&ifreq, 0, sizeof(struct ifreq));
-    strncpy(ifreq.ifr_name, PRIV->ifname, IFNAMSIZ);
-
-    if (ioctl(PRIV->sockfd, SIOCGIFFLAGS, &ifreq) < 0) {
-        PR_ERRNO("获取网络界面标志信息失败");
-        return FAILURE;
-    }
-
-    if (PRIV->promisc)
-        ifreq.ifr_flags |= IFF_PROMISC;
-    else
-        ifreq.ifr_flags &= ~IFF_PROMISC;
-
-    if (ioctl(PRIV->sockfd, SIOCSIFFLAGS, &ifreq) < 0) {
-        PR_ERRNO("混杂模式设置失败");
-        return FAILURE;
+static RESULT capture(IF_IMPL *this) {
+    uint8_t buf[4096];
+    struct ifreq req = {0};
+    strcpy(req.ifr_name, PRIV->ifname);
+    if (ioctl(PRIV->sockfd, SIOCGIFFLAGS, &req)) return FAILURE;
+    eap_link_changed((req.ifr_flags & IFF_UP) && (req.ifr_flags & IFF_RUNNING));
+    struct pollfd fds[] = {{PRIV->sockfd, POLLIN, 0}, {PRIV->linkfd, POLLIN, 0}, {PRIV->signalfd, POLLIN, 0}};
+    while (!PRIV->stopped) {
+        int n = poll(fds, 3, sched_alarm_timeout());
+        if (n < 0) { if (errno == EINTR) continue; return FAILURE; }
+        if (fds[2].revents & POLLIN) return SUCCESS;
+        if (fds[1].revents & POLLIN) {
+            struct sockaddr_nl from;
+            socklen_t fromlen = sizeof(from);
+            ssize_t len = recvfrom(PRIV->linkfd, buf, sizeof(buf), 0, (struct sockaddr *)&from, &fromlen);
+            if (len < 0) return FAILURE;
+            if (from.nl_pid == 0) {
+                for (struct nlmsghdr *msg = (struct nlmsghdr *)buf; NLMSG_OK(msg, len); msg = NLMSG_NEXT(msg, len)) {
+                    if (msg->nlmsg_len < NLMSG_LENGTH(sizeof(struct ifinfomsg))) continue;
+                    struct ifinfomsg *info = NLMSG_DATA(msg);
+                    if (info->ifi_index != PRIV->index) continue;
+                    if (msg->nlmsg_type == RTM_DELLINK) return FAILURE;
+                    if (msg->nlmsg_type == RTM_NEWLINK)
+                        eap_link_changed((info->ifi_flags & IFF_UP) && (info->ifi_flags & IFF_RUNNING));
+                }
+            }
+        }
+        if (fds[0].revents & POLLIN) {
+            struct sockaddr_ll from;
+            socklen_t fromlen = sizeof(from);
+            ssize_t len = recvfrom(PRIV->sockfd, buf, FRAME_BUF_SIZE, MSG_TRUNC, (struct sockaddr *)&from, &fromlen);
+            if (len > 0 && len <= FRAME_BUF_SIZE && from.sll_pkttype != PACKET_OUTGOING) {
+                ETH_EAP_FRAME frame = {.actual_len = (size_t)len, .buffer_len = FRAME_BUF_SIZE, .content = buf};
+                PRIV->handler(&frame);
+            } else if (len < 0 && errno != EAGAIN && errno != EINTR) return FAILURE;
+        }
+        for (unsigned i = 0; i < 3; i++)
+            if (fds[i].revents & (POLLERR | POLLHUP | POLLNVAL)) return FAILURE;
+        sched_alarm_dispatch();
     }
     return SUCCESS;
 }
-
-RESULT sockraw_start_capture(struct _if_impl* this) {
-    uint8_t buf[FRAME_BUF_SIZE]; /* Max length of ethernet packet */
-    int recvlen = 0;
-    ETH_EAP_FRAME frame;
-
-    memset(buf, 0, FRAME_BUF_SIZE);
-    frame.actual_len = 0;
-    frame.buffer_len = FRAME_BUF_SIZE;
-    frame.content = buf;
-    // TODO will ctrl-c break recv first or call signal handler first?
-    while ((recvlen = recv(PRIV->sockfd, (void*)buf, 1512, 0)) > 0
-                && PRIV->stop_flag == 0) {
-        frame.actual_len = recvlen;
-        PRIV->handler(&frame);
-        memset(buf, 0, 1512);
-    }
-
-    PRIV->stop_flag = 0;
-    return SUCCESS; /* No use if it's blocking... */
+static RESULT send_frame(IF_IMPL *this, ETH_EAP_FRAME *frame) {
+    if (!frame || !frame->content || frame->actual_len > frame->buffer_len || frame->actual_len < 14) return FAILURE;
+    struct sockaddr_ll addr = {.sll_family = AF_PACKET, .sll_protocol = htons(0x888e),
+        .sll_ifindex = PRIV->index, .sll_halen = 6};
+    memcpy(addr.sll_addr, frame->content, 6);
+    return sendto(PRIV->sockfd, frame->content, frame->actual_len, 0, (struct sockaddr *)&addr, sizeof(addr)) == (ssize_t)frame->actual_len ? SUCCESS : FAILURE;
 }
-
-RESULT sockraw_stop_capture(struct _if_impl* this) {
-    PRIV->stop_flag = 1;
-    return SUCCESS;
+static void set_handler(IF_IMPL *this, void (*handler)(ETH_EAP_FRAME *)) { PRIV->handler = handler; }
+static void destroy(IF_IMPL *this) {
+    if (PRIV->sockfd >= 0) close(PRIV->sockfd);
+    if (PRIV->linkfd >= 0) close(PRIV->linkfd);
+    if (PRIV->signalfd >= 0) close(PRIV->signalfd);
+    free(this->priv);
+    free(this);
 }
-
-RESULT sockraw_send_frame(struct _if_impl* this, ETH_EAP_FRAME* frame) {
-    struct sockaddr_ll socket_address;
-    if (frame == NULL || frame->content == NULL)
-        return FAILURE;
-
-    /* Send via this interface */
-    memset(&socket_address, 0, sizeof(struct sockaddr_ll));
-    socket_address.sll_ifindex = PRIV->if_index;
-    socket_address.sll_halen = ETH_ALEN;
-    memmove(socket_address.sll_addr, frame->header->eth_hdr.dest_mac, 6);
-
-    int ret = sendto(PRIV->sockfd, frame->content, frame->actual_len, 0,
-                (struct sockaddr*)&socket_address, sizeof(struct sockaddr_ll));
-    if (ret < 0) {
-        PR_ERRNO("sendto 调用失败");
-        return FAILURE;
-    } else {
-        return SUCCESS;
-    }
-}
-
-void sockraw_set_frame_handler(struct _if_impl* this, void (*handler)(ETH_EAP_FRAME* frame)) {
-    PRIV->handler = handler;
-}
-
-void sockraw_destroy(IF_IMPL* this) {
-    if (PRIV->sockfd > 0)
-        close(PRIV->sockfd);
-    chk_free((void**)&this->priv);
-    chk_free((void**)&this);
-}
-
-IF_IMPL* sockraw_new() {
-    IF_IMPL* this = (IF_IMPL*)malloc(sizeof(IF_IMPL));
-    if (this == NULL) {
-        PR_ERRNO("SOCK_RAW 主结构内存分配失败");
-        return NULL;
-    }
-    memset(this, 0, sizeof(IF_IMPL));
-
-    /* The priv pointer in if_impl.h is a sockraw_priv* here */
-    this->priv = (sockraw_priv*)malloc(sizeof(sockraw_priv));
-    if (this->priv == NULL) {
-        PR_ERRNO("SOCK_RAW 私有结构内存分配失败");
-        free(this);
-        return NULL;
-    }
-    memset(this->priv, 0, sizeof(sockraw_priv));
-
-    this->set_ifname = sockraw_set_ifname;
-    this->get_ifname = sockraw_get_ifname;
-    this->destroy = sockraw_destroy;
-    this->setup_capture_params = sockraw_setup_capture_params;
-    this->prepare_interface = sockraw_prepare_interface;
-    this->start_capture = sockraw_start_capture;
-    this->stop_capture = sockraw_stop_capture;
-    this->send_frame = sockraw_send_frame;
-    this->set_frame_handler = sockraw_set_frame_handler;
-    this->name = "sockraw";
-    this->description = "采用RAW Socket进行通信的轻量网络接口模块";
+IF_IMPL *sockraw_new(void) {
+    IF_IMPL *this = calloc(1, sizeof(*this));
+    raw_socket *raw = calloc(1, sizeof(*raw));
+    if (!this || !raw) { free(this); free(raw); return NULL; }
+    raw->sockfd = raw->linkfd = raw->signalfd = -1;
+    this->priv = raw;
+    this->set_ifname = set_name;
+    this->get_ifname = get_name;
+    this->prepare_interface = prepare;
+    this->start_capture = capture;
+    this->send_frame = send_frame;
+    this->set_frame_handler = set_handler;
+    this->destroy = destroy;
     return this;
 }
-IF_IMPL_INIT(sockraw_new)

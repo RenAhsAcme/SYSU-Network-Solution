@@ -2,6 +2,8 @@
 #define _MINIEAP_PACKET_PLUGIN_RJV3_KEEPALIVE_H
 
 #include <stdint.h>
+#include "packet_plugin.h"
+void rjv3_start_keepalive(PACKET_PLUGIN *this);
 
 void rjv3_set_keepalive_echokey(uint32_t key);
 void rjv3_set_keepalive_echono(uint32_t no);

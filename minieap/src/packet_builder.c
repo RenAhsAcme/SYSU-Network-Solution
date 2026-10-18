@@ -29,14 +29,16 @@ static PACKET_BUILDER* g_builder = NULL;
 /* Original MentoHUST flavor, with function name changed */
 static uint8_t* hash_md5_pwd(uint8_t id, const uint8_t *md5Seed, int seedLen, const char* password)
 {
-	uint8_t md5Src[80];
+	uint8_t md5Src[1 + PASSWORD_MAX_LEN + MD5_CHALLENGE_DIGEST_SIZE];
 	int md5Len = strlen(password);
 	md5Src[0] = id;
 	memcpy(md5Src + 1, password, md5Len);
 	md5Len++;
 	memcpy(md5Src + md5Len, md5Seed, seedLen);
 	md5Len += seedLen;
-	return ComputeHash(md5Src, md5Len);
+	uint8_t *hash = ComputeHash(md5Src, md5Len);
+	explicit_bzero(md5Src, sizeof(md5Src));
+	return hash;
 }
 
 void builder_set_eth_field(struct _packet_builder* this, int field, const uint8_t* val) {
@@ -155,6 +157,7 @@ static PACKET_BUILDER* packet_builder_new() {
     this->priv = (packet_builder_priv*)malloc(sizeof(packet_builder_priv));
     if (this->priv == NULL) {
         PR_ERRNO("数据包生成器私有结构内存分配失败");
+        free(this);
         return NULL;
     }
     memset(this->priv, 0, sizeof(packet_builder_priv));

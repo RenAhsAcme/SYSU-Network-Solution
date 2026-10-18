@@ -20,6 +20,7 @@ static void insert_node(LIST_ELEMENT** start, LIST_ELEMENT* new_node) {
 
 void insert_data(LIST_ELEMENT** start, void* data) {
     LIST_ELEMENT* new_node = (LIST_ELEMENT*)malloc(sizeof(LIST_ELEMENT));
+    if (!new_node) abort();
     new_node->next = NULL;
     new_node->content = data;
     insert_node(start, new_node);

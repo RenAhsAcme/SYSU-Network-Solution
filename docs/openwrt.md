@@ -99,10 +99,9 @@
       1. 前往 `Shells`，勾选 `bash`；
       2. 前往 `Compression`，勾选 `unzip`；
    5. 前往 `Network`：
-      1. 勾选 `ipset`；
+      1. 勾选 `ipset` 和 `sysu-auth`；
       2. 前往 `File Transfer`，勾选 `curl`；
       3. 前往 `Routing and Redirection`，勾选 `ip-full`；
-      4. 勾选 minieap。
    6. 前往 `Languages`，前往 `Ruby`，勾选 `ruby `，`ruby-yaml`；
    7. 前往 `Kernel modules`：
       1. 前往 `Network Support`，勾选 `kmod-tun`， `kmod-inet-diag`；
@@ -200,62 +199,9 @@
 
 - （可选）将电脑与无线路由器 LAN 相连，无线路由器 WAN 与软路由 LAN 相连，将无线路由器改为有线中继模式。
 
-#### 2.3 配置 MiniEAP 认证
+#### 2.3 配置认证
 
-- 在电脑上用终端通过 SSH 连接路由，使用 SCP 将 MiniEAP 的 apk 包传入路由器 `/tmp/` 目录（已在 [Release](https://github.com/RenAhsAcme/SYSU-Network-Solution/Release) 上传适用于 x86 的包，若需要构建其它平台，请参考以下方法构建。
-
-  > 首先为你的设备下载对应的 SDK 文件（[清华大学开源软件镜像站 - OpenWrt Downloads](https://mirrors.tuna.tsinghua.edu.cn/openwrt/)）并解压 
-  >
-  > ```bash
-  > cd /path/to/your/sdk
-  > git clone --depth 1 --branch main https://github.com/RenAhsAcme/SYSU-Network-Solution.git package/minieap
-  > make menuconfig # choose `minieap` in section `Network`
-  > make package/minieap/compile V=s
-  > ```
-  >
-  > 然后取出 MiniEAP apk 产物。
-  >
-  > 你可以参阅 [[OpenWrt Wiki\] Using the SDK](https://openwrt.org/docs/guide-developer/toolchain/using_the_sdk) 了解更多信息。
-  
-- 然后执行下述命令：
-
-  ```bash
-  apk add --allow-untrusted /tmp/upload.apk
-  minieap -u （NetID用户名） -p （NetID密码） -n （WAN口的实际硬件名称，这里是eth0） -w -b 3 --module rjv3
-  ```
-  
-- 确认能够请求到认证成功的信息，然后按 Ctrl + C退出，接着执行：
-
-  ```bash
-  vi /etc/minieap.conf
-  ```
-
-- 进入 vi 的插入编辑模式，去掉 `no_auto_reauth=1` 这一行（如无，请忽略），然后退出保存，接着执行：
-
-  ```bash
-  cat > /etc/init.d/minieap << 'EOF'
-  #!/bin/sh /etc/rc.common
-  START=99
-  USE_PROCD=1
-  start_service() {
-    procd_open_instance
-    procd_set_param command /usr/sbin/minieap
-    procd_set_param respawn
-    procd_set_param stdout 1
-    procd_set_param stderr 1
-    procd_close_instance
-  }
-  stop_service() {
-    /usr/sbin/minieap -k
-  }
-  EOF
-  chmod +x /etc/init.d/minieap
-  killall minieap
-  /etc/init.d/minieap enable
-  /etc/init.d/minieap start
-  ```
-
-  此时查看下游设备应该可以正常上网。
+- 转至 Web 页面的【服务】-【SYSU 认证】，填入 NetID 账号和密码并启用，以完成校园网认证配置。
 
 
 #### 2.4 OpenClash 配置

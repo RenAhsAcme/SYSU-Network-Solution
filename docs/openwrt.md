@@ -27,6 +27,8 @@
 
 本方案采用 OpenWrt 官方固件，转至 [Releases · openwrt/openwrt](https://github.com/openwrt/openwrt/releases)，阅读仓库并为你的设备编译合适的固件。
 
+本仓库提供了用于中山大学有线校园网的认证插件（`/minieap/`），你可以使其与固件一同编译。仓库内的插件可能仅尽力维护其在新版本上的 OpenWrt 可用性。请使用最新版固件。
+
 > [!TIP]
 >
 > - 一些内核特性（例如 `kmod-tun`）必须在编译时期就启用，否则它们可能在后期无法安装；
@@ -102,7 +104,7 @@
       1. 勾选 `ipset` 和 `sysu-auth`；
       2. 前往 `File Transfer`，勾选 `curl`；
       3. 前往 `Routing and Redirection`，勾选 `ip-full`；
-   6. 前往 `Languages`，前往 `Ruby`，勾选 `ruby `，`ruby-yaml`；
+   6. 前往 `Languages`，前往 `Ruby`，勾选 `ruby`，`ruby-yaml`；
    7. 前往 `Kernel modules`：
       1. 前往 `Network Support`，勾选 `kmod-tun`， `kmod-inet-diag`；
       2. 前往 `Netfilter Extensions`，勾选 `kmod-nft-tproxy`；
@@ -121,10 +123,6 @@
     4. 参考：对于示例环境，N = 18 是恰到好处的充分利用资源的设置，你应该关闭 Windows 上运行的绝大多数程序以给 WSL 预留足够的资源。
 
 12. 编译好的产物存放在 `./bin/targets/`。
-
-#### 1.2 科学上网配置文件
-
-取出 Clash 订阅文件。根据服务商提供的指引准备。
 
 ### 2. 软路由配置
 
@@ -187,7 +185,7 @@
 
 - 选择合适的 LAN 口与电脑连接，确保电脑可获取到类似 `192.168.1.*` 的 IPv4 地址；
 - 电脑 Web 访问 `192.168.1.1` --> **Log in**（无密码） --> 按照提示设置密码后重新登录；
-- 转至 http://192.168.1.1/cgi-bin/luci/admin/network/network 的接口选项卡，确认当前连接的端口，然后按以下截图配置：
+- 转至 [OpenWrt | 接口](http://192.168.1.1/cgi-bin/luci/admin/network/network)，确认当前连接的端口，然后按以下截图配置：
 
 ![Screenshot_01](illustration/Screenshot_01.webp)
 ![Screenshot_02](illustration/Screenshot_02.webp)
@@ -203,93 +201,15 @@
 
 - 转至 Web 页面的【服务】-【SYSU 认证】，填入 NetID 账号和密码并启用，以完成校园网认证配置。
 
-
 #### 2.4 OpenClash 配置
 
 - 转到 [vernesong/OpenClash](https://github.com/vernesong/OpenClash)，按照 Wiki 等相关指引完成适合你的科学上网配置。
 
-#### 2.5 流量整形
+#### 3.6 Tailscale 配置
 
-> 以下思路为过往探索时所进行的一些工作，但由于个人当前设备及网络需求发生了极其复杂的变化，该规则灵活性不足，在极端情况下可能影响用网体验，因此不再建议使用。本部分内容仅供参考。
+Tailscale 通过点对点 NAT 穿透让内网设备无需公网 IP 即可直连，并支持将某台设备设为 Exit Node 来统一加密路由全部公网流量。下述介绍了将你的软路由配置为 Tailscale 网络中的 Exit Node 的方法。
 
-利用流量整形实现在下游设备上大流量任务进行的同时保证小包传输延迟不发生剧烈抖动，适用于保证前台游戏延迟体验的同时在后台进行近乎满速的大流量下载任务，远程桌面同时下载大包保证不发生画面卡顿。如果需要，你还可以部署多设备竞争条件，使得速度分配更加公平。灵感来源于校园网对全校流量实施的深度优化，确保所有人公平用网的手段。
-
-如使用该仓库提供的 `.config` 文件完成编译，得到的固件默认安装 qosify，请通过以下步骤完成配置。
-
-- 请修改 `/etc/config/qosify` 文件如下：
-
-  ```bash
-  config defaults
-          list defaults /etc/qosify/*.conf
-          option dscp_prio video
-          option dscp_icmp +besteffort
-          option dscp_default_udp besteffort
-          option prio_max_avg_pkt_len 500
-  config class besteffort
-          option ingress CS0
-          option egress CS0
-  config class bulk
-          option ingress LE
-          option egress LE
-  config class video
-          option ingress AF41
-          option egress AF41
-  config class voice
-          option ingress CS6
-          option egress CS6
-          option bulk_trigger_pps 200
-          option bulk_trigger_timeout 3
-          option dscp_bulk CS1
-  config interface wan
-          option name eth0              # 你的实际WAN接口
-          option disabled 0
-          option bandwidth_up 66mbit    # 改成真实带宽90~95%
-          option bandwidth_down 66mbit
-          option overhead_type none
-          option ingress 1
-          option egress 1
-          option mode diffserv4
-          option nat 1
-          option host_isolate 1
-          option autorate_ingress 0
-          option ingress_options "dual-dsthost nat"
-          option egress_options "dual-srchost nat ack-filter"
-          option options "besteffort triple-isolate no-squash-dscp"
-  config device wandev
-          option disabled 0
-          option name eth0
-          option bandwidth 66mbit
-  ```
-
-- 请新建并修改 `/etc/nftables.d/qosify-extra.nft` 文件如下：
-
-  ```bash
-  chain qosify_postrouting {
-          type filter hook postrouting priority mangle;
-          meta length < 200 counter ip dscp set cs6
-          ct state new counter ip dscp set cs6
-          meta length > 1200 counter ip dscp set cs1
-          ct bytes > 10000000 counter ip dscp set cs1
-          # Tailscale 优先，如果你需要使用内网穿透服务。
-          udp dport 41641 ip dscp set cs6
-          udp sport 41641 ip dscp set cs6
-  }
-  ```
-
-- 然后，请执行以下命令重启相关服务以使配置生效：
-
-  ```bash
-  /etc/init.d/firewall restart
-  /etc/init.d/qosify restart
-  ```
-
-#### 3.6 Tailscale 穿透
-
-> 本部分内容初衷是为了解决极端网络环境下 Tailscale 穿透成功率低的问题，但在常规用网（如在学校内不同地点的互联）环境中并不存在该问题，因此该部分所述内容可能具有伪需求之嫌。如果您没有这方面的极端需求，可以忽略这里的描述。本部分内容仅供参考。
-
-由于本人做网络拓扑时引入了两层 NAT，导致从运营商网络发起穿透的成功率不高。因此考虑在 OpenWrt 再部署一个 Tailscale 以提高内网穿透成功率。如果你已经能正常穿透，请跳过这部分内容。
-
-- Tailscale 下载页面选 Other，跳转到 Stable release track
+- 转至 [Tailscale Packages - stable track](https://pkgs.tailscale.com/stable/)，复制适合你的平台架构的二进制文件链接；
 
 - 用 `wget` 获取文件直链，然后按如下解压：
 

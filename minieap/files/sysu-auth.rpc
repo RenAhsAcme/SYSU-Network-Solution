@@ -1,0 +1,68 @@
+#!/bin/sh
+. /usr/share/libubox/jshn.sh
+
+case "$1" in
+list)
+    printf '%s\n' '{"status":{},"logs":{},"control":{"action":""}}'
+    ;;
+call)
+    case "$2" in
+    status)
+        service="$(ubus call service list '{"name":"sysu-auth"}' 2>/dev/null)"
+        running=0
+        if json_load "$service" && json_select sysu-auth 2>/dev/null && json_select instances 2>/dev/null && json_select main 2>/dev/null; then
+            json_get_var running running
+        fi
+        [ "$running" = 1 ] || running=0
+        json_init
+        if [ "$running" = 1 ] && [ -f /var/run/sysu-auth/status.json ]; then
+            data="$(head -c 4096 /var/run/sysu-auth/status.json)"
+            json_load "$data" || json_init
+        fi
+        json_get_var state state
+        if [ "$running" = 0 ] || [ -z "$state" ]; then
+            json_init
+            json_add_string state stopped
+            json_add_string reason stopped
+        fi
+        json_add_boolean running "$running"
+        read -r uptime rest </proc/uptime
+        json_add_int now "${uptime%%.*}"
+        json_dump
+        ;;
+    logs)
+        json_init
+        json_add_string text "$(logread -e 'sysu-auth' 2>/dev/null | grep -E ' sysu-auth(\[[0-9]+\])?:' | tail -n 40)"
+        json_dump
+        ;;
+    control)
+        read -r request
+        json_load "$request" || exit 1
+        json_get_var action action
+        case "$action" in
+            connect)
+                logger -t sysu-auth '管理请求：连接'
+                if [ "$(uci -q get sysu-auth.main.enabled)" != 1 ]; then result=2
+                elif /etc/init.d/sysu-auth running >/dev/null 2>&1; then result=0
+                else /etc/init.d/sysu-auth start >/dev/null 2>&1; result=$?; fi
+                ;;
+            disconnect)
+                logger -t sysu-auth '管理请求：断开'
+                /etc/init.d/sysu-auth stop >/dev/null 2>&1; result=$?
+                ;;
+            reconnect)
+                logger -t sysu-auth '管理请求：重新认证'
+                if [ "$(uci -q get sysu-auth.main.enabled)" != 1 ]; then result=2
+                else /etc/init.d/sysu-auth restart >/dev/null 2>&1; result=$?; fi
+                ;;
+            *) exit 1 ;;
+        esac
+        json_init
+        json_add_int code "$result"
+        json_dump
+        ;;
+    *) exit 1 ;;
+    esac
+    ;;
+*) exit 1 ;;
+esac

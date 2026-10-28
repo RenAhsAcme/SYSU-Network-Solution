@@ -1,0 +1,14 @@
+{
+    "sysu-auth-status": {
+        "description": "Read SYSU authentication status and redacted logs",
+        "read": { "ubus": { "sysu-auth": ["status", "logs"] } }
+    },
+    "sysu-auth-config": {
+        "description": "Manage SYSU authentication including stored credentials",
+        "read": { "uci": ["sysu-auth"] },
+        "write": {
+            "uci": ["sysu-auth"],
+            "ubus": { "sysu-auth": ["control"] }
+        }
+    }
+}

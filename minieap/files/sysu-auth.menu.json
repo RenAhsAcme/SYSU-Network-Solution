@@ -1,0 +1,8 @@
+{
+    "admin/services/sysu-auth": {
+        "title": "SYSU 认证",
+        "order": 60,
+        "action": { "type": "view", "path": "sysu-auth" },
+        "depends": { "acl": ["sysu-auth-status", "sysu-auth-config"], "uci": {"sysu-auth": true} }
+    }
+}

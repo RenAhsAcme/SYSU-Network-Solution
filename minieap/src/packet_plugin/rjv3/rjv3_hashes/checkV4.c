@@ -274,15 +274,16 @@ void display(const unsigned char array[], int length) {
 
 unsigned char *computeV4(const unsigned char *src, int len)
 {
+    if (!src || len < 16) return NULL;
     static unsigned char buf[0x100];
-    static unsigned char s[20];
+    unsigned char s[16];
     memcpy(s, src, 16);
 
     unsigned char wtmp[193];
     int wpos = 0;
     int i;
 
-    uint32_t v4_check_type = ((signed char)s[0] + (signed char)s[3]) % 5u;
+    uint32_t v4_check_type = ((unsigned)s[0] + (unsigned)s[3]) % 5u;
     switch(v4_check_type)
     {
         case 0:
@@ -303,7 +304,7 @@ unsigned char *computeV4(const unsigned char *src, int len)
 
             for (i=0; i<8; ++i)
             {
-                sprintf(tbuf, "%02x", (signed char)(s[2*i]));
+                sprintf(tbuf, "%02x", (unsigned)s[2*i]);
                 strcpy((char*)wtmp + wpos, tbuf);
                 wpos += strlen(tbuf);
             }
@@ -318,7 +319,7 @@ unsigned char *computeV4(const unsigned char *src, int len)
             }
             for (i=0; i<8; ++i)
             {
-                sprintf(tbuf, "%02x", (signed char)(s[2*i+1]));
+                sprintf(tbuf, "%02x", (unsigned)s[2*i+1]);
                 strcpy((char*)wtmp + wpos, tbuf);
                 wpos += strlen(tbuf);
             }

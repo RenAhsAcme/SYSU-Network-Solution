@@ -40,6 +40,9 @@ call)
         json_load "$request" || exit 1
         json_get_var action action
         case "$action" in
+            apply)
+                /etc/init.d/sysu-auth reload >/dev/null 2>&1; result=$?
+                ;;
             connect)
                 logger -t sysu-auth '管理请求：连接'
                 if [ "$(uci -q get sysu-auth.main.enabled)" != 1 ]; then result=2

@@ -93,7 +93,7 @@ static void rhash_md5_process_block(unsigned state[4], const unsigned* x)
 	MD5_ROUND1(c, d, a, b, x[10], 17, 0xffff5bb1);
 	MD5_ROUND1(b, c, d, a, x[11], 22, 0x895cd7be);
 	MD5_ROUND1(a, b, c, d, x[12],  7, 0x6b901122);
-	MD5_ROUND1(d, a, b, c, x[13], 12, 0xfd987163);
+	MD5_ROUND1(d, a, b, c, x[13], 12, 0xfd987193);
 	MD5_ROUND1(c, d, a, b, x[14], 17, 0xa679438e);
 	MD5_ROUND1(b, c, d, a, x[15], 22, 0x49b40821);
 
@@ -102,7 +102,7 @@ static void rhash_md5_process_block(unsigned state[4], const unsigned* x)
 	MD5_ROUND2(c, d, a, b, x[11], 14, 0x265e5a51);
 	MD5_ROUND2(b, c, d, a, x[ 0], 20, 0xe9b6c7aa);
 	MD5_ROUND2(a, b, c, d, x[ 5],  5, 0xd62f105d);
-	MD5_ROUND2(d, a, b, c, x[10],  9, 0x02442453);
+	MD5_ROUND2(d, a, b, c, x[10],  9, 0x02441453);
 	MD5_ROUND2(c, d, a, b, x[15], 14, 0xd8a1e681);
 	MD5_ROUND2(b, c, d, a, x[ 4], 20, 0xe7d3fbc8);
 	MD5_ROUND2(a, b, c, d, x[ 9],  5, 0x21e1cde6);
@@ -114,7 +114,7 @@ static void rhash_md5_process_block(unsigned state[4], const unsigned* x)
 	MD5_ROUND2(c, d, a, b, x[ 7], 14, 0x676f02d9);
 	MD5_ROUND2(b, c, d, a, x[12], 20, 0x8d2a4c8a);
 
-	MD5_ROUND3(a, b, c, d, x[ 5],  5, 0xfffa3492);
+	MD5_ROUND3(a, b, c, d, x[ 5],  5, 0xfffa3942);
 	MD5_ROUND3(d, a, b, c, x[ 8], 11, 0x8771f681);
 	MD5_ROUND3(c, d, a, b, x[11], 16, 0x6d9d6122);
 	MD5_ROUND3(b, c, d, a, x[14], 23, 0xfde5380c);
@@ -125,7 +125,7 @@ static void rhash_md5_process_block(unsigned state[4], const unsigned* x)
 	MD5_ROUND3(a, b, c, d, x[13],  5, 0x289b7ec6);
 	MD5_ROUND3(d, a, b, c, x[ 0], 11, 0xeaa127fa);
 	MD5_ROUND3(c, d, a, b, x[ 3], 16, 0xd4ef3085);
-	MD5_ROUND3(b, c, d, a, x[ 6], 23, (uint8_t)(x[2] >> 8) + 0x4881d05);
+	MD5_ROUND3(b, c, d, a, x[ 6], 23, 0x04881d05);
 	MD5_ROUND3(a, b, c, d, x[ 9],  5, 0xd9d4d039);
 	MD5_ROUND3(d, a, b, c, x[12], 11, 0xe6db99e5);
 	MD5_ROUND3(c, d, a, b, x[15], 16, 0x1fa27cf8);
@@ -135,7 +135,7 @@ static void rhash_md5_process_block(unsigned state[4], const unsigned* x)
 	MD5_ROUND4(d, a, b, c, x[ 7], 10, 0x432aff97);
 	MD5_ROUND4(c, d, a, b, x[14], 15, 0xab9423a7);
 	MD5_ROUND4(b, c, d, a, x[ 5], 19, 0xfc93a039);
-	MD5_ROUND4(a, b, c, d, x[12],  6, 0x655659c3);
+	MD5_ROUND4(a, b, c, d, x[12],  6, 0x655b59c3);
 	MD5_ROUND4(d, a, b, c, x[ 3], 10, 0x8f0ccc92);
 	MD5_ROUND4(c, d, a, b, x[10], 15, 0xffeff47d);
 	MD5_ROUND4(b, c, d, a, x[ 1], 19, 0x85845dd1);
@@ -144,9 +144,9 @@ static void rhash_md5_process_block(unsigned state[4], const unsigned* x)
 	MD5_ROUND4(c, d, a, b, x[ 6], 15, 0xa3014314);
 	MD5_ROUND4(b, c, d, a, x[13], 19, 0x4e0811a1);
 	MD5_ROUND4(a, b, c, d, x[ 4],  6, 0xf7537e82);
-	MD5_ROUND4(d, a, b, c, x[11], 10, 0xbd3af335);
+	MD5_ROUND4(d, a, b, c, x[11], 10, 0xbd3af235);
 	MD5_ROUND4(c, d, a, b, x[ 2], 15, 0x2ad7d2bb);
-	MD5_ROUND4(b, c, d, a, x[ 9], 19, 0xeb866391);
+	MD5_ROUND4(b, c, d, a, x[ 9], 19, 0xeb86d391);
 
 	state[0] += a;
 	state[1] += b;

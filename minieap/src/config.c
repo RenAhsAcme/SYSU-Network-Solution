@@ -25,7 +25,7 @@ static int number(const char *value, int min, int max, int *out) {
 
 RESULT parse_config_file(const char *path) {
     static const char *keys[] = {"username", "password", "nic", "heartbeat",
-        "stage-timeout", "wait-after-fail", "max-retries"};
+        "stage-timeout", "wait-after-fail", "max-retries", "debug"};
     unsigned seen = 0;
     char line[256];
     struct stat st;
@@ -78,6 +78,7 @@ RESULT parse_config_file(const char *path) {
         case 4: valid &= number(value, 1, 60, &config.stage_timeout); break;
         case 5: valid &= number(value, 5, 300, &config.wait_after_fail_secs); break;
         case 6: valid &= number(value, 1, 10, &config.max_retries); break;
+        case 7: valid &= number(value, 0, 1, &config.debug); break;
         }
         if (!valid) break;
     }

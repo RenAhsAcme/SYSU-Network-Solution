@@ -2,7 +2,7 @@
 
 仅面向 OpenWrt/Linux 的中山大学有线校园网认证客户端，基于 MiniEAP 0.93 与 MentoHUST 锐捷算法裁剪。
 
-OpenWrt 构建与 LuCI 配置见 [宿舍用网](../../docs/openwrt.md)。完整的架构、单包构建、迁移和回退文档 `docs/sysu-auth.md` 待补充。
+OpenWrt 构建与 LuCI 配置见 [宿舍用网](../../docs/openwrt.md)。认证、会话维护与验证边界见 [SYSU 认证插件](../../docs/sysu-auth.md)。
 
 直接在 Linux 编译核心：
 

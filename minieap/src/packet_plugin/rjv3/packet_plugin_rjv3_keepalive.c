@@ -1,6 +1,7 @@
 #include "packet_plugin_rjv3_priv.h"
 #include "packet_plugin_rjv3_keepalive.h"
 #include "if_impl.h"
+#include "eap_state_machine.h"
 #include "net_util.h"
 #include "sched_alarm.h"
 #include "misc.h"
@@ -9,7 +10,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-static int timer;
+static int timer, errors;
 static uint32_t echokey, echono;
 static uint8_t destination[6];
 void rjv3_set_keepalive_echokey(uint32_t key) { echokey = key; }
@@ -17,7 +18,7 @@ void rjv3_set_keepalive_echono(uint32_t no) { echono = no; }
 void rjv3_set_keepalive_dest_mac(uint8_t *mac) { memcpy(destination, mac, 6); }
 void rjv3_keepalive_reset(void) {
     unschedule_alarm(timer);
-    timer = 0;
+    timer = errors = 0;
     echokey = echono = 0;
 }
 RESULT rjv3_send_new_keepalive_frame(PACKET_PLUGIN *this) {
@@ -45,11 +46,14 @@ void rjv3_send_keepalive_timed(void *data) {
     PACKET_PLUGIN *this = data;
     rjv3_priv *params = this->priv;
     if (IS_FAIL(rjv3_send_new_keepalive_frame(this))) {
-        status_update("error", "heartbeat_send_failed", 0);
-        PR_ERR("心跳发送失败，退出并由服务管理器恢复");
-        exit(EXIT_FAILURE);
+        if (++errors >= 3) {
+            PR_WARN("心跳连续发送失败，进入受控重试");
+            eap_heartbeat_failed();
+            return;
+        }
     }
-    timer = schedule_alarm(params->heartbeat_interval, rjv3_send_keepalive_timed, this);
+    else errors = 0;
+    timer = schedule_alarm(errors ? 5 : params->heartbeat_interval, rjv3_send_keepalive_timed, this);
 }
 void rjv3_start_keepalive(PACKET_PLUGIN *this) {
     timer = schedule_alarm(1, rjv3_send_keepalive_timed, this);

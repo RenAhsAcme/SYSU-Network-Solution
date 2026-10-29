@@ -6,6 +6,7 @@
 #include "sched_alarm.h"
 #include "logging.h"
 #include "sysu.h"
+#include "session.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -15,7 +16,9 @@
 #include <unistd.h>
 
 static void cleanup(void) {
+    eap_state_machine_stop();
     status_update("stopped", "stopped", 0);
+    session_destroy();
     free_if_impl();
     packet_plugin_destroy();
     packet_builder_destroy();
@@ -51,7 +54,7 @@ int main(int argc, char **argv) {
     if (!init_if_impl_list() || !init_packet_plugin_list()) return 1;
     IF_IMPL *iface = get_if_impl();
     if (IS_FAIL(iface->set_ifname(iface, get_program_config()->ifname)) ||
-        IS_FAIL(iface->prepare_interface(iface)) || IS_FAIL(drop_privileges()) ||
+        IS_FAIL(iface->prepare_interface(iface)) || IS_FAIL(session_init(get_program_config()->ifname)) || IS_FAIL(drop_privileges()) ||
         IS_FAIL(sched_alarm_init()) || IS_FAIL(eap_state_machine_init())) return 1;
     iface->set_frame_handler(iface, eap_state_machine_recv_handler);
     PR_INFO("SYSU 认证 " SYSU_VERSION " 已启动");

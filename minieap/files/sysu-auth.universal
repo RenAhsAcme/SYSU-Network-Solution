@@ -1,0 +1,20 @@
+#!/bin/sh
+# OpenWrt 发布信息记录用户空间架构，避免误用 64 位内核对应程序。
+[ -r /etc/openwrt_release ] || { echo '此安装包需要 OpenWrt' >&2; exit 1; }
+arch="$(. /etc/openwrt_release; printf '%s' "$DISTRIB_ARCH")"
+case "$arch" in
+    x86_64) arch=x86_64 ;;
+    i386_*|i486_*|i586_*|i686_*) arch=x86 ;;
+    arm_*) arch=arm ;;
+    aarch64_*) arch=aarch64 ;;
+    mips64el_*) arch=mips64el ;;
+    mips64_*) arch=mips64 ;;
+    mipsel_*) arch=mipsel ;;
+    mips_*) arch=mips ;;
+    powerpc64le_*) arch=powerpc64le ;;
+    powerpc64_*) arch=powerpc64 ;;
+    powerpc_*) arch=powerpc ;;
+    riscv64_*) arch=riscv64 ;;
+    *) echo '此通用包尚未包含当前处理器，请按目标平台编译' >&2; exit 1 ;;
+esac
+exec /usr/libexec/sysu-auth/"$arch"/sysu-auth "$@"

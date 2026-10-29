@@ -36,7 +36,15 @@ extern "C" {
 
 
 /* detect CPU endianness */
-#if (defined(__BYTE_ORDER) && defined(__LITTLE_ENDIAN) && \
+#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+# define CPU_BIG_ENDIAN
+# define IS_BIG_ENDIAN 1
+# define IS_LITTLE_ENDIAN 0
+#elif defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+# define CPU_LITTLE_ENDIAN
+# define IS_BIG_ENDIAN 0
+# define IS_LITTLE_ENDIAN 1
+#elif (defined(__BYTE_ORDER) && defined(__LITTLE_ENDIAN) && \
 		__BYTE_ORDER == __LITTLE_ENDIAN) || \
 	defined(CPU_IA32) || defined(CPU_X64) || \
 	defined(__ia64) || defined(__ia64__) || defined(__alpha__) || defined(_M_ALPHA) || \

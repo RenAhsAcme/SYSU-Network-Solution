@@ -82,20 +82,19 @@ extern uint64_t rhash_tiger_sboxes[4][256];
 	round(b,c,a,x7,mul)
 
 #define key_schedule { \
+	uint64_t old_x1 = x1, old_x2 = x2, old_x4 = x4, old_x5 = x5; \
 	x0 -= x7 ^ I64(0xA5A5B5A5A5A5A7A5); \
 	x1 ^= x0; \
-	x2 += x1; \
-	x3 -= x2 ^ ((~x1)<<19); \
+	x3 -= (x1 + x2) ^ ((~x1)<<19); \
 	x4 ^= x3; \
-	x5 += x4; \
-	x6 -= x5 ^ ((~x4)>>23); \
+	x6 -= (x4 + x5) ^ ((~x4)>>23); \
 	x7 ^= x6; \
 	x0 += x7; \
-	x1 -= x0 ^ ((~x7)<<19); \
-	x2 ^= x1; \
+	x1 -= (x0 + x7) ^ ((~x7)<<19); \
+	x2 = (old_x1 + old_x2) ^ x1; \
 	x3 += x2; \
 	x4 -= x3 ^ ((~x2)>>23); \
-	x5 ^= x4; \
+	x5 = (old_x4 + old_x5) ^ x4; \
 	x6 += x5; \
 	x7 -= x6 ^ I64(0x0123456789ABCDEF); \
 }

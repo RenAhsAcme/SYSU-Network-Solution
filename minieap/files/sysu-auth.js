@@ -17,8 +17,11 @@ var reasons = {
     stopped: '服务尚未运行', starting: '正在准备认证', link_down: '请检查网线与认证设备',
     discovering: '正在查找认证服务器', identity: '正在回应身份请求', challenge: '正在回应认证挑战',
     accepted: '服务端已接受认证',
+    link_ready: '链路已恢复，正在准备认证', server_reauth: '服务端要求重新认证',
+    round_timeout: '本轮认证超过总时限',
     timeout: '服务端响应超时', rejected: '服务端拒绝认证，请检查账号、密码或接入状态',
-    server_logoff: '服务端结束了当前会话', send_failed: '报文发送失败', heartbeat_send_failed: '心跳报文发送失败'
+    server_logoff: '服务端结束了当前会话', send_failed: '报文发送失败', heartbeat_send_failed: '心跳报文发送失败',
+    maintenance_timeout: '会话维护连续未获回应，正在等待重新认证'
 };
 
 return view.extend({
@@ -42,15 +45,17 @@ return view.extend({
         o.password = true;
         o.rmempty = false;
         o.datatype = 'and(minlength(1),maxlength(64))';
-        o = s.taboption('advanced', form.Flag, 'heartbeat', '启用心跳（Legacy）');
-        o.enabled = '60';
-        o.disabled = '0';
+        o = s.taboption('advanced', form.Value, 'heartbeat', '旧版 NAS 心跳间隔（秒）');
         o.default = '0';
+        o.datatype = 'range(0,3600)';
         o.rmempty = false;
-        o.description = '默认关闭；启用后每 60 秒发送一次。';
-        o.cfgvalue = function(section_id) {
-            return Number(form.Flag.prototype.cfgvalue.call(this, section_id)) > 0 ? this.enabled : this.disabled;
-        };
+        o.description = '0 为自动。仅旧版 NAS 需要手动覆盖间隔，标准会话按服务器参数自动维护。';
+        o = s.taboption('advanced', form.ListValue, 'log_mode', '日志模式');
+        o.value('normal', '常规');
+        o.value('debug', '调试');
+        o.default = 'normal';
+        o.rmempty = false;
+        o.description = '调试模式记录协议阶段、重试与会话维护过程，不记录密码、密钥或报文内容。排查完成后建议恢复常规模式。';
         [['stage_timeout', '阶段超时（秒）', '5', 'range(1,60)'],
          ['retry_delay', '重试起始间隔（秒）', '30', 'range(5,300)'],
          ['max_retries', '阶段重发次数', '3', 'range(1,10)']].forEach(function(field) {
@@ -71,6 +76,8 @@ return view.extend({
                 if (data.device) info.push('设备：' + data.device);
                 if (data.state == 'authenticated') {
                     info.push('会话：' + Math.max(0, data.now - data.since) + ' 秒');
+                    var maintenance = { none: '未收到维护参数', pending: '正在确认会话', confirmed: '会话维护正常', backoff: '维护暂未回应，等待重试' };
+                    if (maintenance[data.maintenance]) info.push(maintenance[data.maintenance]);
                 }
                 if (data.retry_at) info.push('下次重试：' + Math.max(0, data.retry_at - data.now) + ' 秒后');
                 timing.textContent = info.join(' · ');
@@ -103,6 +110,12 @@ return view.extend({
         return m.render().then(function(formNode) {
             controls.forEach(function(button) { button.disabled = !!m.readonly; });
             poll.add(update, 5);
+            if (!m.readonly) document.addEventListener('uci-applied', function() {
+                callControl('apply').then(function(result) {
+                    if (result.code !== 0) throw new Error('设置已保存，但认证服务未能应用，请查看诊断日志');
+                    return update();
+                }).catch(function(err) { ui.addNotification(null, E('p', {}, err.message), 'error'); });
+            });
             update();
             return E('div', {}, [E('h2', {}, 'SYSU 认证'),
                 E('p', { 'class': 'cbi-map-descr' }, '中山大学有线校园网认证。地址与路由由网络接口配置管理。'),

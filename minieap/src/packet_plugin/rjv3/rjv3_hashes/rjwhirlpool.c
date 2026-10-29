@@ -65,18 +65,7 @@ extern uint64_t rhash_whirlpool_sbox[8][256];
  */
 static void rhash_whirlpool_process_block(uint64_t *hash, uint64_t* p_block)
 {
-	int i;                /* loop counter */
-	uint64_t K[2][8];       /* key */
-	uint64_t state[2][8];   /* state */
-
-	/* alternating binary flags */
-	unsigned int m = 0;
-
-	/* the number of rounds of the internal dedicated block cipher */
-	const int number_of_rounds = 10;
-
-	/* array used in the rounds */
-	static const uint64_t rc[10] = {
+    static const uint64_t rc[10] = {
 		I64(0x1823c6e887b8014f),
 		I64(0x36a6d2f5796f9152),
 		I64(0x60bc9b8ea30c7b35),
@@ -88,52 +77,18 @@ static void rhash_whirlpool_process_block(uint64_t *hash, uint64_t* p_block)
 		I64(0xfbee7c66dd17479e),
 		I64(0xca2dbf07ad5a8333)
 	};
-
-	/* map the message buffer to a block */
-	for (i = 0; i < 8; i++) {
-		/* store K^0 and xor it with the intermediate hash state */
-		K[0][i] = hash[i]; /***********maybe k[0][8-i]**************/
-		state[0][i] = be2me_64(p_block[i]) ^ hash[i]; /****maybe state[0][8-i]****/
-		hash[i] = state[0][i]; /**************maybe disapeared********/
-	}
-
-
-	/* iterate over algorithm rounds */
-	for (i = 0; i < number_of_rounds; i++)
-	{
-		/* compute K^i from K^{i-1} */
-		K[m ^ 1][0] = WHIRLPOOL_OP(K[m], 0) ^ rc[i];
-		K[m ^ 1][1] = WHIRLPOOL_OP(K[m], 1);
-		K[m ^ 1][2] = WHIRLPOOL_OP(K[m], 2);
-		K[m ^ 1][3] = WHIRLPOOL_OP(K[m], 3);
-		K[m ^ 1][4] = WHIRLPOOL_OP(K[m], 4);
-		K[m ^ 1][5] = WHIRLPOOL_OP(K[m], 5);
-		K[m ^ 1][6] = WHIRLPOOL_OP(K[m], 6);
-		K[m ^ 1][7] = WHIRLPOOL_OP(K[m], 7);
-
-		/* apply the i-th round transformation */
-		//state[m ^ 1][0] = WHIRLPOOL_OP(state[m], 0) ^ K[m ^ 1][0];
-		state[m ^ 1][0] = WHIRLPOOL_OP(state[m], 0) ^ K[m ^ 1][0];
-		state[m ^ 1][1] = (WHIRLPOOL_OP(state[m], 1) ^ K[m ^ 1][1]);
-		state[m ^ 1][2] = (WHIRLPOOL_OP(state[m], 2) ^ K[m ^ 1][2]) + 1;
-		state[m ^ 1][3] = (WHIRLPOOL_OP(state[m], 3) ^ K[m ^ 1][3]);
-		state[m ^ 1][4] = (WHIRLPOOL_OP(state[m], 4) ^ K[m ^ 1][4]);
-		state[m ^ 1][5] = (WHIRLPOOL_OP(state[m], 5) ^ K[m ^ 1][5]) + 1;
-		state[m ^ 1][6] = (WHIRLPOOL_OP(state[m], 6) ^ K[m ^ 1][6]) + 1;
-		state[m ^ 1][7] = (WHIRLPOOL_OP(state[m], 7) ^ K[m ^ 1][7]);
-
-		m = m ^ 1;
-	}
-
-	/* apply the Miyaguchi-Preneel compression function */
-	hash[0] ^= state[0][0];
-	hash[1] ^= state[0][1];
-	hash[2] ^= state[0][2];
-	hash[3] ^= state[0][3];
-	hash[4] ^= state[0][4];
-	hash[5] ^= state[0][5];
-	hash[6] ^= state[0][6];
-	hash[7] ^= state[0][7];
+    uint64_t original[8], next[8];
+    for (int i = 0; i < 8; i++) {
+        hash[i] ^= be2me_64(p_block[i]);
+        original[i] = hash[i];
+    }
+    /* 客户端变体直接迭代状态；不使用标准 Whirlpool 的独立轮密钥。 */
+    for (int round = 0; round < 10; round++) {
+        for (int i = 0; i < 8; i++)
+            next[i] = WHIRLPOOL_OP(hash, i) ^ (i == 0 ? rc[round] : 0);
+        memcpy(hash, next, sizeof(next));
+    }
+    for (int i = 0; i < 8; i++) hash[i] ^= original[i];
 }
 
 /**

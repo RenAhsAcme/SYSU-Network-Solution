@@ -7,5 +7,8 @@ typedef enum {
     EAP_STATE_CHALLENGE_SENT, EAP_STATE_SUCCESS, EAP_STATE_FAILURE
 } EAP_STATE;
 RESULT eap_state_machine_init(void);
+void eap_state_machine_stop(void);
+void eap_session_event(int event);
+void eap_heartbeat_failed(void);
 void eap_state_machine_recv_handler(ETH_EAP_FRAME *frame);
 #endif

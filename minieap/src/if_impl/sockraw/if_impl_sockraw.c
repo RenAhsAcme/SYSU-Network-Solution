@@ -3,6 +3,8 @@
 #include "logging.h"
 #include "sched_alarm.h"
 #include "sysu.h"
+#include "eap_state_machine.h"
+#include "session.h"
 #include <arpa/inet.h>
 #include <linux/if_packet.h>
 #include <linux/rtnetlink.h>
@@ -43,7 +45,7 @@ static RESULT prepare(IF_IMPL *this) {
     int ignore = 1;
     if (setsockopt(PRIV->sockfd, SOL_PACKET, PACKET_IGNORE_OUTGOING, &ignore, sizeof(ignore))) return FAILURE;
     PRIV->linkfd = socket(AF_NETLINK, SOCK_RAW | SOCK_CLOEXEC | SOCK_NONBLOCK, NETLINK_ROUTE);
-    struct sockaddr_nl nl = {.nl_family = AF_NETLINK, .nl_groups = RTMGRP_LINK};
+    struct sockaddr_nl nl = {.nl_family = AF_NETLINK, .nl_groups = RTMGRP_LINK | RTMGRP_IPV4_IFADDR};
     if (PRIV->linkfd < 0 || bind(PRIV->linkfd, (struct sockaddr *)&nl, sizeof(nl))) return FAILURE;
     sigset_t signals;
     sigemptyset(&signals);
@@ -54,24 +56,48 @@ static RESULT prepare(IF_IMPL *this) {
     PRIV->signalfd = signalfd(-1, &signals, SFD_CLOEXEC | SFD_NONBLOCK);
     return PRIV->signalfd >= 0 ? SUCCESS : FAILURE;
 }
-static RESULT capture(IF_IMPL *this) {
-    uint8_t buf[4096];
+static RESULT refresh_link(IF_IMPL *this) {
     struct ifreq req = {0};
     strcpy(req.ifr_name, PRIV->ifname);
     if (ioctl(PRIV->sockfd, SIOCGIFFLAGS, &req)) return FAILURE;
     eap_link_changed((req.ifr_flags & IFF_UP) && (req.ifr_flags & IFF_RUNNING));
-    struct pollfd fds[] = {{PRIV->sockfd, POLLIN, 0}, {PRIV->linkfd, POLLIN, 0}, {PRIV->signalfd, POLLIN, 0}};
+    return SUCCESS;
+}
+static RESULT capture(IF_IMPL *this) {
+    uint8_t buf[4096];
+    if (IS_FAIL(refresh_link(this))) return FAILURE;
+    struct pollfd fds[] = {{PRIV->sockfd, POLLIN, 0}, {PRIV->linkfd, POLLIN, 0}, {PRIV->signalfd, POLLIN, 0}, {session_fd(), POLLIN, 0}};
     while (!PRIV->stopped) {
-        int n = poll(fds, 3, sched_alarm_timeout());
+        int wait = sched_alarm_timeout(), session_wait = session_timeout();
+        if (session_wait >= 0 && (wait < 0 || session_wait < wait)) wait = session_wait;
+        int n = poll(fds, 4, wait);
         if (n < 0) { if (errno == EINTR) continue; return FAILURE; }
         if (fds[2].revents & POLLIN) return SUCCESS;
         if (fds[1].revents & POLLIN) {
-            struct sockaddr_nl from;
+            int address_changed = 0;
+            struct sockaddr_nl from = {0};
             socklen_t fromlen = sizeof(from);
-            ssize_t len = recvfrom(PRIV->linkfd, buf, sizeof(buf), 0, (struct sockaddr *)&from, &fromlen);
-            if (len < 0) return FAILURE;
+            ssize_t len = recvfrom(PRIV->linkfd, buf, sizeof(buf), MSG_TRUNC, (struct sockaddr *)&from, &fromlen);
+            if (len < 0) {
+                if (errno != EAGAIN && errno != EINTR && errno != ENOBUFS) {
+                    PR_ERRNO("读取链路通知失败"); return FAILURE;
+                }
+                if (IS_FAIL(refresh_link(this))) return FAILURE;
+                address_changed = 1;
+                len = 0;
+            }
+            if (len > (ssize_t)sizeof(buf)) {
+                if (IS_FAIL(refresh_link(this))) return FAILURE;
+                address_changed = 1;
+                len = 0;
+            }
             if (from.nl_pid == 0) {
                 for (struct nlmsghdr *msg = (struct nlmsghdr *)buf; NLMSG_OK(msg, len); msg = NLMSG_NEXT(msg, len)) {
+                    if (msg->nlmsg_type == RTM_NEWADDR || msg->nlmsg_type == RTM_DELADDR) {
+                        if (msg->nlmsg_len >= NLMSG_LENGTH(sizeof(struct ifaddrmsg)) &&
+                            ((struct ifaddrmsg *)NLMSG_DATA(msg))->ifa_index == (unsigned)PRIV->index) address_changed = 1;
+                        continue;
+                    }
                     if (msg->nlmsg_len < NLMSG_LENGTH(sizeof(struct ifinfomsg))) continue;
                     struct ifinfomsg *info = NLMSG_DATA(msg);
                     if (info->ifi_index != PRIV->index) continue;
@@ -80,6 +106,7 @@ static RESULT capture(IF_IMPL *this) {
                         eap_link_changed((info->ifi_flags & IFF_UP) && (info->ifi_flags & IFF_RUNNING));
                 }
             }
+            if (address_changed) session_update_address();
         }
         if (fds[0].revents & POLLIN) {
             struct sockaddr_ll from;
@@ -88,11 +115,35 @@ static RESULT capture(IF_IMPL *this) {
             if (len > 0 && len <= FRAME_BUF_SIZE && from.sll_pkttype != PACKET_OUTGOING) {
                 ETH_EAP_FRAME frame = {.actual_len = (size_t)len, .buffer_len = FRAME_BUF_SIZE, .content = buf};
                 PRIV->handler(&frame);
-            } else if (len < 0 && errno != EAGAIN && errno != EINTR) return FAILURE;
+            } else if (len < 0 && errno != EAGAIN && errno != EINTR) {
+                if (errno != ENETDOWN && errno != ENOBUFS) {
+                    PR_ERRNO("接收认证报文失败"); return FAILURE;
+                }
+                if (IS_FAIL(refresh_link(this))) return FAILURE;
+            }
         }
-        for (unsigned i = 0; i < 3; i++)
-            if (fds[i].revents & (POLLERR | POLLHUP | POLLNVAL)) return FAILURE;
+        if (fds[3].revents & POLLIN) eap_session_event(session_dispatch());
+        for (unsigned i = 0; i < 4; i++) {
+            if (fds[i].revents & (POLLHUP | POLLNVAL)) { PR_ERR("认证通道已关闭（%u）", i); return FAILURE; }
+            if (!(fds[i].revents & POLLERR)) continue;
+            int error = 0;
+            socklen_t size = sizeof(error);
+            if (getsockopt(fds[i].fd, SOL_SOCKET, SO_ERROR, &error, &size)) return FAILURE;
+            /* 网口临时断开不应重启进程；链路事件负责暂停与恢复。 */
+            if ((i == 0 || i == 3) && (!error || error == ENETDOWN || error == ENOBUFS)) {
+                if (IS_FAIL(refresh_link(this))) return FAILURE;
+                continue;
+            }
+            if (i == 1 && (!error || error == ENOBUFS)) {
+                if (IS_FAIL(refresh_link(this))) return FAILURE;
+                session_update_address();
+                continue;
+            }
+            PR_ERR("认证通道错误（%u，%d）", i, error);
+            return FAILURE;
+        }
         sched_alarm_dispatch();
+        eap_session_event(session_tick());
     }
     return SUCCESS;
 }

@@ -1,6 +1,7 @@
 #include "sysu.h"
 #include "config.h"
 #include "logging.h"
+#include "session.h"
 #include <fcntl.h>
 #include <grp.h>
 #include <pwd.h>
@@ -26,15 +27,17 @@ static void write_status(void) {
     if (fd < 0) { PR_ERRNO("无法更新运行状态"); return; }
     FILE *fp = fdopen(fd, "w");
     if (!fp) { close(fd); return; }
-    int n = fprintf(fp, "{\"state\":\"%s\",\"reason\":\"%s\",\"device\":\"%s\","
+    static const char *maintenance[] = {"none", "pending", "confirmed", "backoff"};
+    int n = fprintf(fp, "{\"state\":\"%s\",\"reason\":\"%s\",\"device\":\"%s\",\"maintenance\":\"%s\","
         "\"since\":%lld,\"retry_at\":%lld,\"pid\":%ld,\"version\":\"" SYSU_VERSION "\"}\n",
-        current_state, current_reason, get_program_config()->ifname,
+        current_state, current_reason, get_program_config()->ifname, maintenance[session_state()],
         (long long)(online_since / 1000), (long long)(retry_at / 1000),
         (long)getpid());
     int err = fclose(fp);
     if (n < 0 || err || rename(SYSU_STATUS ".tmp", SYSU_STATUS)) PR_ERR("状态写入失败");
 }
 void status_init(void) { ready = 1; status_update("starting", "starting", 0); }
+void status_refresh(void) { write_status(); }
 void status_update(const char *state, const char *reason, int retry_secs) {
     if (!strcmp(state, "authenticated")) {
         if (strcmp(current_state, state)) online_since = monotonic_ms();

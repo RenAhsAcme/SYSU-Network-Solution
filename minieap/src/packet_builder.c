@@ -14,6 +14,7 @@
 #include "logging.h"
 #include "misc.h"
 #include "md5.h"
+#include "sysu_protocol.h"
 
 typedef struct _packet_builder_priv {
     FRAME_HEADER frame_header;
@@ -69,7 +70,9 @@ void builder_set_eap_fields(struct _packet_builder* this,
          * This field only takes standard EAP fields into account, vendor extension
          * does not get counted here.
          */
-        unsigned short _eap_packet_len = sizeof(EAP_HEADER) + strlen(config->username);
+        unsigned short _eap_packet_len = sizeof(EAP_HEADER);
+        if (eap_type == IDENTITY || (eap_type == MD5_CHALLENGE && sysu_protocol_is_nas()))
+            _eap_packet_len += strlen(config->username);
 
         /* Wireshark shows that username is appended after MD5 digest */
         if (eap_type == MD5_CHALLENGE) {
@@ -138,8 +141,10 @@ int builder_build_packet(struct _packet_builder* this, uint8_t* buffer) {
         }
 
         /* Common Routine: Username */
-        memmove(buffer + _copied_bytes, PRIV->eap_config->username, _username_len);
-        _copied_bytes += _username_len;
+        if (_eap_type == IDENTITY || (_eap_type == MD5_CHALLENGE && sysu_protocol_is_nas())) {
+            memmove(buffer + _copied_bytes, PRIV->eap_config->username, _username_len);
+            _copied_bytes += _username_len;
+        }
 
         return _copied_bytes;
     }

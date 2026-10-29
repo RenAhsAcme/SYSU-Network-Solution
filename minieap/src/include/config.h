@@ -7,7 +7,7 @@
 typedef struct { char *username, *password; } EAP_CONFIG;
 typedef struct {
     char ifname[IFNAMSIZ];
-    int heartbeat, stage_timeout, wait_after_fail_secs, max_retries;
+    int heartbeat, stage_timeout, wait_after_fail_secs, max_retries, debug;
 } PROG_CONFIG;
 RESULT parse_config_file(const char *path);
 void free_config(void);

@@ -25,6 +25,7 @@ function mode(v, udp) {
 }
 let config = { main: {
     enabled: flag('main', 'enabled', '0'),
+    dnsmasq_protect: flag('main', 'dnsmasq_protect', '1'),
     log_mode: text(value('main', 'log_mode', 'normal'), /^(normal|debug)$/, '日志模式'),
     check_interval: integer(value('main', 'check_interval', '60'), 15, 3600, '检查间隔'),
     proxy_enabled: flag('main', 'proxy_enabled', '0'),

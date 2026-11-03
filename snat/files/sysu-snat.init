@@ -70,6 +70,7 @@ start_service() {
     check_legacy || exit 1
     # rc.common 不传递 start_service 的失败；退出可避免提交空实例列表。
     prepare_config || exit 1
+    /usr/libexec/sysu-snat/dns sync || exit 1
     enabled || enable || exit 1
     for family in 4 6; do
         config_get_bool active "ipv$family" enabled 1
@@ -98,6 +99,10 @@ stop_service() {
     logger -t sysu-snat '停止服务，释放插件持有的地址、规则与路由'
 }
 
+service_stopped() {
+    (trap '' HUP; /usr/libexec/sysu-snat/dns release-wait) </dev/null >/dev/null 2>&1 &
+}
+
 service_triggers() {
     local family iface
     procd_add_reload_trigger sysu-snat
@@ -109,10 +114,13 @@ service_triggers() {
             [ -z "$name" ] || procd_add_interface_trigger 'interface.*' "$name" /etc/init.d/sysu-snat wake
         done
     done
-    procd_add_reload_trigger firewall
+    procd_add_reload_trigger firewall dhcp
 }
 
-wake() { procd_send_signal sysu-snat '*' USR1; }
+wake() {
+    /usr/libexec/sysu-snat/dns sync || return 1
+    procd_send_signal sysu-snat '*' USR1
+}
 rebuild() {
     local family
     for family in 4 6; do

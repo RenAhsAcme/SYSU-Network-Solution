@@ -30,6 +30,7 @@ local live=(instances.ipv4 or {}).running or (instances.ipv6 or {}).running
 local c=live and applied.main and applied or saved
 if not c.main then io.write(json.stringify({error='配置无效，请检查设置',families={}}));return end
 local result={enabled=c.main.enabled==1,now=os.time(),families={},pending=live and not same(saved,applied) or false,
+    dns_error=read('/var/run/sysu-snat/dns-error',512):match('^[^\n]*'),
     error=not saved.main and '已保存配置无效，当前保留此前运行配置' or nil}
 for _,family in ipairs({4,6}) do
     local key='ipv'..family

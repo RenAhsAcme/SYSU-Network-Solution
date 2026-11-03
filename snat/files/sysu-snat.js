@@ -32,6 +32,9 @@ return view.extend({
         var o = main.taboption('basic', form.Flag, 'enabled', '启用');
         o.rmempty = false;
         o.description = '启用并保存应用后立即运行，同时启用开机启动；禁用并应用后清理插件持有的地址、规则与路由。';
+        o = main.taboption('basic', form.Flag, 'dnsmasq_protect', '禁止 dnsmasq 监听地址池 WAN');
+        o.default = '1'; o.rmempty = false;
+        o.description = '自动限制所有 dnsmasq 实例的 WAN 监听，避免大量池地址耗尽句柄。关闭或停用后只撤回本插件新增的条目，原有排除设置保留。关闭前请确认已另行限制 DNS 监听范围。';
         o = main.taboption('advanced', form.Flag, 'proxy_enabled', '接管代理进程组流量');
         o.rmempty = false;
         o = main.taboption('advanced', form.Value, 'proxy_gid', '代理进程组 GID');
@@ -161,7 +164,7 @@ return view.extend({
         var error = E('p', { 'class': 'description' });
         var update = function() {
             return callStatus().then(function(state) {
-                error.textContent = state.error || (state.pending ? '已保存设置与运行配置不同，请检查并保存应用。' : '');
+                error.textContent = state.dns_error ? 'DNS 监听限制未能应用，地址池任务暂缓：' + state.dns_error : state.error || (state.pending ? '已保存设置与运行配置不同，请检查并保存应用。' : '');
                 Object.keys(boxes).forEach(function(key) { boxes[key].update((state.families || {})[key] || {}); });
             }).catch(function() { error.textContent = '暂时无法读取状态，请检查服务和访问权限'; });
         };

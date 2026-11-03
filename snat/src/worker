@@ -27,6 +27,7 @@ cleanup() {
     [ -z "$child" ] || { kill "$child" 2>/dev/null || :; wait "$child" 2>/dev/null || :; }
     SNAT_CONFIG_DIR="$(readlink -f "$BASE/var/run/sysu-snat/config")" "$ENGINE" clear >/dev/null 2>&1
     rm -f "$STATE/worker.pid" "$STATE/building" "$STATE/refresh" "$STATE/config-inuse"
+    [ ! -x "$BASE/usr/libexec/sysu-snat/dns" ] || "$BASE/usr/libexec/sysu-snat/dns" release
 }
 trap cleanup EXIT
 logger -t sysu-snat "IPv$family 服务已启动"
@@ -40,21 +41,23 @@ while [ "$stopping" = 0 ]; do
     export SNAT_CONFIG_DIR
     CHECK_INTERVAL=60
     . "$SNAT_CONFIG_DIR/ipv$family.conf"
-    mode=check
-    if [ -f "$STATE/refresh" ]; then rm -f "$STATE/refresh"; mode=refresh; fi
-    "$ENGINE" "$mode" >"$STATE/last-output" 2>&1 &
-    child=$!
-    [ "$stopping" = 0 ] || kill "$child" 2>/dev/null || :
-    # 信号可能中断 wait，必须等清理结束后再退出或进入下一轮。
-    while :; do
-        wait "$child" 2>/dev/null
-        result=$?
-        kill -0 "$child" 2>/dev/null || break
-    done
-    child=
-    [ "$stopping" = 0 ] || break
-    if [ "$result" = 0 ]; then
-        "$ENGINE" rules >>"$STATE/last-output" 2>&1 || logger -p user.err -t sysu-snat "IPv$family 策略应用失败，请查看状态"
+    if "$BASE/usr/libexec/sysu-snat/dns" sync; then
+        mode=check
+        if [ -f "$STATE/refresh" ]; then rm -f "$STATE/refresh"; mode=refresh; fi
+        "$ENGINE" "$mode" >"$STATE/last-output" 2>&1 &
+        child=$!
+        [ "$stopping" = 0 ] || kill "$child" 2>/dev/null || :
+        # 信号可能中断 wait，必须等清理结束后再退出或进入下一轮。
+        while :; do
+            wait "$child" 2>/dev/null
+            result=$?
+            kill -0 "$child" 2>/dev/null || break
+        done
+        child=
+        [ "$stopping" = 0 ] || break
+        if [ "$result" = 0 ]; then
+            "$ENGINE" rules >>"$STATE/last-output" 2>&1 || logger -p user.err -t sysu-snat "IPv$family 策略应用失败，请查看状态"
+        fi
     fi
     [ "$stopping" = 0 ] || break
     [ "$wake" = 0 ] || continue

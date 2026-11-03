@@ -12,6 +12,8 @@ mkdir -p "$base/usr/libexec/sysu-snat" "$base/var/run/sysu-snat/config" "$base/m
 printf 'CHECK_INTERVAL=60\n' > "$base/var/run/sysu-snat/config/ipv4.conf"
 printf '#!/bin/sh\nexit 0\n' > "$base/mock-bin/logger"
 chmod 700 "$base/mock-bin/logger"
+printf '#!/bin/sh\n[ "$1" != sync ] || [ ! -f "$SNAT_BASE/dns-denied" ]\n' > "$base/usr/libexec/sysu-snat/dns"
+chmod 700 "$base/usr/libexec/sysu-snat/dns"
 cat > "$base/usr/libexec/sysu-snat/ipv4" <<'ENGINE'
 #!/bin/sh
 case "$1" in
@@ -26,8 +28,13 @@ clear) touch "$SNAT_BASE/cleared";;
 esac
 ENGINE
 chmod 700 "$base/usr/libexec/sysu-snat/ipv4"
+touch "$base/dns-denied"
 SNAT_BASE="$base" sh ../src/worker 4 &
 worker=$!
+sleep 1
+test ! -f "$base/calls"
+rm "$base/dns-denied"
+kill -USR1 "$worker"
 for n in $(seq 1 10); do [ ! -f "$base/calls" ] || break;sleep 1;done
 test -f "$base/calls"
 SNAT_BASE="$base" sh ../src/worker 4 && exit 1

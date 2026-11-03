@@ -13,6 +13,7 @@ FILES = [
     ('files/sysu-snat.config', 'etc/config/sysu-snat', 0o600),
     ('files/sysu-snat.init', 'etc/init.d/sysu-snat', 0o755),
     ('files/sysu-snat-config.uc', 'usr/libexec/sysu-snat/config', 0o755),
+    ('files/sysu-snat-dns.uc', 'usr/libexec/sysu-snat/dns-config', 0o755),
     ('files/sysu-snat.rpc', 'usr/libexec/rpcd/sysu-snat', 0o755),
     ('files/sysu-snat.acl.json', 'usr/share/rpcd/acl.d/sysu-snat.json', 0o644),
     ('files/sysu-snat.menu.json', 'usr/share/luci/menu.d/sysu-snat.json', 0o644),
@@ -47,11 +48,11 @@ def main():
         for path in (source / 'src').iterdir():
             if path.suffix == '.lua':
                 put('usr/lib/sysu-snat/' + path.name, path.read_text())
-            elif path.name in ('ipv4', 'ipv6', 'worker'):
+            elif path.name in ('ipv4', 'ipv6', 'worker', 'dns'):
                 put('usr/libexec/sysu-snat/' + path.name, path.read_text(), 0o755)
         common = '#!/bin/sh\n[ -s "${IPKG_INSTROOT}/lib/functions.sh" ] || exit 0\n. "${IPKG_INSTROOT}/lib/functions.sh"\nexport root="${IPKG_INSTROOT}"\nexport pkgname="sysu-snat"\n'
         post = common + 'default_postinst\n[ -n "$IPKG_INSTROOT" ] || { [ "$(uci -q get sysu-snat.main.enabled)" = 1 ] || /etc/init.d/sysu-snat disable; }\n'
-        pre = common + 'default_prerm\n'
+        pre = common + 'default_prerm\n[ -n "$IPKG_INSTROOT" ] || { [ ! -x /usr/libexec/sysu-snat/dns ] || /usr/libexec/sysu-snat/dns release-wait; }\n'
         put('CONTROL/control', f'Package: sysu-snat\nVersion: {version}\nArchitecture: all\nMaintainer: RenAhsAcme\nLicense: GPL-3.0-only\nSection: net\nPriority: optional\nDepends: ' + ', '.join(deps) + '\nDescription: SYSU SNAT source pools and connection policies with LuCI\n')
         put('CONTROL/conffiles', '/etc/config/sysu-snat\n')
         put('CONTROL/postinst', post, 0o755)

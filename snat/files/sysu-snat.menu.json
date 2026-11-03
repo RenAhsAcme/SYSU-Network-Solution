@@ -1,0 +1,8 @@
+{
+    "admin/services/sysu-snat": {
+        "title": "SYSU SNAT",
+        "order": 61,
+        "action": { "type": "view", "path": "sysu-snat" },
+        "depends": { "acl": ["sysu-snat-status", "sysu-snat-config"], "uci": {"sysu-snat": true} }
+    }
+}

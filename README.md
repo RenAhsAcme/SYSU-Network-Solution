@@ -24,6 +24,8 @@
 
 AAAA 过滤配置见 [config/sysu-openwrt-aaaa.conf](config/sysu-openwrt-aaaa.conf)；旧版文档与配置见 [历史说明](docs/legacy/README.md)。
 
+SYSU SNAT 双栈出口地址池、LuCI 设置与迁移说明见 [docs/sysu-snat.md](docs/sysu-snat.md)，实现位于 `snat`。
+
 ## 如何贡献
 
 欢迎您通过 Issue 和 PR 更新本仓库。详细请见 [贡献指南](.github/CONTRIBUTING.md)。

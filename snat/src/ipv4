@@ -1,0 +1,293 @@
+#!/bin/sh
+# OpenWrt fw4/nftables IPv4 connection distribution, runtime aliases only.
+set -u
+PATH=/usr/sbin:/usr/bin:/sbin:/bin
+BASE=${AWP_BASE:-}
+[ -z "$BASE" ] || PATH="$BASE/mock-bin:$PATH"
+CONFIG_DIR=${SNAT_CONFIG_DIR:-$BASE/var/run/sysu-snat/config}
+CONF="$CONFIG_DIR/ipv4.conf"
+STATE="$BASE/var/run/sysu-snat/ipv4"
+CALC="$BASE/usr/lib/sysu-snat/netcalc.lua"
+PLANFILE="$STATE/plan.next"
+CHAIN=AWP_AUTO
+PROBE=AWP_PROBE
+TAG=awp-auto
+ENABLED=0; WAN_IF=wan; LAN_IF=lan; PRIMARY=;LOG_MODE=normal;TAILSCALE_ENABLED=0;TAILSCALE_PREFIX=fd7a:115c:a1e0::/48;PROXY_GID=
+PROBE_URL=https://www.baidu.com/; PARALLEL=8; RETRY_SECONDS=300
+[ ! -f "$CONF" ] || . "$CONF"
+umask 077
+mkdir -p "$STATE" || exit 1
+progress() { [ "$LOG_MODE" != debug ] || logger -p user.debug -t sysu-snat "IPv4: $1"; printf '%s\n' "$1"; }
+log() { logger -p "user.${2:-notice}" -t sysu-snat "$1"; printf '%s\n' "$1"; }
+field() { printf '%s' "$1" | jsonfilter -e "$2"; }
+
+snapshot() {
+    w=$(ubus call "network.interface.$WAN_IF" status 2>/dev/null) || return 1
+    [ "$(field "$w" '@.up')" = true ] || return 1
+    DEV=$(field "$w" '@.l3_device')
+    lua "$(dirname "$CALC")/native.lua" 4 "$WAN_IF" "$PRIMARY" > "$STATE/native" 2> "$STATE/plan-error" || return 1
+    read -r WAN_IP PREFIX < "$STATE/native"
+    case "$DEV" in ''|*[!a-zA-Z0-9_.:-]*) return 1;; esac
+    GW=$(ip -4 route show default dev "$DEV" | awk 'NR==1 {for(i=1;i<NF;i++) if($i=="via") {print $(i+1);exit}}')
+    l=$(ubus call "network.interface.$LAN_IF" status 2>/dev/null) || return 1
+    LANDEV=$(field "$l" '@.l3_device')
+    case "$LANDEV" in ''|*[!a-zA-Z0-9_.:-]*) return 1;; esac
+    LAN_IP=$(field "$l" '@["ipv4-address"][0].address')
+    LAN_PREFIX=$(field "$l" '@["ipv4-address"][0].mask')
+    [ -n "$WAN_IP" ] && [ -n "$PREFIX" ] && [ -n "$GW" ] && [ -n "$LAN_IP" ] && [ -n "$LAN_PREFIX" ] || return 1
+    lua "$CALC" plan "$WAN_IP" "$PREFIX" "$GW" "$LAN_IP" "$LAN_PREFIX" > "$PLANFILE" 2> "$STATE/plan-error" || return 1
+    read -r WAN_CIDR LAN_CIDR POOL_CIDR < "$PLANFILE"
+    cfgsum=$(printf '%s\n' "$PROBE_URL" | sha256sum) || return 1
+    SIGNATURE="$DEV $WAN_IP/$PREFIX $GW $LAN_CIDR $POOL_CIDR $cfgsum"
+}
+
+remove_probe() {
+    nft delete table ip awp_probe 2>/dev/null || :
+}
+clear_pool() {
+    nft delete table ip awp_auto 2>/dev/null || :
+    remove_probe
+    if [ -f "$STATE/owned" ]; then
+        while read -r olddev addr; do
+            [ -z "$addr" ] || ip addr del "$addr/32" dev "$olddev" 2>/dev/null || :
+        done < "$STATE/owned"
+    fi
+    : > "$STATE/owned"
+    rm -f "$STATE/signature" "$STATE/active" "$STATE/fallback"
+}
+install_rules() {
+    local kind=${1:-pool}
+    lua "$(dirname "$CALC")/compile.lua" rules "$CONFIG_DIR/policy.json" "$STATE" 4 "$DEV" "$LAN_CIDR" "$WAN_CIDR" "$LANDEV" "$kind" "$WAN_IP" > "$STATE/rules.next" || return 1
+    if cmp -s "$STATE/rules.next" "$STATE/rules.nft" && nft list table ip awp_auto >/dev/null 2>&1; then return 0; fi
+    nft -c -f "$STATE/rules.next" || return 1
+    nft -f "$STATE/rules.next" || return 1
+    mv "$STATE/rules.next" "$STATE/rules.nft"
+}
+install_fallback() {
+    :
+    install_rules fallback || { clear_pool; return 1; }
+    touch "$STATE/fallback"
+}
+
+still_current() {
+    current=$(ubus call "network.interface.$WAN_IF" status 2>/dev/null) || return 1
+    [ "$(field "$current" '@.up')" = true ] &&
+    [ "$(field "$current" '@.l3_device')" = "$DEV" ] &&
+    [ "$(field "$current" '@["ipv4-address"][0].address')" = "$WAN_IP" ] &&
+    [ "$(field "$current" '@["ipv4-address"][0].mask')" = "$PREFIX" ] &&
+    ip -4 route show default dev "$DEV" | awk -v gw="$GW" '$3==gw {found=1} END {exit !found}'
+}
+
+mode=${1:-status}
+case "$mode" in
+ status)
+    if [ -f "$STATE/active" ]; then
+        printf 'Active: '; cat "$STATE/signature"
+        printf 'Pool size: '; wc -l < "$STATE/pool"
+    else echo 'Pool is inactive'; fi
+    exit 0;;
+ plan)
+    PLANFILE=$(mktemp "$STATE/preview.XXXXXX") || exit 1
+    trap 'rm -f "$PLANFILE"' EXIT
+    snapshot || exit 1
+    printf 'WAN=%s LAN=%s POOL=%s\n' "$WAN_CIDR" "$LAN_CIDR" "$POOL_CIDR"
+    printf 'Candidates before live discovery: '; tail -n +2 "$PLANFILE" | wc -l
+    exit 0;;
+ check|refresh|clear|rules|adopt) ;;
+ *) echo 'Usage: wan-ip-pool-auto check|refresh|clear|plan|status'; exit 2;;
+esac
+
+exec 9> "$STATE/lock"
+if [ "$mode" = clear ]; then flock 9 || exit 1; else flock -n 9 || exit 0; fi
+[ "$mode" != clear ] || { clear_pool; log '已清理本项目地址和 NAT 规则，使用原 WAN。'; exit 0; }
+[ "$ENABLED" = 1 ] || { [ ! -f "$STATE/active" ] || log '自动地址池已停用，正在清理。'; clear_pool; exit 0; }
+case "$PARALLEL" in 1|2|4|8) ;; *) log 'PARALLEL must be 1, 2, 4 or 8'; exit 1;; esac
+case "$RETRY_SECONDS" in ''|*[!0-9]*) exit 1;; esac
+for cmd in lua ubus jsonfilter ip nft curl ping awk flock sha256sum; do
+    command -v "$cmd" >/dev/null || { log "Missing dependency: $cmd"; exit 1; }
+done
+if ! snapshot; then
+    clear_pool
+    [ -f "$STATE/unavailable" ] || log "WAN 未就绪或网段不支持，使用原 WAN。$(cat "$STATE/plan-error" 2>/dev/null)" warn
+    touch "$STATE/unavailable"
+    exit 0
+fi
+rm -f "$STATE/unavailable"
+if [ "$mode" = adopt ]; then
+    [ -s "$STATE/pool" ] && [ -f "$STATE/active" ] || exit 1
+    ip -o -4 addr show dev "$DEV" | awk '{print $4}' > "$STATE/present"
+    while read -r a; do
+        grep -qxF "$a/32" "$STATE/present" || exit 1
+    done < "$STATE/pool"
+    :
+    install_rules || exit 1
+    printf '%s\n' "$SIGNATURE" > "$STATE/signature"
+    exit 0
+fi
+if [ "$mode" = rules ]; then
+    :
+    if [ -f "$STATE/active" ]; then install_rules; else install_fallback; fi
+    exit $?
+fi
+
+
+if [ "$mode" = check ] && [ -s "$STATE/pool" ] && [ -f "$STATE/signature" ] && [ "$(cat "$STATE/signature")" = "$SIGNATURE" ]; then
+    ip -o -4 addr show dev "$DEV" | awk '{print $4}' > "$STATE/present"
+    missing=0
+    while read -r addr; do grep -qxF "$addr/32" "$STATE/present" || missing=1; done < "$STATE/pool"
+    if [ "$missing" -eq 0 ]; then
+        if ! nft list table ip awp_auto >/dev/null 2>&1; then
+            install_rules || { clear_pool; log 'NAT 规则恢复失败，已回退原 WAN。' err; exit 1; }
+            log '已恢复丢失的地址池 NAT 规则。'
+        fi
+        exit 0
+    fi
+fi
+if [ "$mode" = check ] && [ -f "$STATE/failed-signature" ] && [ "$(cat "$STATE/failed-signature")" = "$SIGNATURE" ]; then
+    remaining=$(( $(cat "$STATE/retry-at") - $(date +%s) ))
+    [ "$remaining" -le 0 ] || exit 0
+fi
+
+# A rebuild discards previous discoveries, as requested.
+clear_pool
+: > "$STATE/reserved"
+: > "$STATE/candidates"
+: > "$STATE/pool"
+rm -f "$STATE"/ok-*
+touch "$STATE/building"
+building=1
+phase=原WAN连通性检查
+printf '%s\n' "$phase" > "$STATE/phase"
+children=
+finish() {
+    rm -f "$STATE/building"
+    for pid in $children; do kill "$pid" 2>/dev/null || :; done
+    for pid in $children; do wait "$pid" 2>/dev/null || :; done
+    if [ "$building" -eq 1 ]; then
+        clear_pool
+        install_fallback || :
+        printf '%s\n' "$SIGNATURE" > "$STATE/failed-signature"
+        echo $(( $(date +%s) + RETRY_SECONDS )) > "$STATE/retry-at"
+        log "构建失败或中断：阶段=$phase；已清理新增地址和规则，使用原 WAN，${RETRY_SECONDS} 秒后重试。" err
+    fi
+}
+trap finish EXIT
+trap 'exit 130' INT TERM HUP
+log "开始重建：WAN=$WAN_IP/$PREFIX 网关=$GW 接口=$DEV 扫描网段=$POOL_CIDR，旧地址池及发现名单已清理。"
+install_fallback || exit 1
+PROBE_IP=$(curl -4 --noproxy '*' -fsS -o /dev/null --interface "$WAN_IP" --connect-timeout 3 --max-time 5 -w '%{remote_ip}' "$PROBE_URL") || { log '原 WAN 的 HTTPS 检查失败，停止构建。' err; exit 1; }
+case "$PROBE_IP" in ''|*[!0-9.]*) log '测试目标未返回 IPv4 地址，停止构建。' err; exit 1;; esac
+progress "测试目标已解析为 $PROBE_IP，本轮验证共用该地址，继续校验 HTTPS 证书。"
+progress '原 WAN 的 HTTPS 检查通过，开始 ARP 地址占用检查。'
+phase=ARP探测
+printf '%s\n' "$phase" > "$STATE/phase"
+scanned=0
+total=$(tail -n +2 "$STATE/plan.next" | wc -l)
+
+# Probe unassigned addresses first; FAILED means only that ARP did not answer.
+ip -o -4 addr show | awk '{split($4,a,"/");print a[1]}' > "$STATE/local-addresses"
+collect_batch() {
+    for pid in $children; do wait "$pid" || :; done
+    children=
+    sleep 3
+    # Consume results promptly: Linux may garbage-collect early FAILED entries.
+    for addr in $batch; do
+        if grep -qxF "$addr" "$STATE/local-addresses"; then echo "$addr local" >> "$STATE/reserved"; continue; fi
+        neighbor=$(ip neigh show to "$addr" dev "$DEV")
+        if printf '%s' "$neighbor" | grep -q lladdr; then
+            echo "$addr responsive" >> "$STATE/reserved"
+        elif printf '%s' "$neighbor" | grep -q FAILED; then
+            echo "$addr" >> "$STATE/candidates"
+        else
+            echo "$addr uncertain" >> "$STATE/reserved"
+        fi
+    done
+    scanned=$((scanned+count))
+    progress "ARP 进度：$scanned/$total，候选=$(wc -l < "$STATE/candidates")，跳过=$(wc -l < "$STATE/reserved")。"
+    batch=
+    still_current
+}
+count=0
+batch=
+while read -r addr; do
+    # Discard stale ARP cache so this rebuild discovers devices afresh.
+    # The plan already excludes the WAN address and gateway.
+    ip neigh del "$addr" dev "$DEV" >/dev/null 2>&1 || :
+    ping -I "$DEV" -c 1 -W 1 -w 1 "$addr" >/dev/null 2>&1 &
+    children="$children $!"; batch="$batch $addr"; count=$((count+1))
+    if [ "$count" -ge "$PARALLEL" ]; then
+        collect_batch || exit 1
+        count=0
+    fi
+done <<EOF
+$(tail -n +2 "$STATE/plan.next")
+EOF
+[ "$count" -eq 0 ] || collect_batch || exit 1
+still_current || exit 1
+phase=绑定候选地址
+printf '%s\n' "$phase" > "$STATE/phase"
+while read -r addr; do
+    if ip neigh show to "$addr" dev "$DEV" | grep -q lladdr; then echo "$addr newly-responsive" >> "$STATE/reserved"; continue; fi
+    # Record intent first so interruption recovery can remove every alias.
+    echo "$DEV $addr" >> "$STATE/owned"
+    ip addr add "$addr/32" dev "$DEV" || exit 1
+
+done < "$STATE/candidates"
+awk '{print $2}' "$STATE/owned" > "$STATE/probe-addresses"
+lua "$(dirname "$CALC")/nftcalc.lua" probe "$STATE/probe-addresses" "$DEV" > "$STATE/probe.nft" || exit 1
+nft -c -f "$STATE/probe.nft" || exit 1
+nft -f "$STATE/probe.nft" || exit 1
+phase=HTTPS源地址验证
+printf '%s\n' "$phase" > "$STATE/phase"
+tested=0
+probe_total=$(wc -l < "$STATE/owned")
+progress "开始 HTTPS 源地址验证：$probe_total 个候选地址，并发=$PARALLEL。"
+probe() {
+    addr=$1
+    if curl -4 --noproxy '*' --connect-to "::$PROBE_IP:" -fsS -o /dev/null --interface "$addr" --connect-timeout 3 --max-time 5 "$PROBE_URL" >/dev/null 2> "$STATE/error-$addr"; then
+        echo "$addr" > "$STATE/ok-$addr"
+        rm -f "$STATE/error-$addr"
+    else
+        progress "HTTPS 验证失败：$addr 不加入地址池。$(cat "$STATE/error-$addr")"
+    fi
+}
+count=0
+while read -r unused addr; do
+    probe "$addr" &
+    children="$children $!"; count=$((count+1))
+    if [ "$count" -ge "$PARALLEL" ]; then
+        for pid in $children; do wait "$pid" || :; done
+        tested=$((tested+count))
+        progress "HTTPS 进度：$tested/$probe_total，通过=$(find "$STATE" -name 'ok-*' | wc -l)。"
+        children=; count=0
+        still_current || exit 1
+    fi
+done < "$STATE/owned"
+for pid in $children; do wait "$pid" || :; done
+children=
+tested=$((tested+count))
+progress "HTTPS 验证完成：$tested/$probe_total，通过=$(find "$STATE" -name 'ok-*' | wc -l)。"
+for file in "$STATE"/ok-*; do [ ! -f "$file" ] || cat "$file"; done > "$STATE/pool"
+[ -s "$STATE/pool" ] || { log '没有候选地址通过 HTTPS 检查。' err; exit 1; }
+phase=释放失败地址
+printf '%s\n' "$phase" > "$STATE/phase"
+# Release every alias that failed the source-bound HTTPS check.
+: > "$STATE/owned.next"
+while read -r olddev addr; do
+    if grep -qxF "$addr" "$STATE/pool"; then echo "$olddev $addr" >> "$STATE/owned.next"
+    else ip addr del "$addr/32" dev "$olddev" || exit 1; fi
+done < "$STATE/owned"
+mv "$STATE/owned.next" "$STATE/owned"
+still_current || exit 1
+phase=安装NAT规则
+printf '%s\n' "$phase" > "$STATE/phase"
+install_rules || exit 1
+still_current || exit 1
+remove_probe
+printf '%s\n' "$SIGNATURE" > "$STATE/signature"
+touch "$STATE/active"
+rm -f "$STATE/failed-signature" "$STATE/retry-at"
+building=0
+date +%s > "$STATE/verified"
+rm -f "$STATE/fallback"
+log "地址池已启用：WAN=$WAN_IP 接口=$DEV，通过=$(wc -l < "$STATE/pool")，跳过=$(wc -l < "$STATE/reserved")，HTTPS 失败=$((probe_total-$(wc -l < "$STATE/pool")))。"

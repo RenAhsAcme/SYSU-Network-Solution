@@ -273,4 +273,4 @@ Tailscale 通过点对点 NAT 穿透让内网设备无需公网 IP 即可直连�
 
 > 推荐
 >
-> [RenAhsAcme/edunet-openwrt](https://github.com/RenAhsAcme/edunet-openwrt)
+> 双栈出口地址池已迁入本仓库，参阅 [SYSU SNAT](sysu-snat.md)。

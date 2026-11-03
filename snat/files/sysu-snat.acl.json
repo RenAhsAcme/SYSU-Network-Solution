@@ -1,0 +1,11 @@
+{
+    "sysu-snat-status": {
+        "description": "Read SYSU SNAT address state and bounded logs",
+        "read": { "ubus": { "sysu-snat": ["status", "logs"] } }
+    },
+    "sysu-snat-config": {
+        "description": "Configure SYSU SNAT and control its service",
+        "read": { "uci": ["sysu-snat"] },
+        "write": { "uci": ["sysu-snat"], "ubus": { "sysu-snat": ["control"] } }
+    }
+}

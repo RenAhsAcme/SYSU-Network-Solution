@@ -1,3 +1,6 @@
 minieap/** text eol=lf
+snat/** text eol=lf
+scripts/build-snat.py text eol=lf
+docs/sysu-snat.md text eol=lf
 tests/** text eol=lf
 .github/workflows/** text eol=lf

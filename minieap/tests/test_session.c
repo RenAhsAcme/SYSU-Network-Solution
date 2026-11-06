@@ -11,7 +11,7 @@
 #include <stdlib.h>
 
 static int64_t now = 100000;
-static int sends, messages, refreshes, have_addresses = 1, fail_sends;
+static int sends, messages, refreshes, have_addresses = 1, fail_sends, have_neighbor = 1;
 static uint8_t sent_frame[DIR_MAX + 42], incoming[DIR_MAX];
 static size_t sent_len, incoming_len;
 static struct sockaddr_ll incoming_peer;
@@ -42,7 +42,7 @@ FILE *fake_fopen(const char *path, const char *mode) {
         snprintf(route, sizeof(route), "eth0 00000000 %08x 0003\n", (unsigned)htonl(0xac19c001));
         text = route;
     }
-    else if (!strcmp(path, "/proc/net/arp")) text = "172.25.192.1 0x1 0x2 02:03:04:05:06:07 * eth0\n";
+    else if (!strcmp(path, "/proc/net/arp")) text = have_neighbor ? "172.25.192.1 0x1 0x2 02:03:04:05:06:07 * eth0\n" : "";
     else if (!strcmp(path, "/tmp/resolv.conf.d/resolv.conf.auto")) text = "nameserver 202.116.64.1\n";
     return text ? fmemopen((void *)text, strlen(text), "r") : NULL;
 }
@@ -148,6 +148,16 @@ int main(void) {
     n = build_payload(info, 0);
     const uint8_t hello[] = {1,1,2,3,4,'t','e','s','t',4,4,172,25,192,188,5,6,0,1,2,3,4,5};
     assert(n == sizeof(hello) && !memcmp(info, hello, n));
+    have_neighbor = 0;
+    session_authenticated();
+    assert(session_tick() == SESSION_NO_EVENT && state == SESSION_PENDING && !backoff && !sends);
+    assert(deadline == now + 5000);
+    now += 30000;
+    assert(session_tick() == SESSION_EXPIRED && expired_reported);
+    now += 5000;
+    assert(session_tick() == SESSION_NO_EVENT);
+    have_neighbor = 1;
+    session_reset(); fill_params(); assert(read_local(&local) == 1);
     session_authenticated(); assert(active && state == SESSION_PENDING && sends == 0 && refreshes > 0 && wire_version == 2);
     assert(session_configure(unsafe, sizeof(unsafe)) == 0); assert(build_packet());
     assert(packet_len == 90 && be32(packet + 2) == 1 && be32(packet + 24) == pending_sequence && be32(packet + 38) == 48);
@@ -211,6 +221,12 @@ int main(void) {
     assert(session_tick() == SESSION_EXPIRED && expired_reported && lost_rounds == 2);
     pending_sequence = 107; attempts = 3; deadline = now;
     assert(session_tick() == SESSION_NO_EVENT && expired_reported);
+
+    confirmed_once = 0; expired_reported = lost_rounds = 0;
+    transaction_userinfo = 1; attempts = 3;
+    assert(defer() == SESSION_NO_EVENT && lost_rounds == 1);
+    attempts = 3;
+    assert(defer() == SESSION_EXPIRED && expired_reported && lost_rounds == 2);
 
     n = response(received, 108, NULL, 0); size_t framelen = server_frame(original, received, n); assert(install_filter());
     assert(bpf_run(original, framelen) == DIR_MAX); original[26] ^= 1; assert(!bpf_run(original, framelen)); original[26] ^= 1;

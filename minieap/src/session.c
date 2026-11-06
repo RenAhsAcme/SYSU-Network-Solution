@@ -185,6 +185,7 @@ static size_t packet_len;
 static uint8_t packet[DIR_MAX];
 static char device[IFNAMSIZ];
 static SESSION_STATE state;
+static int64_t local_wait_started;
 
 static void change_state(SESSION_STATE value) { state = value; status_refresh(); }
 static int peer_allowed(uint32_t peer) {
@@ -306,7 +307,7 @@ void session_reset(void) {
     explicit_bzero(&local, sizeof(local)); explicit_bzero(packet, sizeof(packet));
     active = attempts = backoff = update_needed = confirmed_once = need_userinfo = transaction_userinfo = 0;
     pending_sequence = last_received_transaction = 0; lost_rounds = expired_reported = 0; packet_len = 0; deadline = confirm_deadline = 0;
-    wire_version = 0; timestamp_counter = receive_timestamp = receive_counter = 0; change_state(SESSION_NONE);
+    wire_version = 0; timestamp_counter = receive_timestamp = receive_counter = 0; local_wait_started = 0; change_state(SESSION_NONE);
 }
 void session_destroy(void) { session_reset(); if (sock >= 0) close(sock); sock = -1; }
 int session_configure(const uint8_t *tlvs, size_t len) {
@@ -432,7 +433,7 @@ static int send_packet(const uint8_t *data, size_t len) {
     explicit_bzero(frame, sizeof(frame)); return result;
 }
 static SESSION_EVENT defer(void) {
-    int expired = transaction_userinfo && confirmed_once && attempts >= 3 && ++lost_rounds >= 2 && !expired_reported;
+    int expired = transaction_userinfo && attempts >= 3 && ++lost_rounds >= 2 && !expired_reported;
     if (!backoff) backoff = params.hello > 120 ? params.hello : 120;
     else backoff = backoff > 450 ? 900 : backoff * 2;
     if (backoff > 900) backoff = 900;
@@ -479,8 +480,20 @@ SESSION_EVENT session_tick(void) {
     if (pending_sequence) { if (attempts >= 3) return defer(); }
     else {
         int available = read_local(&local);
-        if (!available) { deadline = monotonic_ms() + 5000; return SESSION_NO_EVENT; }
-        if (available < 0 || !install_filter() || !build_packet()) return defer();
+        if (available <= 0) {
+            int64_t now = monotonic_ms();
+            if (!local_wait_started) local_wait_started = now;
+            deadline = now + 5000;
+            /* 短暂等待 ARP 收敛；持续不可用也必须交回认证状态机恢复。 */
+            if (now - local_wait_started >= 30000 && !expired_reported) {
+                expired_reported = 1;
+                PR_WARN("维护所需地址或邻居持续不可用，重新认证");
+                return SESSION_EXPIRED;
+            }
+            return SESSION_NO_EVENT;
+        }
+        local_wait_started = 0;
+        if (!install_filter() || !build_packet()) return defer();
         attempts = update_needed = 0;
         if (transaction_userinfo) change_state(SESSION_PENDING);
     }

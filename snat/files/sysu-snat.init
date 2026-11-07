@@ -4,36 +4,22 @@ STOP=10
 USE_PROCD=1
 
 prepare_config() {
-    local stage family
+    local stage
     umask 077
     mkdir -p /var/run/sysu-snat || return 1
     chmod 0700 /var/run/sysu-snat
     exec 7>/var/run/sysu-snat/config.lock
     flock 7 || return 1
     stage="$(mktemp -d /var/run/sysu-snat/config.XXXXXX)" || { flock -u 7; return 1; }
-    if ! /usr/libexec/sysu-snat/config stage "$stage" || ! lua /usr/lib/sysu-snat/compile.lua check "$stage/policy.json"; then
-        rm -f "$stage/ipv4.conf" "$stage/ipv6.conf" "$stage/policy.json"
+    if ! /usr/bin/ucode /usr/libexec/sysu-snat/v2/config.uc stage "$stage"; then
+        rm -f "$stage/policy.json"
         rmdir "$stage"
         logger -t sysu-snat '配置校验失败，保留当前运行配置'
         flock -u 7
         return 1
     fi
-    for family in 4 6; do
-        if ! (
-            . "$stage/ipv$family.conf"
-            [ "$ENABLED" = 1 ] && [ -n "$PRIMARY" ] || exit 0
-            [ "$(ubus call "network.interface.$WAN_IF" status 2>/dev/null | jsonfilter -e '@.up')" = true ] || exit 0
-            lua /usr/lib/sysu-snat/native.lua "$family" "$WAN_IF" "$PRIMARY" >/dev/null 2>&1
-        ); then
-            rm -f "$stage/ipv4.conf" "$stage/ipv6.conf" "$stage/policy.json"
-            rmdir "$stage"
-            logger -t sysu-snat "IPv$family 主地址不属于当前可用原生地址，保留当前运行配置"
-            flock -u 7
-            return 1
-        fi
-    done
     if cmp -s "$stage/policy.json" /var/run/sysu-snat/config/policy.json; then
-        rm -f "$stage/ipv4.conf" "$stage/ipv6.conf" "$stage/policy.json"
+        rm -f "$stage/policy.json"
         rmdir "$stage"
         flock -u 7
         return 0
@@ -41,47 +27,32 @@ prepare_config() {
     rm -f /var/run/sysu-snat/config.next
     ln -s "$stage" /var/run/sysu-snat/config.next || { flock -u 7; return 1; }
     mv -Tf /var/run/sysu-snat/config.next /var/run/sysu-snat/config || { flock -u 7; return 1; }
-    local previous resolved ref4 ref6
-    ref4="$(cat /var/run/sysu-snat/ipv4/config-inuse 2>/dev/null || :)"
-    ref6="$(cat /var/run/sysu-snat/ipv6/config-inuse 2>/dev/null || :)"
+    local previous
     for previous in /var/run/sysu-snat/config.*; do
-        [ -d "$previous" ] && [ ! -L "$previous" ] || continue
-        resolved="$(readlink -f "$previous")"
-        [ "$previous" != "$stage" ] && [ "$resolved" != "$ref4" ] && [ "$resolved" != "$ref6" ] || continue
-        rm -f "$previous/ipv4.conf" "$previous/ipv6.conf" "$previous/policy.json"
+        [ -d "$previous" ] && [ ! -L "$previous" ] && [ "$previous" != "$stage" ] || continue
+        rm -f "$previous/policy.json"
         rmdir "$previous" 2>/dev/null || :
     done
     flock -u 7
 }
 
-check_legacy() {
-    if grep -qE '_WAN_IP_POOL_AUTO_|_WAN_IPV6_POOL_AUTO_' /etc/crontabs/root 2>/dev/null ||
-        [ -f /etc/hotplug.d/iface/95-wan-ip-pool-auto ] || [ -f /etc/hotplug.d/iface/96-wan-ipv6-pool-auto ]; then
-        logger -p user.err -t sysu-snat '旧地址池维护任务仍存在，请先迁移，避免双重管理'
-        return 1
-    fi
-}
-
 start_service() {
-    local enabled family active
+    local enabled
     config_load sysu-snat
     config_get_bool enabled main enabled 0
     [ "$enabled" = 1 ] || { disable; return 0; }
-    check_legacy || exit 1
     # rc.common 不传递 start_service 的失败；退出可避免提交空实例列表。
     prepare_config || exit 1
     /usr/libexec/sysu-snat/dns sync || exit 1
     enabled || enable || exit 1
-    for family in 4 6; do
-        config_get_bool active "ipv$family" enabled 1
-        [ "$active" = 1 ] || continue
-        procd_open_instance "ipv$family"
-        procd_set_param command /usr/libexec/sysu-snat/worker "$family"
-        procd_set_param respawn 3600 10 5
-        procd_set_param term_timeout 20
-        procd_set_param limits core="0 0"
-        procd_close_instance
-    done
+    mkdir -p /var/run/sysu-snat/v2
+    chmod 0700 /var/run/sysu-snat/v2
+    procd_open_instance controller
+    procd_set_param command /usr/libexec/sysu-snat/net-helper supervise /usr/bin/ucode /usr/libexec/sysu-snat/v2/daemon.uc
+    procd_set_param respawn 3600 3 0
+    procd_set_param term_timeout 120
+    procd_set_param limits core="0 0"
+    procd_close_instance
 }
 
 reload_service() {
@@ -89,14 +60,22 @@ reload_service() {
     config_load sysu-snat
     config_get_bool active main enabled 0
     if [ "$active" != 1 ]; then stop; disable; return 0; fi
-    check_legacy || return 1
     prepare_config || return 1
     start || return 1
     procd_send_signal sysu-snat '*' USR1 || :
 }
 
 stop_service() {
+    [ ! -f /var/run/sysu-snat/v2/upgrade-preserve ] || exit 0
     logger -t sysu-snat '停止服务，释放插件持有的地址、规则与路由'
+    [ -f /var/run/sysu-snat/v2/daemon.pid ] || return 0
+    printf 'stop\n' > /var/run/sysu-snat/v2/request
+    local n
+    for n in $(seq 1 120); do
+        [ -f /var/run/sysu-snat/v2/daemon.pid ] || return 0
+        sleep 1
+    done
+    logger -t sysu-snat '清理尚未完成，保留资源记录供下次恢复'
 }
 
 service_stopped() {
@@ -122,10 +101,8 @@ wake() {
     procd_send_signal sysu-snat '*' USR1
 }
 rebuild() {
-    local family
-    for family in 4 6; do
-        [ ! -f "/var/run/sysu-snat/ipv$family/worker.pid" ] || touch "/var/run/sysu-snat/ipv$family/refresh"
-    done
+    mkdir -p /var/run/sysu-snat/v2
+    printf 'rotate\n' > /var/run/sysu-snat/v2/request
     wake
 }
 extra_command wake 'Check interface and rule changes'

@@ -1,0 +1,29 @@
+#!/bin/sh
+set -eu
+[ -z "${IPKG_INSTROOT:-}" ] || exit 0
+run=/var/run/sysu-snat/v2
+mkdir -p "$run"
+chmod 0700 "$run"
+# APK 保护 /etc 下的本地改动；服务入口必须与本次包内控制器同步。
+if [ -f /etc/init.d/sysu-snat.apk-new ]; then
+    cp -p /etc/init.d/sysu-snat "$run/init.previous"
+    chmod 0755 /etc/init.d/sysu-snat.apk-new
+    mv -f /etc/init.d/sysu-snat.apk-new /etc/init.d/sysu-snat
+fi
+[ ! -x /etc/init.d/rpcd ] || /etc/init.d/rpcd reload
+if [ "$(uci -q get sysu-snat.main.enabled)" != 1 ]; then
+    /etc/init.d/sysu-snat disable
+    exit 0
+fi
+previous=$(cat "$run/daemon.pid" 2>/dev/null || :)
+/etc/init.d/sysu-snat enable
+/etc/init.d/sysu-snat start
+rm -f "$run/upgrade-preserve"
+# 同名 procd 实例不会因 start 自动换进程，温和退出保留现有数据平面。
+case "$previous" in
+    ''|*[!0-9]*) ;;
+    *) if [ "$(cat "$run/daemon.pid" 2>/dev/null || :)" = "$previous" ] &&
+          tr '\000' ' ' 2>/dev/null < "/proc/$previous/cmdline" | grep -q '/usr/libexec/sysu-snat/v2/daemon.uc'; then
+           kill -TERM "$previous"
+       fi;;
+esac

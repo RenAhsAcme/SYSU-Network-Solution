@@ -1,6 +1,7 @@
 #!/usr/bin/ucode
 import { writefile, chmod } from 'fs';
 import { cursor } from 'uci';
+import { validate, native_primary } from './validate.uc';
 
 let c = cursor();
 if (!c.load('sysu-snat')) die('SYSU SNAT 配置不存在\n');
@@ -27,7 +28,7 @@ let config = { main: {
     enabled: flag('main', 'enabled', '0'),
     dnsmasq_protect: flag('main', 'dnsmasq_protect', '1'),
     log_mode: text(value('main', 'log_mode', 'normal'), /^(normal|debug)$/, '日志模式'),
-    check_interval: integer(value('main', 'check_interval', '60'), 15, 3600, '检查间隔'),
+    check_interval: integer(value('main', 'check_interval', '60'), 15, 60, '检查间隔'),
     proxy_enabled: flag('main', 'proxy_enabled', '0'),
     proxy_gid: value('main', 'proxy_gid', ''),
     tailscale_enabled: flag('main', 'tailscale_enabled', '0'),
@@ -43,13 +44,11 @@ for (let family in ['ipv4', 'ipv6']) {
         wan: text(value(family, 'wan', family == 'ipv4' ? 'wan' : 'wan6'), /^[A-Za-z0-9_]{1,32}$/, 'WAN 接口'),
         lan: text(value(family, 'lan', 'lan'), /^[A-Za-z0-9_]{1,32}$/, 'LAN 接口'),
         primary: text(value(family, 'primary', ''), /^[0-9A-Fa-f:.]*$/, '主地址'),
-        probe_url: text(value(family, 'probe_url', family == 'ipv4' ? 'https://www.baidu.com/' : 'https://mirrors.ustc.edu.cn/'), /^https:\/\/[A-Za-z0-9.-]+(:[0-9]{1,5})?(\/[^[:cntrl:] ]*)?$/, 'HTTPS 验证地址'),
-        parallel: integer(value(family, 'parallel', '8'), 1, 8, '并发数'),
-        retry_seconds: integer(value(family, 'retry_seconds', '300'), 30, 86400, '重试间隔'),
-        pool_size: integer(value(family, 'pool_size', '254'), 1, 512, 'IPv6 候选数'),
+        probe_url: text(value(family, 'probe_url', 'https://mirrors.ustc.edu.cn/'), /^https:\/\/[A-Za-z0-9.-]+(:[0-9]{1,5})?(\/[^[:cntrl:] ]*)?$/, 'HTTPS 验证地址'),
+        probe_url_secondary: text(value(family, 'probe_url_secondary', family == 'ipv4' ? 'https://mirrors.bfsu.edu.cn/debian/README' : 'https://mirrors.tuna.tsinghua.edu.cn/'), /^https:\/\/[A-Za-z0-9.-]+(:[0-9]{1,5})?(\/[^[:cntrl:] ]*)?$/, '第二 HTTPS 验证地址'),
+        probe_url_tertiary: text(value(family, 'probe_url_tertiary', ''), /^(https:\/\/[A-Za-z0-9.-]+(:[0-9]{1,5})?(\/[^[:cntrl:] ]*)?)?$/, '第三 HTTPS 验证地址'),
         fallback: text(value(family, 'fallback', 'primary'), /^(primary|original)$/, '回退方式')
     };
-    if (index([1, 2, 4, 8], f.parallel) < 0) die('并发数须为 1、2、4 或 8\n');
     for (let scope in ['lan', 'proxy', 'tailscale'])
         for (let proto in ['tcp', 'udp', 'other']) {
             let key = scope + '_' + proto;
@@ -71,21 +70,10 @@ c.foreach('sysu-snat', 'rule', function(s) {
     if (r.proto == 'any' && (length(r.sport) || length(r.dport))) die('端口条件需要选择 TCP 或 UDP\n');
     push(config.rules, r);
 });
+validate(config);
+native_primary(config);
 if (ARGV[0] == 'show') { printf('%J\n', config); exit(0); }
 if (ARGV[0] != 'stage' || !match(ARGV[1] || '', /^\/var\/run\/sysu-snat\/config\.[A-Za-z0-9]+$/)) die('无效的内部调用\n');
 let dir = ARGV[1];
-function quote(v) { return "'" + replace('' + v, /'/g, "'\\''") + "'"; }
-function save(name, data) {
-    if (!writefile(dir + '/' + name, data) || !chmod(dir + '/' + name, 0600)) die('运行配置写入失败\n');
-}
-save('policy.json', sprintf('%J\n', config));
-for (let family in ['ipv4', 'ipv6']) {
-    let f = config[family], fields = { ENABLED: config.main.enabled && f.enabled ? 1 : 0,
-        WAN_IF: f.wan, LAN_IF: f.lan, PRIMARY: f.primary, PROBE_URL: f.probe_url,
-        PARALLEL: f.parallel, RETRY_SECONDS: f.retry_seconds, POOL_SIZE: f.pool_size,
-        LOG_MODE: config.main.log_mode, CHECK_INTERVAL: config.main.check_interval,
-        TAILSCALE_ENABLED: config.main.tailscale_enabled, TAILSCALE_PREFIX: config.main.tailscale_ipv6 };
-    let lines = [];
-    for (let key, v in fields) push(lines, key + '=' + quote(v));
-    save(family + '.conf', join('\n', lines) + '\n');
-}
+if (!writefile(dir + '/policy.json', sprintf('%J\n', config)) || !chmod(dir + '/policy.json', 0600))
+    die('运行配置写入失败\n');

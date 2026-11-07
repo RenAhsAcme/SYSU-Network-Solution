@@ -4,27 +4,25 @@ BASE=${SNAT_DNS_BASE:-}
 RUN="$BASE/var/run/sysu-snat"
 umask 077
 mkdir -p "$RUN" || exit 1
-active_workers() {
-    local family pid
-    for family in ipv4 ipv6; do
-        pid="$(cat "$RUN/$family/worker.pid" 2>/dev/null || :)"
-        case "$pid" in ''|*[!0-9]*) continue;; esac
-        kill -0 "$pid" 2>/dev/null && return 0
-    done
+[ ! -f "$RUN/v2/upgrade-preserve" ] || exit 0
+controller_running() {
+    local pid
+    pid="$(cat "$RUN/v2/daemon.pid" 2>/dev/null || :)"
+    case "$pid" in ''|*[!0-9]*) ;; *) kill -0 "$pid" 2>/dev/null && return 0;; esac
     return 1
 }
 case "${1:-}" in
 sync) action=sync;;
 release|release-wait)
     if [ "$1" = release-wait ]; then
-        for n in $(seq 1 25); do active_workers || break; sleep 1; done
+        for n in $(seq 1 25); do controller_running || break; sleep 1; done
     fi
     action=release;;
 *) exit 2;;
 esac
 exec 6>"$RUN/dns.lock"
 flock 6 || exit 1
-if [ "$action" = release ] && active_workers; then exit 0; fi
+if [ "$action" = release ] && controller_running; then exit 0; fi
 helper="$BASE/usr/libexec/sysu-snat/dns-config"
 if "$helper" "$action" >"$RUN/dns-output" 2>"$RUN/dns-error.next"; then
     if [ -s "$RUN/dns-output" ]; then logger -t sysu-snat "$(cat "$RUN/dns-output")"; fi

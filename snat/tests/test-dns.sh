@@ -6,6 +6,9 @@ trap 'rm -rf "$base"' EXIT
 export SNAT_DNS_BASE="$base"
 mkdir -p "$base/etc/config" "$base/uci" "$base/var/run/sysu-snat/config" "$base/mock-bin"
 cp ../files/sysu-snat-dns.uc "$base/helper"
+mkdir -p "$base/v2" "$base/usr/libexec/sysu-snat/v2"
+cp ../v2/io.uc "$base/v2/io.uc"
+cp ../v2/io.uc "$base/usr/libexec/sysu-snat/v2/io.uc"
 cat > "$base/etc/config/dhcp" <<'CONFIG'
 config dnsmasq 'first'
     list notinterface 'wan'
@@ -54,6 +57,13 @@ sed -i 's/"lan":{"l3_device":"eth0"}/"lan":{"l3_device":"br-lan"}/' "$base/netwo
 sed -i 's/"wan":"wan"/"wan":"uplink"/' "$base/var/run/sysu-snat/config/policy.json"
 ucode "$base/helper" sync
 grep -q "notinterface 'eth1'" "$base/etc/config/dhcp"
+mkdir -p "$base/var/run/sysu-snat/v2"
+printf '%s\n' '{"families":{"ipv4":{"ctx":{"device":"eth2"},"members":[{"bound":true}]}}}' > "$base/var/run/sysu-snat/v2/state.json"
+ucode "$base/helper" sync
+grep -q "notinterface 'eth2'" "$base/etc/config/dhcp"
+rm "$base/var/run/sysu-snat/v2/state.json"
+ucode "$base/helper" sync
+! grep -q "notinterface 'eth2'" "$base/etc/config/dhcp"
 sed -i 's/"dnsmasq_protect":1/"dnsmasq_protect":0/' "$base/var/run/sysu-snat/config/policy.json"
 ucode "$base/helper" sync
 cmp "$base/before" "$base/etc/config/dhcp"
@@ -65,18 +75,18 @@ test "$count" = "$(wc -l < "$base/reloads")"
 ucode "$base/helper" release
 test "$count" = "$(wc -l < "$base/reloads")"
 cmp "$base/before" "$base/etc/config/dhcp"
-mkdir -p "$base/usr/libexec/sysu-snat" "$base/var/run/sysu-snat/ipv4"
+mkdir -p "$base/usr/libexec/sysu-snat" "$base/var/run/sysu-snat/v2"
 cp "$base/helper" "$base/usr/libexec/sysu-snat/dns-config"
 chmod 700 "$base/usr/libexec/sysu-snat/dns-config"
 printf '#!/bin/sh\nexit 0\n' > "$base/mock-bin/logger"
 chmod 700 "$base/mock-bin/logger"
 export PATH="$base/mock-bin:$PATH"
-sh ../src/dns sync
-echo $$ > "$base/var/run/sysu-snat/ipv4/worker.pid"
-sh ../src/dns release
+sh ../files/sysu-snat-dns sync
+echo $$ > "$base/var/run/sysu-snat/v2/daemon.pid"
+sh ../files/sysu-snat-dns release
 grep -q sysu_snat_notinterface "$base/etc/config/dhcp"
-rm "$base/var/run/sysu-snat/ipv4/worker.pid"
-sh ../src/dns release
+rm "$base/var/run/sysu-snat/v2/daemon.pid"
+sh ../files/sysu-snat-dns release
 cmp "$base/before" "$base/etc/config/dhcp"
 printf 'not a valid UCI configuration\n' > "$base/etc/config/dhcp"
 if ucode "$base/helper" sync; then exit 1;fi

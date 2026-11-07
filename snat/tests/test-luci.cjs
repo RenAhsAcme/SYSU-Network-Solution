@@ -53,6 +53,7 @@ function descendants(node) {
 }
 (async () => {
     const writable = await render(false);
+    assert.ok(writable.fields.every(args => !['pool_size', 'parallel', 'retry_seconds', 'mapping_mode'].some(key => args.includes(key))));
     const text = descendants(writable.tree).map(n => n.textContent).join('\n');
     assert.match(text, /WAN 原生地址/); assert.match(text, /主地址/); assert.match(text, /2 个可用/);
     assert.match(text, /地址池运行中/);
@@ -65,7 +66,7 @@ function descendants(node) {
     assert.deepEqual(readonly.document.registrations, []);
     readonly.document.dispatchEvent(new Event('uci-applied')); await flush();
     assert.deepEqual(readonly.calls, []);
-    const controls = descendants(readonly.tree).filter(n => ['启动', '停止', '重新构建'].includes(n.textContent));
-    assert.equal(controls.length, 3); assert.ok(controls.every(n => n.disabled));
+    const controls = descendants(readonly.tree).filter(n => ['启动', '停止', '检查', '补齐', '逐个轮换'].includes(n.textContent));
+    assert.equal(controls.length, 5); assert.ok(controls.every(n => n.disabled));
     console.log('LuCI: address roles/status/repeated apply/read-only controls passed');
 })().catch(error => { console.error(error); process.exitCode = 1; });

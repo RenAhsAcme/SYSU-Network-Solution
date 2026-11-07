@@ -1,10 +1,10 @@
 #!/bin/sh
 . /usr/share/libubox/jshn.sh
 case "$1" in
-list) printf '%s\n' '{"status":{},"logs":{},"control":{"action":""}}';;
+list) printf '%s\n' '{"status":{},"members":{},"events":{},"operation":{},"logs":{},"control":{"action":""}}';;
 call)
     case "$2" in
-    status) exec lua /usr/lib/sysu-snat/status.lua;;
+    status|members|events|operation) exec /usr/bin/ucode /usr/libexec/sysu-snat/v2/status.uc "$2";;
     logs)
         json_init
         json_add_string text "$(logread -e sysu-snat 2>/dev/null | grep -E ' sysu-snat(\[[0-9]+\])?:' | tail -n 80)"
@@ -14,20 +14,9 @@ call)
         [ "${#request}" -le 512 ] || exit 1
         json_load "$request" || exit 1
         json_get_var action action
-        result=0
-        case "$action" in
-        apply) /etc/init.d/sysu-snat reload >/dev/null 2>&1; result=$?;;
-        start|rebuild)
-            if [ "$(uci -q get sysu-snat.main.enabled)" != 1 ]; then result=2
-            elif [ "$action" = start ]; then
-                /etc/init.d/sysu-snat reload >/dev/null 2>&1; result=$?
-            else /etc/init.d/sysu-snat rebuild >/dev/null 2>&1; result=$?; fi;;
-        stop) /etc/init.d/sysu-snat stop >/dev/null 2>&1; result=$?;;
-        *) exit 1;;
-        esac
-        json_init
-        json_add_int code "$result"
-        json_dump;;
+        mkdir -p /var/run/sysu-snat/v2
+        exec /usr/bin/flock -n /var/run/sysu-snat/v2/control.lock /usr/bin/ucode /usr/libexec/sysu-snat/v2/control.uc "$action"
+        ;;
     *) exit 1;;
     esac;;
 *) exit 1;;

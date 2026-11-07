@@ -2,6 +2,7 @@
 import { readfile, writefile } from 'fs';
 import { cursor } from 'uci';
 import { connect } from 'ubus';
+import { load } from './v2/io.uc';
 
 let base = getenv('SNAT_DNS_BASE') || '';
 let action = ARGV[0];
@@ -26,11 +27,9 @@ if (active) {
         if (wan.l3_device) add(wan.l3_device);
     }
     // 接口切换时，旧地址释放前仍保留其设备的监听限制。
-    for (let family in ['ipv4', 'ipv6'])
-        for (let line in split(readfile(base + '/var/run/sysu-snat/' + family + '/owned') || '', '\n')) {
-            let pair = match(line, /^(\S+)\s+\S+$/);
-            if (pair) add(pair[1]);
-        }
+    let state = load(base + '/var/run/sysu-snat/v2/state.json', {});
+    for (let key, family in state.families || {}) for (let member in family.members || [])
+        if (member.bound) add((member.resource_ctx || family.ctx).device);
 }
 let c = base ? cursor(base + '/etc/config', base + '/uci', '') : cursor();
 if (!c.load('dhcp')) {

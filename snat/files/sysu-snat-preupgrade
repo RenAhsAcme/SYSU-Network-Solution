@@ -1,0 +1,5 @@
+#!/bin/sh
+set -eu
+[ -z "${IPKG_INSTROOT:-}" ] || exit 0
+run=/var/run/sysu-snat/v2
+[ ! -f "$run/daemon.pid" ] || touch "$run/upgrade-preserve"

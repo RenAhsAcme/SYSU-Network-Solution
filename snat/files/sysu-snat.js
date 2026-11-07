@@ -9,8 +9,8 @@
 var callStatus = rpc.declare({ object: 'sysu-snat', method: 'status', expect: { '': {} } });
 var callLogs = rpc.declare({ object: 'sysu-snat', method: 'logs', expect: { text: '' } });
 var callControl = rpc.declare({ object: 'sysu-snat', method: 'control', params: ['action'], expect: { '': {} } });
-var labels = { stopped: '已停止', starting: '正在启动', waiting: '等待网络接口',
-    building: '正在构建地址池', active: '地址池运行中', fallback: '使用回退策略', retrying: '等待重试' };
+var labels = { stopping: '正在停止', stopped: '已停止', starting: '正在启动', waiting: '等待网络接口',
+    building: '正在构建地址池', active: '地址池运行中', degraded: '地址池补位中', fault: '维护异常', offline: '维护进程离线', fallback: '使用回退策略', retrying: '等待重试' };
 var modes = [['original', '保留原出口'], ['primary', '使用 WAN 主地址'],
     ['random', '地址池 · 按连接随机'], ['host', '地址池 · 按来源地址保持一致'],
     ['endpoint', '地址池 · 按 UDP 源端点保持一致']];
@@ -55,7 +55,7 @@ return view.extend({
         o.value('normal', '常规'); o.value('debug', '调试'); o.rmempty = false;
         o.description = '常规模式仅记录构建摘要、状态变化与故障；调试模式额外记录批次进度。';
         o = main.taboption('advanced', form.Value, 'check_interval', '健康检查间隔（秒）');
-        o.datatype = 'range(15,3600)'; o.default = '60'; o.rmempty = false;
+        o.datatype = 'range(15,60)'; o.default = '60'; o.rmempty = false;
 
         var boxes = {};
         [4, 6].forEach(function(family) {
@@ -85,14 +85,12 @@ return view.extend({
             opt = s.taboption('advanced', form.Value, 'probe_url', 'HTTPS 验证地址');
             opt.rmempty = false; opt.datatype = 'maxlength(512)';
             opt.description = '使用具有有效证书的 HTTPS 地址，验证结果仅代表该目标在验证时可达。';
-            opt = s.taboption('advanced', form.ListValue, 'parallel', '探测并发数');
-            [1, 2, 4, 8].forEach(function(n) { opt.value(String(n)); }); opt.rmempty = false;
-            opt = s.taboption('advanced', form.Value, 'retry_seconds', '失败重试间隔（秒）');
-            opt.datatype = 'range(30,86400)'; opt.rmempty = false;
-            if (family == 6) {
-                opt = s.taboption('advanced', form.Value, 'pool_size', 'IPv6 候选数量');
-                opt.datatype = 'range(1,512)'; opt.rmempty = false;
-            }
+            opt = s.taboption('advanced', form.Value, 'probe_url_secondary', '第二 HTTPS 验证地址');
+            opt.rmempty = false; opt.datatype = 'maxlength(512)';
+            opt.default = family == 4 ? 'https://mirrors.bfsu.edu.cn/debian/README' : 'https://mirrors.tuna.tsinghua.edu.cn/';
+
+            opt = s.taboption('advanced', form.Value, 'probe_url_tertiary', '第三 HTTPS 验证地址（可选）');
+            opt.rmempty = true; opt.datatype = 'maxlength(512)';
 
             var summary = E('p', {}, '正在读取状态…');
             var native = E('div');
@@ -130,7 +128,7 @@ return view.extend({
                             (a.preferred === 0 ? ' · 已弃用' : '')));
                     });
                     addresses = list(state.pool); filter();
-                    poolInfo.textContent = '扩展池：' + (state.usable || 0) + ' 个可用 / ' + (state.count || 0) + ' 个记录 · 最近验证：' + timestamp(state.verified);
+                    poolInfo.textContent = '扩展池：' + (state.usable || 0) + ' 个可用 / ' + (state.count || 0) + ' 个绑定 · 严格合格：' + (state.qualified || 0) + '/5 · 最近验证：' + timestamp(state.verified);
                     others.textContent = list(state.other).map(function(a) { return a.address + '/' + a.prefix + ' · ' + a.scope; }).join('\n') || '无其他地址';
                     detail.textContent = (state.state == 'fallback' ? '地址池尚不可用，当前按回退设置处理新连接。' : '') +
                         (state.retry_at ? ' 下次尝试：' + timestamp(state.retry_at) : '') + (state.detail ? '\n' + state.detail : '');
@@ -165,14 +163,20 @@ return view.extend({
         var update = function() {
             return callStatus().then(function(state) {
                 error.textContent = state.dns_error ? 'DNS 监听限制未能应用，地址池任务暂缓：' + state.dns_error : state.error || (state.pending ? '已保存设置与运行配置不同，请检查并保存应用。' : '');
+                if (state.operation) {
+                    var op = state.operation;
+                    var text = { pending: '操作已提交', running: '维护操作进行中', completed: '操作已完成', interrupted: '操作已中断，可重新提交', failed: '操作失败，请检查日志与配置' }[op.state];
+                    if (text) error.textContent += (error.textContent ? '\n' : '') + text;
+                }
                 Object.keys(boxes).forEach(function(key) { boxes[key].update((state.families || {})[key] || {}); });
             }).catch(function() { error.textContent = '暂时无法读取状态，请检查服务和访问权限'; });
         };
-        [['start', '启动'], ['stop', '停止'], ['rebuild', '重新构建']].forEach(function(action) {
+        [['start', '启动'], ['stop', '停止'], ['check', '检查'], ['refill', '补齐'], ['rotate', '逐个轮换']].forEach(function(action) {
             var button = E('button', { 'class': 'cbi-button cbi-button-action', 'type': 'button', 'disabled': true,
                 'click': ui.createHandlerFn(this, function() {
                     return callControl(action[0]).then(function(result) {
                         if (result.code === 2) throw new Error('请先启用服务，并保存应用设置');
+                        if (result.code === 3) throw new Error('已有维护操作正在进行');
                         if (result.code !== 0) throw new Error('操作未完成，请检查日志与配置');
                         return update();
                     }).catch(function(err) { ui.addNotification(null, E('p', {}, err.message), 'error'); });

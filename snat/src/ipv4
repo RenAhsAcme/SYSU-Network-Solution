@@ -210,6 +210,10 @@ collect_batch() {
 count=0
 batch=
 while read -r addr; do
+    if [ -f "$BASE/etc/sysu-snat/ipv4-excluded" ] && grep -qxF "$addr" "$BASE/etc/sysu-snat/ipv4-excluded"; then
+        echo "$addr excluded" >> "$STATE/reserved"
+        continue
+    fi
     # Discard stale ARP cache so this rebuild discovers devices afresh.
     # The plan already excludes the WAN address and gateway.
     ip neigh del "$addr" dev "$DEV" >/dev/null 2>&1 || :

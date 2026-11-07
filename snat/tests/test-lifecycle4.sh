@@ -67,6 +67,13 @@ test "$logs" -eq "$(wc -l < "$base/log")"
 rm "$base/nat"
 sh ../src/ipv4 check >> "$base/stdout"
 grep -q '已恢复丢失' "$base/log"
+mkdir -p "$base/etc/sysu-snat"
+echo 10.1.2.3 > "$base/etc/sysu-snat/ipv4-excluded"
+sh ../src/ipv4 refresh >> "$base/stdout"
+! grep -qxF 10.1.2.3 "$base/var/run/sysu-snat/ipv4/pool"
+grep -qxF '10.1.2.3 excluded' "$base/var/run/sysu-snat/ipv4/reserved"
+! grep -qxF 10.1.2.3/32 "$base/aliases"
+test "$(wc -l < "$base/var/run/sysu-snat/ipv4/pool")" -eq 2
 AWP_FAIL=1 sh ../src/ipv4 refresh >> "$base/stdout" 2>&1 && exit 1
 grep -q '原 WAN 的 HTTPS 检查失败' "$base/log"
 grep -q '阶段=原WAN连通性检查' "$base/log"

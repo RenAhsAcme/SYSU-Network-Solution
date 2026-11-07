@@ -434,9 +434,9 @@ static int send_packet(const uint8_t *data, size_t len) {
 }
 static SESSION_EVENT defer(void) {
     int expired = transaction_userinfo && attempts >= 3 && ++lost_rounds >= 2 && !expired_reported;
-    if (!backoff) backoff = params.hello > 120 ? params.hello : 120;
+    if (!backoff) backoff = transaction_userinfo ? 15 : params.hello > 120 ? params.hello : 120;
     else backoff = backoff > 450 ? 900 : backoff * 2;
-    if (backoff > 900) backoff = 900;
+    if (backoff > (transaction_userinfo ? 60 : 900)) backoff = transaction_userinfo ? 60 : 900;
     pending_sequence = attempts = 0; need_userinfo = transaction_userinfo;
     deadline = monotonic_ms() + (int64_t)backoff * 1000; change_state(SESSION_BACKOFF);
     if (transaction_userinfo) PR_WARN("直连会话确认未获回应，%d 秒后重试", backoff);
@@ -468,8 +468,8 @@ static unsigned hello_interval(void) {
     return interval && interval < 10 ? 10 : interval > 3600 ? 3600 : interval;
 }
 static unsigned confirm_interval(void) {
-    unsigned interval = hello_interval() * 5;
-    return interval < 600 ? 600 : interval > 1800 ? 1800 : interval;
+    unsigned interval = hello_interval();
+    return interval < 60 ? 60 : interval > 120 ? 120 : interval;
 }
 static void schedule_maintenance(void) {
     int64_t hello = monotonic_ms() + (int64_t)hello_interval() * 1000;

@@ -168,8 +168,8 @@ int main(void) {
     sends = 0; session_tick(); assert(sends == 1 && attempts == 1);
     now += 2999; session_tick(); assert(sends == 1); now++; session_tick(); assert(sends == 2 && attempts == 2);
     now += 3000; session_tick(); assert(sends == 3 && attempts == 3);
-    now += 3000; assert(session_tick() == SESSION_NO_EVENT && sends == 3 && state == SESSION_BACKOFF && backoff == 120 && need_userinfo);
-    defer(); assert(backoff == 240); defer(); assert(backoff == 480); defer(); assert(backoff == 900); defer(); assert(backoff == 900);
+    now += 3000; assert(session_tick() == SESSION_NO_EVENT && sends == 3 && state == SESSION_BACKOFF && backoff == 15 && need_userinfo);
+    defer(); assert(backoff == 30); defer(); assert(backoff == 60); defer(); assert(backoff == 60);
 
     state = SESSION_PENDING; pending_sequence = 99; update_needed = 0;
     uint8_t received[DIR_MAX], original[DIR_MAX]; n = response(received, 98, NULL, 0);
@@ -191,8 +191,15 @@ int main(void) {
     assert(receive_frame(version_frame, version_frame_len) == SESSION_NO_EVENT && wire_version == 2 && pending_sequence == 99);
     assert(decode_response(received, n) == SESSION_NO_EVENT && state == SESSION_CONFIRMED && !pending_sequence && backoff == 0 && !need_userinfo);
     assert(params.version == 2 && wire_version == 1);
-    assert(confirm_deadline == now + 600000);
+    assert(confirm_deadline == now + 120000);
     assert(deadline == now + 120000); assert(decode_response(original, n) == SESSION_NO_EVENT);
+    now = deadline; session_tick();
+    assert(transaction_userinfo && attempts == 1 && pending_sequence);
+    n = response(received, pending_sequence, NULL, 0); decode_response(received, n);
+    assert(state == SESSION_CONFIRMED && confirm_deadline == now + 120000);
+    first_ack_timestamp += 120;
+    /* 独立验证普通 Hello，不把其发送成功当成可靠确认。 */
+    confirm_deadline = now + 600000; schedule_maintenance();
     int before_hello = sends;
     now = deadline; session_tick();
     assert(sends == before_hello + 1 && !pending_sequence && !attempts && !transaction_userinfo && state == SESSION_CONFIRMED);
@@ -205,9 +212,9 @@ int main(void) {
     assert(transaction_userinfo && pending_sequence && attempts == 1 && state == SESSION_PENDING && packet_len == 90);
     assert(params.version == 2 && packet[0] == 1 && be64(packet + 28) == first_ack_timestamp + 600);
     n = response(received, pending_sequence, NULL, 0); decode_response(received, n);
-    assert(state == SESSION_CONFIRMED && !pending_sequence && confirm_deadline == now + 600000);
-    params.hello = 0; schedule_maintenance(); assert(deadline == confirm_deadline && session_timeout() == 600000);
-    params.hello = 3600; assert(confirm_interval() == 1800); params.hello = 120; schedule_maintenance();
+    assert(state == SESSION_CONFIRMED && !pending_sequence && confirm_deadline == now + 120000);
+    params.hello = 0; confirm_deadline = now + 60000; schedule_maintenance(); assert(deadline == confirm_deadline && session_timeout() == 60000);
+    params.hello = 3600; assert(confirm_interval() == 120); params.hello = 120; confirm_deadline = now + 600000; schedule_maintenance();
     fail_sends = 1; now = deadline; int old_lost = lost_rounds; session_tick(); assert(pending_sequence && attempts == 1 && !transaction_userinfo);
     now += 3000; session_tick(); now += 3000; session_tick(); now += 3000; session_tick();
     assert(state == SESSION_BACKOFF && lost_rounds == old_lost && !need_userinfo);
@@ -258,5 +265,5 @@ int main(void) {
     session_reset(); assert(installed_len == 1 && !bpf_run(original, n)); now += 9999999; int last_sends = sends; session_tick();
     assert(state == SESSION_NONE && !active && session_timeout() == -1 && sends == last_sends);
     sock = -1; session_destroy(); assert(session_fd() == -1);
-    puts("session: official SAM no-ACK Hello/header, 10-minute confirmation/ACK and trusted version downgrade, scoped raw transport, DES/RC4 and single expiry passed"); return 0;
+    puts("session: official SAM no-ACK Hello/header, bounded reliable confirmation/ACK and trusted version downgrade, scoped raw transport, DES/RC4 and single expiry passed"); return 0;
 }
